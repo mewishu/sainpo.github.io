@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="paxos,分布式服务,">
 
 
 
@@ -80,6 +80,7 @@
 
 
 <meta name="description" content="paxos算法号称是”世界上唯一的分布式一致性算法”,其他任何一致性算法都是它的变体. 最近在看paxos算法, 看了不少博客, 都感觉总结得不够到位,甚至有理解偏差的地方,倒是在博客的引用文章里面找到了一篇英文文献,看完后豁然开朗茅塞顿开. 于是把那篇英文原文翻译了一下, 加深一下理解 英文文献虽是2012年的了, 但是短小精悍,值得一看,原文地址是:  angus.nyc/2012/paxos">
+<meta name="keywords" content="paxos,分布式服务">
 <meta property="og:type" content="article">
 <meta property="og:title" content="paxos-by-example">
 <meta property="og:url" content="https://github.com/mewishu/sainpo.github.io/2019/07/29/paxos-by-example/index.html">
@@ -92,7 +93,7 @@
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/6/28/16b9c5024f7ec98c?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/6/28/16b9c5025b15891d?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/6/28/16b9c502fba8bd6f?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
-<meta property="og:updated_time" content="2019-07-29T12:32:51.121Z">
+<meta property="og:updated_time" content="2019-07-29T13:38:43.532Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos-by-example">
 <meta name="twitter:description" content="paxos算法号称是”世界上唯一的分布式一致性算法”,其他任何一致性算法都是它的变体. 最近在看paxos算法, 看了不少博客, 都感觉总结得不够到位,甚至有理解偏差的地方,倒是在博客的引用文章里面找到了一篇英文文献,看完后豁然开朗茅塞顿开. 于是把那篇英文原文翻译了一下, 加深一下理解 英文文献虽是2012年的了, 但是短小精悍,值得一看,原文地址是:  angus.nyc/2012/paxos">
@@ -309,6 +310,39 @@
           </span>
 
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sainpo.github.io/categories/分布式服务/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式服务</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/sainpo.github.io/categories/分布式服务/paxos算法/" itemprop="url" rel="index">
+                    <span itemprop="name">paxos算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -406,6 +440,14 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/sainpo.github.io/tags/paxos/" rel="tag"># paxos</a>
+          
+            <a href="/sainpo.github.io/tags/分布式服务/" rel="tag"># 分布式服务</a>
+          
+        </div>
       
 
       
@@ -508,7 +550,25 @@
             
 
             
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/sainpo.github.io/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/sainpo.github.io/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
             
 
           </nav>
@@ -623,6 +683,8 @@
   
 
 
+  
+
 
 
 
@@ -661,6 +723,11 @@
   
   
     <script type="text/javascript" src="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/sainpo.github.io/lib/canvas-nest/canvas-nest.min.js"></script>
   
 
 
