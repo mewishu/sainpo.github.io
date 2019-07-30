@@ -87,13 +87,13 @@
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="paxos算法号称是”世界上唯一的分布式一致性算法”,其他任何一致性算法都是它的变体. 最近在看paxos算法, 看了不少博客, 都感觉总结得不够到位,甚至有理解偏差的地方,倒是在博客的引用文章里面找到了一篇英文文献,看完后豁然开朗茅塞顿开. 于是把那篇英文原文翻译了一下, 加深一下理解 英文文献虽是2012年的了, 但是短小精悍,值得一看,原文地址是:  angus.nyc/2012/paxos">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
-<meta property="og:updated_time" content="2019-07-30T01:12:19.207Z">
+<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
+<meta property="og:updated_time" content="2019-07-30T02:16:56.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos-by-example">
 <meta name="twitter:description" content="paxos算法号称是”世界上唯一的分布式一致性算法”,其他任何一致性算法都是它的变体. 最近在看paxos算法, 看了不少博客, 都感觉总结得不够到位,甚至有理解偏差的地方,倒是在博客的引用文章里面找到了一篇英文文献,看完后豁然开朗茅塞顿开. 于是把那篇英文原文翻译了一下, 加深一下理解 英文文献虽是2012年的了, 但是短小精悍,值得一看,原文地址是:  angus.nyc/2012/paxos">
-<meta name="twitter:image" content="https://mewishu.github.io/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
+<meta name="twitter:image" content="https://mewishu.github.io/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
 
 
 
@@ -384,8 +384,7 @@
 <p>在一个分布式系统中这非常的难, 因为不同机器之前的消息可能会丢失, 或是被无限延迟, 甚至机器本身也会挂掉</p>
 <p>Paxos算法可以保证最终只会有一个值会被选中, 但是不能保证如果集群中的大多数节点挂掉后,还能选中一个值</p>
 <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Paxos的节点可以是proposer, acceptor,learner中的任何一种角色.proposer会提议一个它想被采纳的值, 一般是通过发送一个包含该提议值的提案给集群中的每个acceptor.  然后acceptor会独立的决定是否接受这个提案–它可能会接收到多个proposer的不同提案, 决定好后会把它的决定发给learner.  learner的作用是判断一个值是否已经被接受.在Paxos算法中, 只有一个值被大多数的acceptor选中, 才算被Paxos算法选中.在实际项目中, 一个节点可能担任多种角色, 但是在这个例子里面, 每一种角色都是一个独立的节点.</p>
-<img src="/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png" title="Paxos的基本架构">
-
+<p><img src="/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png" alt="Paxos的基本架构"></p>
 <p><img src="/sainpo.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png" alt="Paxos的基本架构"></p>
 <blockquote>
 <p>图1 Paxos的基本架构. 几个proposer向acceptor提交提案. 当一个acceptor接受了一个值后, 它把它的决定发给learner</p>
