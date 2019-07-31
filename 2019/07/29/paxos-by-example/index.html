@@ -94,7 +94,7 @@
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure4-Paxos.png">
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure5-Paxos.png">
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png">
-<meta property="og:updated_time" content="2019-07-31T10:25:25.003Z">
+<meta property="og:updated_time" content="2019-07-31T10:37:08.943Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos-by-example">
 <meta name="twitter:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
@@ -385,7 +385,7 @@
 <p><a href="https://angus.nyc/2012/paxos-by-example/" target="_blank" rel="noopener">angus.nyc/2012/paxos-by-example/ </a></p>
 </blockquote>
 <p>文章中不全是直译, 有些地方改成了我自己的理解, 所以有可能有理解错的地方, 还望指出.</p>
-<h2 id="关于作者-Lamport"><a href="#关于作者-Lamport" class="headerlink" title="关于作者: Lamport"></a>关于作者: Lamport</h2><p>提到Paxos算法，我们不得不首先来介绍下Paxos算法的作者Leslie Lamport(莱斯利·兰伯特, <a href="http://www.lamport.org)及其对计算机科学尤其是分布式计算领域的杰出贡献。作为2013年的新科图灵奖得主，Lamport是计算机科学领域一位拥有杰出成就的传奇人物，其先后多次荣获ACM和IEEE以及其他各类计算机重大奖项。Lamport对时间时钟、面包店算法、拜占庭将军问题以及Paxos算法的创造性研究，极大地推动了计算机科学尤其是分布式计算的发展，全世界无数工程师得益于他的理论，其中Paxos算法的提出，正是Lamport多年的研究成果。" target="_blank" rel="noopener">http://www.lamport.org)及其对计算机科学尤其是分布式计算领域的杰出贡献。作为2013年的新科图灵奖得主，Lamport是计算机科学领域一位拥有杰出成就的传奇人物，其先后多次荣获ACM和IEEE以及其他各类计算机重大奖项。Lamport对时间时钟、面包店算法、拜占庭将军问题以及Paxos算法的创造性研究，极大地推动了计算机科学尤其是分布式计算的发展，全世界无数工程师得益于他的理论，其中Paxos算法的提出，正是Lamport多年的研究成果。</a></p>
+<h2 id="关于作者-Lamport"><a href="#关于作者-Lamport" class="headerlink" title="关于作者: Lamport"></a>关于作者: Lamport</h2><p>提到Paxos算法，我们不得不首先来介绍下Paxos算法的作者Leslie Lamport(莱斯利·兰伯特, <a href="http://www.lamport.org" target="_blank" rel="noopener">http://www.lamport.org</a> )及其对计算机科学尤其是分布式计算领域的杰出贡献。作为2013年的新科图灵奖得主，Lamport是计算机科学领域一位拥有杰出成就的传奇人物，其先后多次荣获ACM和IEEE以及其他各类计算机重大奖项。Lamport对时间时钟、面包店算法、拜占庭将军问题以及Paxos算法的创造性研究，极大地推动了计算机科学尤其是分布式计算的发展，全世界无数工程师得益于他的理论，其中Paxos算法的提出，正是Lamport多年的研究成果。</p>
 <p>说起Paxos理论的发表，还有一段非常有趣的历史故事。Lamport早在1990年就已经将其对Paxos算法的研究论文<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/lamport-paxos.pdf" target="_blank" rel="noopener">《<strong>The PartTime Parliament</strong>》</a>提交给ACM TOCS Jnl.的评审委员会了，但是由于Lamport“创造性”地使用了故事的方式来进行算法的描述，导致当时委员会的工作人员没有一个能够正确地理解他对算法的描述，时任主编要求Lamport使用严谨的数据证明方式来描述该算法，否则他们将不考虑接受这篇论文。遗憾的是，Lamport并没有接收他们的建议，当然也就拒绝了对论文的修改，并撤销了对这篇论文的提交。在后来的一个会议上，Lamport还对此事耿耿于怀：“为什么这些搞理论的人一点幽默感也没有呢？”</p>
 <p>幸运的是，还是有人能够理解Lamport那公认的令人晦涩的算法描述的。1996年，来自微软的Butler Lampson在WDAG96上提出了重新审视这篇分布式论文的建议，在次年的WDAG97上，麻省理工学院的Nancy Lynch也公布了其根据Lamport的原文重新修改后的<a href="http://research.microsoft.com/en-us/um/people/blampson/60-PaxosAlgorithm/Acrobat.pdf" target="_blank" rel="noopener">《<strong>Revisiting the Paxos Algorithm</strong>》</a>，“帮助”Lamport用数学的形式化术语定义并证明了Paxos算法。于是在1998年的ACM TOCS上，这篇延迟了9年的论文终于被接受了，也标志着Paxos算法正式被计算机科学接受并开始影响更多的工程师解决分布式一致性问题。</p>
 <p>后来在2001年，Lamport本人也做出了让步，这次他放弃了故事的描述方式，而是使用了通俗易懂的语言重新讲述了原文，并发表了<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/paxos-simple.pdf" target="_blank" rel="noopener">《<strong>Paxos Made Simple</strong>》</a>——当然，Lamport甚为固执地认为他自己的表述语言没有歧义，并且也足够让人明白Paxos算法，因此不需要数学来协助描述，于是整篇文章还是没有任何数学符号。好在这篇文章已经能够被更多的人理解，相信绝大多数的Paxos爱好者也都是从这篇文章开始慢慢进入了Paxos的神秘世界。</p>
@@ -448,6 +448,9 @@
 </li>
 <li><p>Raft - An Understandable Consensus Algorithm. Raft is another conensus algorithm designed for humans to understand, which if you can tell from the above wall of text might be a problem with Paxos. <a href="https://ramcloud.stanford.edu/raft.pdf" target="_blank" rel="noopener">https://ramcloud.stanford.edu/raft.pdf</a></p>
 </li>
+<li><p>左耳听风 - 推荐阅读：分布式数据调度相关论文: <a href="http://10-02.com/180118-32%20_%20%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E8%B0%83%E5%BA%A6%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87.html" target="_blank" rel="noopener">http://10-02.com/180118-32%20_%20%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%EF%BC%9A%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E8%B0%83%E5%BA%A6%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87.html</a></p>
+</li>
+<li></li>
 </ul>
 
       
