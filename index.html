@@ -316,8 +316,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sainpo.github.io/categories/分布式服务/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式服务</span>
+                  <a href="/sainpo.github.io/categories/分布式一致性/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式一致性</span>
                   </a>
                 </span>
 
@@ -327,7 +327,7 @@
                 
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sainpo.github.io/categories/分布式服务/paxos算法/" itemprop="url" rel="index">
+                  <a href="/sainpo.github.io/categories/分布式一致性/paxos算法/" itemprop="url" rel="index">
                     <span itemprop="name">paxos算法</span>
                   </a>
                 </span>
@@ -366,18 +366,20 @@
       
         
           
-            <p>paxos算法号称是”世界上唯一的分布式一致性算法”,其他任何一致性算法都是它的变体.</p>
+            <p>Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。</p>
+<p>网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文<a href="https://www.cnblogs.com/YaoDD/p/6150498.html" target="_blank" rel="noopener">Paxos Made Simple</a>，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。</p>
+<h2 id="Paxos是什么"><a href="#Paxos是什么" class="headerlink" title="Paxos是什么"></a>Paxos是什么</h2><blockquote>
+<p>Paxos算法是基于<strong>消息传递</strong>且具有<strong>高度容错特性</strong>的<strong>一致性算法</strong>，是目前公认的解决<strong>分布式一致性</strong>问题<strong>最有效</strong>的算法之一。</p>
+</blockquote>
+<p>Google Chubby的作者Mike Burrows说过这个世界上<strong>只有一种</strong>一致性算法，那就是Paxos，其它的算法都是<strong>残次品</strong>。</p>
+<p>虽然Mike Burrows说得有点夸张，但是至少说明了Paxos算法的地位。然而，Paxos算法也因为晦涩难懂而臭名昭著。本文的目的就是带领大家深入浅出理解Paxos算法，不仅理解它的执行流程，还要理解算法的推导过程，作者是怎么一步步想到最终的方案的。只有理解了推导过程，才能深刻掌握该算法的精髓。而且理解推导过程对于我们的思维也是非常有帮助的，可能会给我们带来一些解决问题的思路，对我们有所启发。</p>
 <p>最近在看paxos算法, 看了不少博客, 都感觉总结得不够到位,甚至有理解偏差的地方,倒是在博客的引用文章里面找到了一篇英文文献,看完后豁然开朗茅塞顿开.</p>
 <p>于是把那篇英文原文翻译了一下, 加深一下理解</p>
 <p>英文文献虽是2012年的了, 但是短小精悍,值得一看,原文地址是:</p>
 <blockquote>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fangus.nyc%2F2012%2Fpaxos-by-example%2F" target="_blank" rel="noopener">angus.nyc/2012/paxos-by-example/ </a></p>
+<p><a href="https://angus.nyc/2012/paxos-by-example/" target="_blank" rel="noopener">angus.nyc/2012/paxos-by-example/ </a></p>
 </blockquote>
 <p>文章中不全是直译, 有些地方改成了我自己的理解, 所以有可能有理解错的地方, 还望指出.</p>
-<p>另外在理解的过程中参考到了以下这篇文章, 也是一篇paxos算法相关的译文</p>
-<blockquote>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fwww.iteblog.com%2Farchives%2F2337.html" target="_blank" rel="noopener">www.iteblog.com/archives/23…</a></p>
-</blockquote>
 <h2 id="译文开始"><a href="#译文开始" class="headerlink" title="译文开始"></a>译文开始</h2><p>本文通过一个实例描述了一个叫Paxos的分布式一致性算法</p>
 <p>分布式一致性算法通常是用于让多个计算机节点就某个单值的修改达成一致, 例如事务的提交commit或回滚rollback, 典型的思想就是二阶段提交或三阶段提交.</p>
 <p>算法并不关心这个单值是什么,只关心最后只有唯一一个值被所有的节点选中, 对该值的修改达成一致</p>
