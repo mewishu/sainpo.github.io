@@ -432,7 +432,18 @@
 <li>这个也可能不会发送, 但是这个算法中也是有可能的 <a href="#fnref2">↩︎</a></li>
 <li>注意这个是它从prepare response中收到的最高的提案号. 在这个例子中, proposer B的提案号(n=4)是比proposer A的提案号(n=2)大. 但是在它的prepare request的响应中, 它只收到了proposer A的提议([n=2, v=8]). 如果它在prepare response中没有收到其他的提案的话, 它就会发送自己的提案([n=4,v=5]) <a href="#fnref3">↩︎</a></li>
 </ol>
-<p>作者：NorthWard链接：<a href="https://juejin.im/post/5d159590f265da1b86089a89来源：掘金著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://juejin.im/post/5d159590f265da1b86089a89来源：掘金著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><p>NEAT ALGORITHMS - PAXOS(小动画可以辅助读懂): <a href="http://harry.me/blog/2014/12/27/neat-algorithms-paxos/" target="_blank" rel="noopener">http://harry.me/blog/2014/12/27/neat-algorithms-paxos/</a></p>
+</li>
+<li><p>paxos-by-example(通过一个例子理解paxos算法): <a href="https://juejin.im/post/5d159590f265da1b86089a89" target="_blank" rel="noopener">https://juejin.im/post/5d159590f265da1b86089a89</a></p>
+</li>
+<li><p>Paxos Made Live: an amazing paper from Google describing the challenges of their Paxos implementation in Chubby: <a href="http://static.googleusercontent.com/media/research.google.com/en//archive/paxos_made_live.pdf" target="_blank" rel="noopener">http://static.googleusercontent.com/media/research.google.com/en//archive/paxos_made_live.pdf</a></p>
+</li>
+<li><p>A Quora thread explaining Paxos in a few different ways: <a href="https://www.quora.com/Distributed-Systems/What-is-a-simple-explanation-of-the-Paxos-algorithm" target="_blank" rel="noopener">https://www.quora.com/Distributed-Systems/What-is-a-simple-explanation-of-the-Paxos-algorithm</a></p>
+</li>
+<li><p>Raft - An Understandable Consensus Algorithm. Raft is another conensus algorithm designed for humans to understand, which if you can tell from the above wall of text might be a problem with Paxos. <a href="https://ramcloud.stanford.edu/raft.pdf" target="_blank" rel="noopener">https://ramcloud.stanford.edu/raft.pdf</a></p>
+</li>
+</ul>
 
           
         

@@ -94,7 +94,7 @@
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure4-Paxos.png">
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure5-Paxos.png">
 <meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png">
-<meta property="og:updated_time" content="2019-07-31T10:14:49.731Z">
+<meta property="og:updated_time" content="2019-07-31T10:25:25.003Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos-by-example">
 <meta name="twitter:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
@@ -437,7 +437,18 @@
 <li>这个也可能不会发送, 但是这个算法中也是有可能的 <a href="#fnref2">↩︎</a></li>
 <li>注意这个是它从prepare response中收到的最高的提案号. 在这个例子中, proposer B的提案号(n=4)是比proposer A的提案号(n=2)大. 但是在它的prepare request的响应中, 它只收到了proposer A的提议([n=2, v=8]). 如果它在prepare response中没有收到其他的提案的话, 它就会发送自己的提案([n=4,v=5]) <a href="#fnref3">↩︎</a></li>
 </ol>
-<p>作者：NorthWard链接：<a href="https://juejin.im/post/5d159590f265da1b86089a89来源：掘金著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。" target="_blank" rel="noopener">https://juejin.im/post/5d159590f265da1b86089a89来源：掘金著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><p>NEAT ALGORITHMS - PAXOS(小动画可以辅助读懂): <a href="http://harry.me/blog/2014/12/27/neat-algorithms-paxos/" target="_blank" rel="noopener">http://harry.me/blog/2014/12/27/neat-algorithms-paxos/</a></p>
+</li>
+<li><p>paxos-by-example(通过一个例子理解paxos算法): <a href="https://juejin.im/post/5d159590f265da1b86089a89" target="_blank" rel="noopener">https://juejin.im/post/5d159590f265da1b86089a89</a></p>
+</li>
+<li><p>Paxos Made Live: an amazing paper from Google describing the challenges of their Paxos implementation in Chubby: <a href="http://static.googleusercontent.com/media/research.google.com/en//archive/paxos_made_live.pdf" target="_blank" rel="noopener">http://static.googleusercontent.com/media/research.google.com/en//archive/paxos_made_live.pdf</a></p>
+</li>
+<li><p>A Quora thread explaining Paxos in a few different ways: <a href="https://www.quora.com/Distributed-Systems/What-is-a-simple-explanation-of-the-Paxos-algorithm" target="_blank" rel="noopener">https://www.quora.com/Distributed-Systems/What-is-a-simple-explanation-of-the-Paxos-algorithm</a></p>
+</li>
+<li><p>Raft - An Understandable Consensus Algorithm. Raft is another conensus algorithm designed for humans to understand, which if you can tell from the above wall of text might be a problem with Paxos. <a href="https://ramcloud.stanford.edu/raft.pdf" target="_blank" rel="noopener">https://ramcloud.stanford.edu/raft.pdf</a></p>
+</li>
+</ul>
 
       
     </div>
@@ -610,7 +621,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos是什么"><span class="nav-number">1.</span> <span class="nav-text">Paxos是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于作者-Lamport"><span class="nav-number">2.</span> <span class="nav-text">关于作者: Lamport</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文开始"><span class="nav-number">3.</span> <span class="nav-text">译文开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos算法例子"><span class="nav-number">3.2.</span> <span class="nav-text">Paxos算法例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文结束"><span class="nav-number">4.</span> <span class="nav-text">译文结束</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos是什么"><span class="nav-number">1.</span> <span class="nav-text">Paxos是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于作者-Lamport"><span class="nav-number">2.</span> <span class="nav-text">关于作者: Lamport</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文开始"><span class="nav-number">3.</span> <span class="nav-text">译文开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos算法例子"><span class="nav-number">3.2.</span> <span class="nav-text">Paxos算法例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文结束"><span class="nav-number">4.</span> <span class="nav-text">译文结束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
