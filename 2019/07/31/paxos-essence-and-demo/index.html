@@ -11,22 +11,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <link rel="apple-touch-icon" sizes="180x180" href="/sainpo.github.io/images/apple-touch-icon-next.png?v=7.3.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="/sainpo.github.io/images/favicon-32x32-next.png?v=7.3.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="/sainpo.github.io/images/favicon-16x16-next.png?v=7.3.0">
-  <link rel="mask-icon" href="/sainpo.github.io/images/logo.svg?v=7.3.0" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
 
-<link rel="stylesheet" href="/sainpo.github.io/css/main.css?v=7.3.0">
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
 
 
-<link rel="stylesheet" href="/sainpo.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
-  <link rel="stylesheet" href="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.css">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css">
 
 
 <script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/sainpo.github.io/',
+    root: '/',
     scheme: 'Gemini',
     version: '7.3.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
@@ -45,7 +45,7 @@
     },
     localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
     search: {
-      root: '/sainpo.github.io/',
+      root: '/',
       path: 'search.xml'
     },
     tabs: true,
@@ -62,7 +62,7 @@
 <meta name="keywords" content="paxos,分布式一致性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="paxos精髓及示例">
-<meta property="og:url" content="https://mewishu.github.io/2019/07/31/paxos-essence-and-demo/index.html">
+<meta property="og:url" content="http://www.sainpo.top/2019/07/31/paxos-essence-and-demo/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="Paxos精髓paxos协议用来解决的问题可以用一句话来简化:   proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。  协议分为两大阶段，每个阶段又分为a/b两小步骤： 准备阶段（占坑阶段）Phase 1a: PreparePropo">
 <meta property="og:locale" content="zh-CN">
@@ -70,7 +70,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos精髓及示例">
 <meta name="twitter:description" content="Paxos精髓paxos协议用来解决的问题可以用一句话来简化:   proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。  协议分为两大阶段，每个阶段又分为a/b两小步骤： 准备阶段（占坑阶段）Phase 1a: PreparePropo">
-  <link rel="canonical" href="https://mewishu.github.io/2019/07/31/paxos-essence-and-demo/">
+  <link rel="canonical" href="http://www.sainpo.top/2019/07/31/paxos-essence-and-demo/">
 
 
 <script id="page.configurations">
@@ -126,7 +126,7 @@
   <div class="site-meta">
 
     <div class="custom-logo-site-title">
-      <a href="/sainpo.github.io/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">窦小固的小木屋</span>
         <span class="logo-line-after"><i></i></span>
@@ -157,7 +157,7 @@
       
     
 
-    <a href="/sainpo.github.io/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
@@ -168,7 +168,7 @@
       
     
 
-    <a href="/sainpo.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
         
@@ -179,7 +179,7 @@
       
     
 
-    <a href="/sainpo.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
 
   </li>
         
@@ -190,7 +190,7 @@
       
     
 
-    <a href="/sainpo.github.io/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
@@ -201,7 +201,7 @@
       
     
 
-    <a href="/sainpo.github.io/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
         
@@ -212,7 +212,7 @@
       
     
 
-    <a href="/sainpo.github.io/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
 
   </li>
         <li class="menu-item menu-item-search">
@@ -268,12 +268,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mewishu.github.io/sainpo.github.io/2019/07/31/paxos-essence-and-demo/">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/07/31/paxos-essence-and-demo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sainpo.yxb">
       <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/sainpo.github.io/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -317,14 +317,14 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
 
                 
                 
@@ -447,14 +447,14 @@
           
         
         <div class="post-tags">
-            <a href="/sainpo.github.io/tags/paxos/" rel="tag"># paxos</a>
+            <a href="/tags/paxos/" rel="tag"># paxos</a>
           
-            <a href="/sainpo.github.io/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
+            <a href="/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
           
         </div>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
-              <a href="/sainpo.github.io/2019/07/29/paxos-by-example/" rel="next" title="paxos-by-example">
+              <a href="/2019/07/29/paxos-by-example/" rel="next" title="paxos-by-example">
                 <i class="fa fa-chevron-left"></i> paxos-by-example
               </a>
             
@@ -515,7 +515,7 @@
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
         
-          <a href="/sainpo.github.io/archives/">
+          <a href="/archives/">
         
           <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
@@ -527,7 +527,7 @@
       <div class="site-state-item site-state-categories">
         
           
-            <a href="/sainpo.github.io/categories/">
+            <a href="/categories/">
           
         
         
@@ -546,7 +546,7 @@
       <div class="site-state-item site-state-tags">
         
           
-            <a href="/sainpo.github.io/tags/">
+            <a href="/tags/">
           
         
         
@@ -685,36 +685,36 @@
     
     
   
-  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/sainpo.github.io/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/sainpo.github.io/lib/jquery/index.js?v=3.4.1"></script>
-  <script src="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.pack.js"></script>
-  <script src="/sainpo.github.io/lib/reading_progress/reading_progress.js"></script>
-  <script src="/sainpo.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  <script src="/sainpo.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
-  <script src="/sainpo.github.io/js/utils.js?v=7.3.0"></script>
-  <script src="/sainpo.github.io/js/motion.js?v=7.3.0"></script>
-
-  
-  <script src="/sainpo.github.io/js/affix.js?v=7.3.0"></script>
-  <script src="/sainpo.github.io/js/schemes/pisces.js?v=7.3.0"></script>
-
-
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
 
   
-  <script src="/sainpo.github.io/js/scrollspy.js?v=7.3.0"></script>
-<script src="/sainpo.github.io/js/post-details.js?v=7.3.0"></script>
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
 
 
-
-  <script src="/sainpo.github.io/js/next-boot.js?v=7.3.0"></script>
 
   
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
 
   
 
   
 
+  
+
 
   
 
@@ -740,7 +740,7 @@
 
 
 
-  <script src="/sainpo.github.io/js/local-search.js?v=7.3.0"></script>
+  <script src="/js/local-search.js?v=7.3.0"></script>
 
 
 

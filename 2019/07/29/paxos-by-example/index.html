@@ -11,22 +11,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <link rel="apple-touch-icon" sizes="180x180" href="/sainpo.github.io/images/apple-touch-icon-next.png?v=7.3.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="/sainpo.github.io/images/favicon-32x32-next.png?v=7.3.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="/sainpo.github.io/images/favicon-16x16-next.png?v=7.3.0">
-  <link rel="mask-icon" href="/sainpo.github.io/images/logo.svg?v=7.3.0" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
 
-<link rel="stylesheet" href="/sainpo.github.io/css/main.css?v=7.3.0">
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
 
 
-<link rel="stylesheet" href="/sainpo.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
-  <link rel="stylesheet" href="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.css">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css">
 
 
 <script id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/sainpo.github.io/',
+    root: '/',
     scheme: 'Gemini',
     version: '7.3.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
@@ -45,7 +45,7 @@
     },
     localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
     search: {
-      root: '/sainpo.github.io/',
+      root: '/',
       path: 'search.xml'
     },
     tabs: true,
@@ -62,23 +62,23 @@
 <meta name="keywords" content="paxos,分布式一致性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="paxos-by-example">
-<meta property="og:url" content="https://mewishu.github.io/2019/07/29/paxos-by-example/index.html">
+<meta property="og:url" content="http://www.sainpo.top/2019/07/29/paxos-by-example/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Lamport.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure2-Paxos.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure3-Paxos.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure4-Paxos.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure5-Paxos.png">
-<meta property="og:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Lamport.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure2-Paxos.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure3-Paxos.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure4-Paxos.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure5-Paxos.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png">
 <meta property="og:updated_time" content="2019-07-31T10:37:08.943Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos-by-example">
 <meta name="twitter:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
-<meta name="twitter:image" content="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/Lamport.png">
-  <link rel="canonical" href="https://mewishu.github.io/2019/07/29/paxos-by-example/">
+<meta name="twitter:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Lamport.png">
+  <link rel="canonical" href="http://www.sainpo.top/2019/07/29/paxos-by-example/">
 
 
 <script id="page.configurations">
@@ -134,7 +134,7 @@
   <div class="site-meta">
 
     <div class="custom-logo-site-title">
-      <a href="/sainpo.github.io/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">窦小固的小木屋</span>
         <span class="logo-line-after"><i></i></span>
@@ -165,7 +165,7 @@
       
     
 
-    <a href="/sainpo.github.io/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
 
   </li>
         
@@ -176,7 +176,7 @@
       
     
 
-    <a href="/sainpo.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
 
   </li>
         
@@ -187,7 +187,7 @@
       
     
 
-    <a href="/sainpo.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
 
   </li>
         
@@ -198,7 +198,7 @@
       
     
 
-    <a href="/sainpo.github.io/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
 
   </li>
         
@@ -209,7 +209,7 @@
       
     
 
-    <a href="/sainpo.github.io/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
 
   </li>
         
@@ -220,7 +220,7 @@
       
     
 
-    <a href="/sainpo.github.io/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
 
   </li>
         <li class="menu-item menu-item-search">
@@ -276,12 +276,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://mewishu.github.io/sainpo.github.io/2019/07/29/paxos-by-example/">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/07/29/paxos-by-example/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sainpo.yxb">
       <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/sainpo.github.io/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -335,14 +335,14 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
 
                 
                 
@@ -409,7 +409,7 @@
 <p>幸运的是，还是有人能够理解Lamport那公认的令人晦涩的算法描述的。1996年，来自微软的Butler Lampson在WDAG96上提出了重新审视这篇分布式论文的建议，在次年的WDAG97上，麻省理工学院的Nancy Lynch也公布了其根据Lamport的原文重新修改后的<a href="http://research.microsoft.com/en-us/um/people/blampson/60-PaxosAlgorithm/Acrobat.pdf" target="_blank" rel="noopener">《<strong>Revisiting the Paxos Algorithm</strong>》</a>，“帮助”Lamport用数学的形式化术语定义并证明了Paxos算法。于是在1998年的ACM TOCS上，这篇延迟了9年的论文终于被接受了，也标志着Paxos算法正式被计算机科学接受并开始影响更多的工程师解决分布式一致性问题。</p>
 <p>后来在2001年，Lamport本人也做出了让步，这次他放弃了故事的描述方式，而是使用了通俗易懂的语言重新讲述了原文，并发表了<a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/paxos-simple.pdf" target="_blank" rel="noopener">《<strong>Paxos Made Simple</strong>》</a>——当然，Lamport甚为固执地认为他自己的表述语言没有歧义，并且也足够让人明白Paxos算法，因此不需要数学来协助描述，于是整篇文章还是没有任何数学符号。好在这篇文章已经能够被更多的人理解，相信绝大多数的Paxos爱好者也都是从这篇文章开始慢慢进入了Paxos的神秘世界。</p>
 <p>由于Lamport个人自负固执的性格，使得Paxos理论的诞生可谓一波三折。关于Paxos理论的诞生过程，后来也成为了计算机科学领域被广泛流传的学术趣事。</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Lamport.png" alt="Lamport本尊"></p>
+<p><img src="/2019/07/29/paxos-by-example/Lamport.png" alt="Lamport本尊"></p>
 <blockquote>
 <p>图0: Lamport本尊</p>
 </blockquote>
@@ -419,36 +419,36 @@
 <p>在一个分布式系统中这非常的难, 因为不同机器之前的消息可能会丢失, 或是被无限延迟, 甚至机器本身也会挂掉</p>
 <p>Paxos算法可以保证最终只会有一个值会被选中, 但是不能保证如果集群中的大多数节点挂掉后,还能选中一个值</p>
 <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>Paxos的节点可以是proposer, acceptor,learner中的任何一种角色.proposer会提议一个它想被采纳的值, 一般是通过发送一个包含该提议值的提案给集群中的每个acceptor.  然后acceptor会独立的决定是否接受这个提案–它可能会接收到多个proposer的不同提案, 决定好后会把它的决定发给learner.  learner的作用是判断一个值是否已经被接受.在Paxos算法中, 只有一个值被大多数的acceptor选中, 才算被Paxos算法选中.在实际项目中, 一个节点可能担任多种角色, 但是在这个例子里面, 每一种角色都是一个独立的节点.</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png" alt="Paxos的基本架构"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png" alt="Paxos的基本架构"></p>
 <blockquote>
 <p>图1 Paxos的基本架构. 几个proposer向acceptor提交提案. 当一个acceptor接受了一个值后, 它把它的决定发给learner</p>
 </blockquote>
 <h3 id="Paxos算法例子"><a href="#Paxos算法例子" class="headerlink" title="Paxos算法例子"></a>Paxos算法例子</h3><p>在标准的Paxos算法中, 一个proposer会发送两种类型的消息给acceptors: prepare request 和accept request. 在算法的第一阶段, proposer会发送一个prepare request给每一个acceptor, 这个prepare request包含一个提议值value和一个提案号number.每一个proposer的提案号number必须是正数, 单调递增的,独一无二的自然数<sup><a href="#fn1">[1]</a></sup>.</p>
 <p>在下面图2的例子中, 有两个proposer, 都在发送prepare request. proposer A的请求([n=2,v=8])比proposer B的请求([n=4,v=5])先到达acceptor X和acceptor Y, 而proposer B的请求先到达acceptor Z</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure2-Paxos.png" alt="Paxos 2"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure2-Paxos.png" alt="Paxos 2"></p>
 <blockquote>
 <p>图2: Paxos. proposer A和B各发送了一个prepare request 给每一个accetor. 在这个例子中, proposer A的请求先到达acceptor X和Y, 而proposer B的请求先到达了acceptor Z.</p>
 </blockquote>
 <p>如果一个acceptor接收到了一个prepare request而又没接收过其他的提案, 这个acceptor会回应一个prepare response, 并保证不会接受其他比当前提案号number更小的提案. 下面图3展示了每个acceptor是如何响应它们接收到的prepare request的</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure3-Paxos.png" alt="Paxos 3"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure3-Paxos.png" alt="Paxos 3"></p>
 <blockquote>
 <p>图3: 每个acceptor都对它接收到的第一个prepare request 进行prepare response.</p>
 </blockquote>
 <p>最终, acceptor Z接收到了proposer A的请求<sup><a href="#fn2">[2]</a></sup>, acceptor X和Y收到了proposer B的请求.</p>
 <p>如果一个acceptor之前已经接收了一个提案号更高的prepare request的话, 那么后面收到的prepare request就会被忽略, 这个例子中就是acceptor Z会忽略掉proposer A的请求(Z已经接收了B的提案n=4).</p>
 <p>如果acceptor之前没有接收过更高提案号的提案, 它会保证忽略其他提案号比这个更低的请求(注意是包括prepare request和accept request),然后在prepare response中把它已经选中的提案号最高的提议(包括这个提议的值)发送给proposer.在这个例子就是acceptor X和Y给proposer B的响应(X和Y已经接受了一个B的[n=2,v=8]的提案,当再收到[n=4, v=5]的提案时, 它保证会忽略任何n&lt;4的prepare request和accept request, 然后把[n=2, v=8]的prepare response回去给B)</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure4-Paxos.png" alt="Paxos 4"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure4-Paxos.png" alt="Paxos 4"></p>
 <blockquote>
 <p>图4: acceptor Z 忽略了proposer A的请求, 因为它已经接收到了更高的提议号(4 &gt; 2). acceptor X和Y给proposer B响应了它见过最高的提议号的提案, 并承诺会忽略提案号更小的提案</p>
 </blockquote>
 <p>一旦proposer 收到了大多数acceptor的prepare response, 它就可以开始给所有的acceptor发送accept request了. 因为proposer A接收到prepare response中表明在它之前没有更早的提案. 所以它的accept request中的提案号和提议值都是跟prepare request中的一样.然而,这个accept request被所有的acceptor都拒绝了,因为它们都承诺了不会接收提议号比4更新的提案(因为都见过proposer B的提案了)</p>
 <p>Proposer B的accept request情况就跟proposer A的有所不同了. 首先它的提案号还是它之前的提案号(n=4), 但是提议值却不是它之前的提议值了(它之前提议的是v=5), 而是它在prepare response中接收到的提议值(v=8)<sup><a href="#fn3">[3]</a></sup></p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure5-Paxos.png" alt="Paxos 5"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure5-Paxos.png" alt="Paxos 5"></p>
 <blockquote>
 <p>图5: proposer B也发送了一个accept request给每一个acceptor.acceptor request中的提案号是它之前的提案号(4), 而提议值是它在prepare response中收到的值(8, 来自proposer A的提案[n=2, v=8])</p>
 </blockquote>
 <p>如果acceptor收到了一个提案号不小于它见过的accept request, 它会接受这个accept request并且发送一个通知给到learner节点. 当learner节点发现大多数acceptor都已经接受了一个值的时候,Paxos算法就认为这个值已经被选中.</p>
-<p><img src="/sainpo.github.io/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png" alt="Paxos 6"></p>
+<p><img src="/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png" alt="Paxos 6"></p>
 <p>当一个值被paxos选中后,后续的流程中将不能改变这个值.例如,当另一个proposer C发送一个提案号更高的prepare request(例如, [n=6, v=7])过来时,所有的acceptor都会响应它之前已经选中的提议(n=4,v=8).这会要求proposer C在后续的acceptor request中也只能发送[n=6, v=8]的提议, 即只能确认一遍已经选中的这个值. 再后面, 如果有少量的acceptor还没选中一个值的话, 这个流程会保证最终所有的节点都会一致地选中同一个值.</p>
 <h2 id="译文结束"><a href="#译文结束" class="headerlink" title="译文结束"></a>译文结束</h2><hr>
 <ol>
@@ -482,14 +482,14 @@
           
         
         <div class="post-tags">
-            <a href="/sainpo.github.io/tags/paxos/" rel="tag"># paxos</a>
+            <a href="/tags/paxos/" rel="tag"># paxos</a>
           
-            <a href="/sainpo.github.io/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
+            <a href="/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
           
         </div>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
-              <a href="/sainpo.github.io/2019/07/27/hello-world/" rel="next" title="Hello World">
+              <a href="/2019/07/27/hello-world/" rel="next" title="Hello World">
                 <i class="fa fa-chevron-left"></i> Hello World
               </a>
             
@@ -498,7 +498,7 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-              <a href="/sainpo.github.io/2019/07/31/paxos-essence-and-demo/" rel="prev" title="paxos精髓及示例">
+              <a href="/2019/07/31/paxos-essence-and-demo/" rel="prev" title="paxos精髓及示例">
                 paxos精髓及示例 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -554,7 +554,7 @@
   <nav class="site-state motion-element">
       <div class="site-state-item site-state-posts">
         
-          <a href="/sainpo.github.io/archives/">
+          <a href="/archives/">
         
           <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
@@ -566,7 +566,7 @@
       <div class="site-state-item site-state-categories">
         
           
-            <a href="/sainpo.github.io/categories/">
+            <a href="/categories/">
           
         
         
@@ -585,7 +585,7 @@
       <div class="site-state-item site-state-tags">
         
           
-            <a href="/sainpo.github.io/tags/">
+            <a href="/tags/">
           
         
         
@@ -724,36 +724,36 @@
     
     
   
-  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/sainpo.github.io/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/sainpo.github.io/lib/jquery/index.js?v=3.4.1"></script>
-  <script src="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.pack.js"></script>
-  <script src="/sainpo.github.io/lib/reading_progress/reading_progress.js"></script>
-  <script src="/sainpo.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  <script src="/sainpo.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
-  <script src="/sainpo.github.io/js/utils.js?v=7.3.0"></script>
-  <script src="/sainpo.github.io/js/motion.js?v=7.3.0"></script>
-
-  
-  <script src="/sainpo.github.io/js/affix.js?v=7.3.0"></script>
-  <script src="/sainpo.github.io/js/schemes/pisces.js?v=7.3.0"></script>
-
-
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
 
   
-  <script src="/sainpo.github.io/js/scrollspy.js?v=7.3.0"></script>
-<script src="/sainpo.github.io/js/post-details.js?v=7.3.0"></script>
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
 
 
-
-  <script src="/sainpo.github.io/js/next-boot.js?v=7.3.0"></script>
 
   
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
 
   
 
   
 
+  
+
 
   
 
@@ -779,7 +779,7 @@
 
 
 
-  <script src="/sainpo.github.io/js/local-search.js?v=7.3.0"></script>
+  <script src="/js/local-search.js?v=7.3.0"></script>
 
 
 

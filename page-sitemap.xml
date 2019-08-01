@@ -2,34 +2,34 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
     <url>
-        <loc>https://mewishu.github.io</loc>
+        <loc>http://www.sainpo.top</loc>
         <changefreq>daily</changefreq>
         <priority>1</priority>
     </url>
     
     <url>
-        <loc>https://mewishu.github.io/lib/canvas-nest/README.html</loc>
+        <loc>http://www.sainpo.top/lib/canvas-nest/README.html</loc>
         <lastmod>2019-08-01T03:36:27.974Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>https://mewishu.github.io/lib/reading_progress/README.html</loc>
+        <loc>http://www.sainpo.top/lib/reading_progress/README.html</loc>
         <lastmod>2019-08-01T03:12:52.285Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>https://mewishu.github.io/tags/</loc>
+        <loc>http://www.sainpo.top/tags/</loc>
         <lastmod>2019-07-29T13:32:34.854Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
-        <loc>https://mewishu.github.io/categories/</loc>
+        <loc>http://www.sainpo.top/categories/</loc>
         <lastmod>2019-07-29T13:31:03.342Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
