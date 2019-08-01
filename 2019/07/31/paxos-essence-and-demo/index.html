@@ -2,91 +2,62 @@
 
 
 
-  
 
 
 <html class="theme-next gemini use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/sainpo.github.io/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/sainpo.github.io/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/sainpo.github.io/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/sainpo.github.io/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/sainpo.github.io/css/main.css?v=7.3.0">
 
 
-
-  
-  
-    
-    
-  <script src="/sainpo.github.io/lib/pace/pace.min.js?v=1.0.2"></script>
-  <link href="/sainpo.github.io/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+<link rel="stylesheet" href="/sainpo.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
 
 
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/sainpo.github.io/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/sainpo.github.io/',
+      path: 'search.xml'
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    }
+  };
+</script>
 
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/sainpo.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/sainpo.github.io/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/sainpo.github.io/images/apple-touch-icon-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/sainpo.github.io/images/favicon-32x32-next.png?v=5.1.4">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/sainpo.github.io/images/favicon-16x16-next.png?v=5.1.4">
-
-
-  <link rel="mask-icon" href="/sainpo.github.io/images/logo.svg?v=5.1.4" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="paxos,分布式一致性,">
-
-
-
-
-
-
-
-
-
-
-<meta name="description" content="Paxos精髓paxos协议用来解决的问题可以用一句话来简化:   proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。  协议分为两大阶段，每个阶段又分为a/b两小步骤： 准备阶段（占坑阶段）Phase 1a: PreparePropo">
+  <meta name="description" content="Paxos精髓paxos协议用来解决的问题可以用一句话来简化:   proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。  协议分为两大阶段，每个阶段又分为a/b两小步骤： 准备阶段（占坑阶段）Phase 1a: PreparePropo">
 <meta name="keywords" content="paxos,分布式一致性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="paxos精髓及示例">
@@ -98,40 +69,14 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="paxos精髓及示例">
 <meta name="twitter:description" content="Paxos精髓paxos协议用来解决的问题可以用一句话来简化:   proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。  协议分为两大阶段，每个阶段又分为a/b两小步骤： 准备阶段（占坑阶段）Phase 1a: PreparePropo">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/sainpo.github.io/',
-    scheme: 'Gemini',
-    version: '5.1.4',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '0',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
   <link rel="canonical" href="https://mewishu.github.io/2019/07/31/paxos-essence-and-demo/">
 
 
-
-
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
 
   <title>paxos精髓及示例 | 窦小固的小木屋</title>
   
@@ -143,22 +88,41 @@
 
 
 
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
-    
-  
 
   <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
+  <div class="site-meta">
 
     <div class="custom-logo-site-title">
       <a href="/sainpo.github.io/" class="brand" rel="start">
@@ -167,13 +131,12 @@
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-      
         <p class="site-subtitle">西河书生</p>
       
   </div>
 
   <div class="site-nav-toggle">
-    <button>
+    <button aria-label="Toggle navigation bar">
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
@@ -181,131 +144,95 @@
   </div>
 </div>
 
+
+
 <nav class="site-nav">
-  
-
-  
     <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/sainpo.github.io/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-about">
-          <a href="/sainpo.github.io/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
-            
-            关于
-          </a>
-        </li>
-      
         
-        <li class="menu-item menu-item-tags">
-          <a href="/sainpo.github.io/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
+          
+          <li class="menu-item menu-item-home">
       
-        
-        <li class="menu-item menu-item-categories">
-          <a href="/sainpo.github.io/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/sainpo.github.io/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-sitemap">
-          <a href="/sainpo.github.io/sitemap.xml" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>
-            
-            站点地图
-          </a>
-        </li>
-      
+    
 
-      
-        <li class="menu-item menu-item-search">
+    <a href="/sainpo.github.io/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
           
-            <a href="javascript:;" class="popup-trigger">
-          
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
-            
-            搜索
-          </a>
-        </li>
+          <li class="menu-item menu-item-about">
       
+    
+
+    <a href="/sainpo.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/sainpo.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/sainpo.github.io/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/sainpo.github.io/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sainpo.github.io/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>Sitemap</a>
+
+  </li>
     </ul>
-  
-
-  
-    <div class="site-search">
-      
-  <div class="popup search-popup local-search-popup">
-  <div class="local-search-header clearfix">
-    <span class="search-icon">
-      <i class="fa fa-search"></i>
-    </span>
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
-    <div class="local-search-input-wrapper">
-      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
-    </div>
-  </div>
-  <div id="local-search-result"></div>
-</div>
-
-
-
-    </div>
-  
 </nav>
 
-
-
- </div>
+</div>
     </header>
+
+    
+
 
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
+            
+
           <div id="content" class="content">
             
 
   <div id="posts" class="posts-expand">
     
-
-  
-
-  
-  
-  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
@@ -316,69 +243,59 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sainpo.yxb">
-      <meta itemprop="description" content>
+      <meta itemprop="description" content="码农|理工男|文青">
       <meta itemprop="image" content="/sainpo.github.io/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="窦小固的小木屋">
     </span>
-
-    
       <header class="post-header">
 
         
-        
-          <h1 class="post-title" itemprop="name headline">paxos精髓及示例</h1>
+          <h1 class="post-title" itemprop="name headline">paxos精髓及示例
+
+              
+            
+          </h1>
         
 
         <div class="post-meta">
-          <span class="post-time">
-            
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-31T18:58:42+08:00">
-                2019-07-31
-              </time>
-            
 
-            
+              
+                
+              
 
-            
-          </span>
-
+              <time title="Created: 2019-07-31 18:58:42 / Modified: 21:40:49" itemprop="dateCreated datePublished" datetime="2019-07-31T18:58:42+08:00">2019-07-31</time>
+            </span>
           
-            <span class="post-category">
             
-              <span class="post-meta-divider">|</span>
+
             
+          
+            <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sainpo.github.io/categories/分布式一致性/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式一致性</span>
-                  </a>
-                </span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
 
                 
                 
-                  ， 
+                  , 
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/sainpo.github.io/categories/分布式一致性/paxos算法/" itemprop="url" rel="index">
-                    <span itemprop="name">paxos算法</span>
-                  </a>
-                </span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/sainpo.github.io/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
 
                 
                 
@@ -387,65 +304,23 @@
           
 
           
-            
-          
-
-          
-          
-
-          
-            <span class="post-meta-divider">|</span>
-            <span class="page-pv"><i class="fa fa-file-o"></i> 本文阅读量
-            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>次
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 Views:  
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
             </span>
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  
-                </span>
-              
-            </div>
-          
-
-          
+          <br>
 
         </div>
       </header>
-    
 
     
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
-      
 
       
         <h2 id="Paxos精髓"><a href="#Paxos精髓" class="headerlink" title="Paxos精髓"></a>Paxos精髓</h2><p>paxos协议用来解决的问题可以用一句话来简化: </p>
@@ -513,37 +388,23 @@
 </ol>
 <hr>
 <h2 id="Java简单实现Basic-Paxos算法"><a href="#Java简单实现Basic-Paxos算法" class="headerlink" title="Java简单实现Basic Paxos算法"></a>Java简单实现Basic Paxos算法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Alipay.com Inc.</span></span><br><span class="line"><span class="comment"> * Copyright (c) 2004-2019 All Rights Reserved.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> paxos;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Charsets;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.StringUtils;</span><br><span class="line"><span class="keyword">import</span> com.google.common.hash.HashFunction;</span><br><span class="line"><span class="keyword">import</span> com.google.common.hash.Hashing;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xbyan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> $Id: PaxosStudy.java, v 0.1 2019-07-01 5:47 PM xbyan Exp $$</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PaxosStudy</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HashFunction HASH_FUNCTION = Hashing.murmur3_32();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Random       RAMDOM        = <span class="keyword">new</span> Random();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String[]     PROPOSALS     = &#123; <span class="string">"ProjectA"</span>, <span class="string">"ProjectB"</span>, <span class="string">"ProjectC"</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="comment">//新建server组</span></span><br><span class="line">        List&lt;Acceptor&gt; acceptors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        Arrays.asList(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>, <span class="string">"E"</span>).forEach(name -&gt; acceptors.add(<span class="keyword">new</span> Acceptor(name)));</span><br><span class="line">        <span class="comment">//开始投票</span></span><br><span class="line">        Proposer.vote(<span class="keyword">new</span> Proposal(<span class="number">1L</span>, <span class="keyword">null</span>), acceptors);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printInfo</span><span class="params">(String subject, String operation,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String result)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        System.out.println(subject + <span class="string">":"</span> + operation + <span class="string">"&lt;"</span> + result + <span class="string">"&gt;"</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对于提案的约束，第三方约束要求</span></span><br><span class="line"><span class="comment">     * 如果maxVote不存在，那么没有限制，下一次表决可以使用任意提案</span></span><br><span class="line"><span class="comment">     * 否则，下一次表决要沿用maxVote提案</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> currentVoteNumber</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> proposals</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Proposal <span class="title">nextProposal</span><span class="params">(<span class="keyword">long</span> currentVoteNumber, List&lt;Proposal&gt; proposals)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> voteNumber = currentVoteNumber + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//刚开始投票</span></span><br><span class="line">        <span class="keyword">if</span> (proposals.isEmpty()) &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber,</span><br><span class="line">                PROPOSALS[RAMDOM.nextInt(PROPOSALS.length)]);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(刚开始投票), currentVoteNumber"</span> + currentVoteNumber</span><br><span class="line">                               + <span class="string">",proposal="</span> + proposal);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//为之前的票排序</span></span><br><span class="line">        Collections.sort(proposals);</span><br><span class="line">        Proposal maxVote = proposals.get(proposals.size() - <span class="number">1</span>);</span><br><span class="line">        <span class="comment">//列表里最大值</span></span><br><span class="line">        <span class="keyword">long</span> maxVoteNumber = maxVote.getVoteNumber();</span><br><span class="line">        String content = maxVote.getContent();</span><br><span class="line">        <span class="keyword">if</span> (maxVoteNumber &gt;= currentVoteNumber) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"illegal state maxVoteNumber"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (content != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber, content);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(content不为空), voteNumber="</span> + voteNumber + <span class="string">",proposal="</span></span><br><span class="line">                               + proposal + <span class="string">",maxVote="</span> + maxVote);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber,</span><br><span class="line">                PROPOSALS[RAMDOM.nextInt(PROPOSALS.length)]);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(content为空), voteNumber="</span> + voteNumber + <span class="string">",proposal="</span></span><br><span class="line">                               + proposal + <span class="string">",maxVote="</span> + maxVote);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proposer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> proposal</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> acceptors</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">vote</span><span class="params">(Proposal proposal,</span></span></span><br><span class="line"><span class="function"><span class="params">                                Collection&lt;Acceptor&gt; acceptors)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//法定人数 n/2+1</span></span><br><span class="line">            <span class="keyword">int</span> quorum = Math.floorDiv(acceptors.size(), <span class="number">2</span>) + <span class="number">1</span>;</span><br><span class="line">            System.out.println(<span class="string">"quorum  "</span> + quorum);</span><br><span class="line">            <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">//开始投票</span></span><br><span class="line">                printInfo(<span class="string">"VOTE_ROUND"</span>, <span class="string">"START"</span>, ++count + <span class="string">"：开始向acceptor发送信息"</span>);</span><br><span class="line">                List&lt;Proposal&gt; proposals = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (Acceptor acceptor : acceptors) &#123;</span><br><span class="line">                    Promise promise = acceptor.onPrepare(proposal);</span><br><span class="line">                    <span class="keyword">if</span> (promise != <span class="keyword">null</span> &amp;&amp; promise.isAck()) &#123;</span><br><span class="line">                        <span class="comment">//Acceptor批准后就可以将发起者加入发起者列表里</span></span><br><span class="line">                        System.out</span><br><span class="line">                            .println(<span class="string">"--------------------------------------------------ACCEPTOR批准,将发起者加入队列里,proposal="</span> + promise.getProposal());</span><br><span class="line">                        proposals.add(promise.getProposal());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (proposals.size() &lt; quorum) &#123;</span><br><span class="line">                    <span class="comment">//小于法定人数</span></span><br><span class="line">                    printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>,</span><br><span class="line">                        <span class="string">"NOT PREPARED：接收到消息的acceptor小于半数"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"onPrepare阶段编号增加 重新发起投票"</span>);</span><br><span class="line">                    proposal = nextProposal(proposal.getVoteNumber(), proposals);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">"接收到消息的acceptor大于半数，开始提案内容"</span>);</span><br><span class="line">                <span class="keyword">int</span> acceptCount = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span> (Acceptor acceptor1 : acceptors) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (acceptor1.onAccept(proposal))</span><br><span class="line">                        acceptCount++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (acceptCount &lt; quorum) &#123;</span><br><span class="line">                    printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>, <span class="string">"NOT ACCEPTED,接受提案的少于半数"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"onAccept阶段编号增加 重新发起投票"</span>);</span><br><span class="line">                    proposal = nextProposal(proposal.getVoteNumber(), proposals);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>, <span class="string">"SUCCESS，接受提案成功"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Acceptor</span> </span>&#123;</span><br><span class="line">        <span class="comment">//上次表决结果</span></span><br><span class="line">        <span class="keyword">private</span> Proposal last = <span class="keyword">new</span> Proposal();</span><br><span class="line">        <span class="keyword">private</span> String   name;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Acceptor</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Promise <span class="title">onPrepare</span><span class="params">(Proposal proposal)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//假设这个过程有50%的几率失败</span></span><br><span class="line">            <span class="keyword">if</span> (Math.random() - <span class="number">0.5</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"NO RESPONSE 向"</span> + name + <span class="string">" 发送失败"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (proposal == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"null proposal"</span>);</span><br><span class="line">            <span class="comment">//大于</span></span><br><span class="line">            <span class="keyword">if</span> (proposal.getVoteNumber() &gt; last.getVoteNumber()) &#123;</span><br><span class="line">                Promise response = <span class="keyword">new</span> Promise(<span class="keyword">true</span>, last);</span><br><span class="line">                last = proposal;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"OK "</span> + name + <span class="string">" 记下编号，返回信息,last="</span> + last);</span><br><span class="line">                <span class="keyword">return</span> response;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"REJECTED "</span> + name + <span class="string">" 已保存有选定的编号，拒绝"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onAccept</span><span class="params">(Proposal proposal)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//假设这个过程有50%的几率失败</span></span><br><span class="line">            <span class="keyword">if</span> (Math.random() - <span class="number">0.5</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"ACCEPT"</span>, <span class="string">"NO RESPONSE "</span> + name + <span class="string">" 发送提案失败"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">boolean</span> accepted = last.equals(proposal);</span><br><span class="line">            printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"ACCEPT"</span>,</span><br><span class="line">                name + (accepted ? <span class="string">"OK：通过"</span> : <span class="string">"NO: 不通过"</span>) + <span class="string">"last="</span> + last + <span class="string">",proposal="</span> + proposal);</span><br><span class="line">            <span class="keyword">return</span> accepted;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Promise</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>  ack;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Proposal proposal;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Promise</span><span class="params">(<span class="keyword">boolean</span> ack, Proposal proposal)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.ack = ack;</span><br><span class="line">            <span class="keyword">this</span>.proposal = proposal;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAck</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> ack;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Proposal <span class="title">getProposal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proposal</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Proposal</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>   voteNumber;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> String content;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Proposal</span><span class="params">(<span class="keyword">long</span> voteNumber, String content)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.voteNumber = voteNumber;</span><br><span class="line">            <span class="keyword">this</span>.content = content;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Proposal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>(<span class="number">0</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getVoteNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> voteNumber;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getContent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> content;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Proposal o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Long.compare(voteNumber, o.voteNumber);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (obj == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!(obj <span class="keyword">instanceof</span> Proposal))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            Proposal proposal = (Proposal) obj;</span><br><span class="line">            <span class="keyword">return</span> voteNumber == proposal.voteNumber</span><br><span class="line">                   &amp;&amp; StringUtils.equals(content, proposal.content);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> HASH_FUNCTION.newHasher().putLong(voteNumber).putString(content, Charsets.UTF_8)</span><br><span class="line">                .hash().asInt();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> StringBuilder().append(voteNumber).append(<span class="string">':'</span>).append(content).toString();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
     </div>
-    
-    
-    
 
     
-
     
-
     
 
     <footer class="post-footer">
-      
-        <div class="post-tags">
           
+        
+        <div class="post-tags">
             <a href="/sainpo.github.io/tags/paxos/" rel="tag"># paxos</a>
           
             <a href="/sainpo.github.io/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
           
         </div>
-      
-
-      
-      
-      
-
-      
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
-            
               <a href="/sainpo.github.io/2019/07/29/paxos-by-example/" rel="next" title="paxos-by-example">
                 <i class="fa fa-chevron-left"></i> paxos-by-example
               </a>
@@ -553,13 +414,8 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
           </div>
         </div>
-      
-
-      
-      
     </footer>
   </div>
   
@@ -567,11 +423,6 @@
   
   </article>
 
-
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
 
@@ -579,14 +430,7 @@
           
 
 
-          
-
-  
-
-
-
         </div>
-        
           
   
   <div class="sidebar-toggle">
@@ -598,111 +442,109 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
-    
     <div class="sidebar-inner">
-
-      
-
-      
         <ul class="sidebar-nav motion-element">
           <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
+            Table of Contents
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
+            Overview
           </li>
         </ul>
       
 
-      <section class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
+
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <p class="site-author-name" itemprop="name">sainpo.yxb</p>
-              <p class="site-description motion-element" itemprop="description">码农|理工男|文青</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/sainpo.github.io/archives/">
-              
-                  <span class="site-state-item-count">3</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/sainpo.github.io/categories/index.html">
-                  <span class="site-state-item-count">2</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/sainpo.github.io/tags/index.html">
-                  <span class="site-state-item-count">2</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
+  <p class="site-author-name" itemprop="name">sainpo.yxb</p>
+  <div class="site-description motion-element" itemprop="description">码农|理工男|文青</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/sainpo.github.io/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
           
+            <a href="/sainpo.github.io/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/sainpo.github.io/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/mewishu" title="GitHub &rarr; https://github.com/mewishu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:xbyan88@163.com" title="E-Mail &rarr; mailto:xbyan88@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+  </div>
 
-          
-            <div class="links-of-author motion-element">
-                
-                  <span class="links-of-author-item">
-                    <a href="https://github.com/mewishu" target="_blank" title="GitHub">
-                      
-                        <i class="fa fa-fw fa-github"></i>GitHub</a>
-                  </span>
-                
-                  <span class="links-of-author-item">
-                    <a href="mailto:xbyan88@163.com" target="_blank" title="E-Mail">
-                      
-                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-                  </span>
-                
-            </div>
-          
 
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/sainpo.github.io/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-
-          
 
         </div>
-      </section>
-
-      
+      </div>
       <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
           <div class="post-toc">
 
             
-              
+            
+            
             
 
             
@@ -710,72 +552,47 @@
             
 
           </div>
-        </section>
+        </div>
       <!--/noindex-->
-      
-
       
 
     </div>
   </aside>
+  <div id="sidebar-dimmer"></div>
 
 
-        
       </div>
     </main>
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">sainpo.yxb</span>
-
-  
-    <span class="post-meta-divider">|</span>
-    <span class="post-meta-item-icon">
-      <i class="fa fa-area-chart"></i>
-    </span>
-    
-      <span class="post-meta-item-text">Site words total count&#58;</span>
-    
-    <span title="Site words total count"></span>
-  
 </div>
-
-
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
-
-
-
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
   <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
-
-
-
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
 
         
 <div class="busuanzi-count">
-  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-  
-    <span class="site-uv">
-      <i class="fa fa-user"></i> 总访问人数
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
       <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
-      人
     </span>
   
-
+    <span class="post-meta-divider">|</span>
   
-    <span class="site-pv">
-      <i class="fa fa-eye"></i> 总访问量
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
       <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
-      次
     </span>
   
 </div>
@@ -790,135 +607,41 @@
         
       </div>
     </footer>
-
-    
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
-        
       </div>
-    
 
     
 
   </div>
 
   
+  <script src="/sainpo.github.io/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/sainpo.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/sainpo.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+  <script src="/sainpo.github.io/js/utils.js?v=7.3.0"></script>
+  <script src="/sainpo.github.io/js/motion.js?v=7.3.0"></script>
 
-
-
-
-
-
+  
+  <script src="/sainpo.github.io/js/affix.js?v=7.3.0"></script>
+  <script src="/sainpo.github.io/js/schemes/pisces.js?v=7.3.0"></script>
 
 
 
   
-
-
-  
-
-
+  <script src="/sainpo.github.io/js/scrollspy.js?v=7.3.0"></script>
+<script src="/sainpo.github.io/js/post-details.js?v=7.3.0"></script>
 
 
 
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/sainpo.github.io/lib/canvas-nest/canvas-nest.min.js"></script>
-  
-
+  <script src="/sainpo.github.io/js/next-boot.js?v=7.3.0"></script>
 
   
 
-
-  <script type="text/javascript" src="/sainpo.github.io/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/sainpo.github.io/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
   
 
-
-  <script type="text/javascript" src="/sainpo.github.io/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/sainpo.github.io/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
   
-  <script type="text/javascript" src="/sainpo.github.io/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/sainpo.github.io/js/src/post-details.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/sainpo.github.io/js/src/bootstrap.js?v=5.1.4"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
 
 
   
@@ -934,343 +657,29 @@
 
 
 
-  
-
-  <script type="text/javascript">
-    // Popup Window;
-    var isfetched = false;
-    var isXml = true;
-    // Search DB path;
-    var search_path = "search.xml";
-    if (search_path.length === 0) {
-      search_path = "search.xml";
-    } else if (/json$/i.test(search_path)) {
-      isXml = false;
-    }
-    var path = "/sainpo.github.io/" + search_path;
-    // monitor main search box;
-
-    var onPopupClose = function (e) {
-      $('.popup').hide();
-      $('#local-search-input').val('');
-      $('.search-result-list').remove();
-      $('#no-result').remove();
-      $(".local-search-pop-overlay").remove();
-      $('body').css('overflow', '');
-    }
-
-    function proceedsearch() {
-      $("body")
-        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
-        .css('overflow', 'hidden');
-      $('.search-popup-overlay').click(onPopupClose);
-      $('.popup').toggle();
-      var $localSearchInput = $('#local-search-input');
-      $localSearchInput.attr("autocapitalize", "none");
-      $localSearchInput.attr("autocorrect", "off");
-      $localSearchInput.focus();
-    }
-
-    // search function;
-    var searchFunc = function(path, search_id, content_id) {
-      'use strict';
-
-      // start loading animation
-      $("body")
-        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
-          '<div id="search-loading-icon">' +
-          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
-          '</div>' +
-          '</div>')
-        .css('overflow', 'hidden');
-      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
-
-      $.ajax({
-        url: path,
-        dataType: isXml ? "xml" : "json",
-        async: true,
-        success: function(res) {
-          // get the contents from search data
-          isfetched = true;
-          $('.popup').detach().appendTo('.header-inner');
-          var datas = isXml ? $("entry", res).map(function() {
-            return {
-              title: $("title", this).text(),
-              content: $("content",this).text(),
-              url: $("url" , this).text()
-            };
-          }).get() : res;
-          var input = document.getElementById(search_id);
-          var resultContent = document.getElementById(content_id);
-          var inputEventFunction = function() {
-            var searchText = input.value.trim().toLowerCase();
-            var keywords = searchText.split(/[\s\-]+/);
-            if (keywords.length > 1) {
-              keywords.push(searchText);
-            }
-            var resultItems = [];
-            if (searchText.length > 0) {
-              // perform local searching
-              datas.forEach(function(data) {
-                var isMatch = false;
-                var hitCount = 0;
-                var searchTextCount = 0;
-                var title = data.title.trim();
-                var titleInLowerCase = title.toLowerCase();
-                var content = data.content.trim().replace(/<[^>]+>/g,"");
-                var contentInLowerCase = content.toLowerCase();
-                var articleUrl = decodeURIComponent(data.url);
-                var indexOfTitle = [];
-                var indexOfContent = [];
-                // only match articles with not empty titles
-                if(title != '') {
-                  keywords.forEach(function(keyword) {
-                    function getIndexByWord(word, text, caseSensitive) {
-                      var wordLen = word.length;
-                      if (wordLen === 0) {
-                        return [];
-                      }
-                      var startPosition = 0, position = [], index = [];
-                      if (!caseSensitive) {
-                        text = text.toLowerCase();
-                        word = word.toLowerCase();
-                      }
-                      while ((position = text.indexOf(word, startPosition)) > -1) {
-                        index.push({position: position, word: word});
-                        startPosition = position + wordLen;
-                      }
-                      return index;
-                    }
-
-                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
-                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
-                  });
-                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
-                    isMatch = true;
-                    hitCount = indexOfTitle.length + indexOfContent.length;
-                  }
-                }
-
-                // show search results
-
-                if (isMatch) {
-                  // sort index by position of keyword
-
-                  [indexOfTitle, indexOfContent].forEach(function (index) {
-                    index.sort(function (itemLeft, itemRight) {
-                      if (itemRight.position !== itemLeft.position) {
-                        return itemRight.position - itemLeft.position;
-                      } else {
-                        return itemLeft.word.length - itemRight.word.length;
-                      }
-                    });
-                  });
-
-                  // merge hits into slices
-
-                  function mergeIntoSlice(text, start, end, index) {
-                    var item = index[index.length - 1];
-                    var position = item.position;
-                    var word = item.word;
-                    var hits = [];
-                    var searchTextCountInSlice = 0;
-                    while (position + word.length <= end && index.length != 0) {
-                      if (word === searchText) {
-                        searchTextCountInSlice++;
-                      }
-                      hits.push({position: position, length: word.length});
-                      var wordEnd = position + word.length;
-
-                      // move to next position of hit
-
-                      index.pop();
-                      while (index.length != 0) {
-                        item = index[index.length - 1];
-                        position = item.position;
-                        word = item.word;
-                        if (wordEnd > position) {
-                          index.pop();
-                        } else {
-                          break;
-                        }
-                      }
-                    }
-                    searchTextCount += searchTextCountInSlice;
-                    return {
-                      hits: hits,
-                      start: start,
-                      end: end,
-                      searchTextCount: searchTextCountInSlice
-                    };
-                  }
-
-                  var slicesOfTitle = [];
-                  if (indexOfTitle.length != 0) {
-                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
-                  }
-
-                  var slicesOfContent = [];
-                  while (indexOfContent.length != 0) {
-                    var item = indexOfContent[indexOfContent.length - 1];
-                    var position = item.position;
-                    var word = item.word;
-                    // cut out 100 characters
-                    var start = position - 20;
-                    var end = position + 80;
-                    if(start < 0){
-                      start = 0;
-                    }
-                    if (end < position + word.length) {
-                      end = position + word.length;
-                    }
-                    if(end > content.length){
-                      end = content.length;
-                    }
-                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
-                  }
-
-                  // sort slices in content by search text's count and hits' count
-
-                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
-                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
-                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
-                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
-                      return sliceRight.hits.length - sliceLeft.hits.length;
-                    } else {
-                      return sliceLeft.start - sliceRight.start;
-                    }
-                  });
-
-                  // select top N slices in content
-
-                  var upperBound = parseInt('1');
-                  if (upperBound >= 0) {
-                    slicesOfContent = slicesOfContent.slice(0, upperBound);
-                  }
-
-                  // highlight title and content
-
-                  function highlightKeyword(text, slice) {
-                    var result = '';
-                    var prevEnd = slice.start;
-                    slice.hits.forEach(function (hit) {
-                      result += text.substring(prevEnd, hit.position);
-                      var end = hit.position + hit.length;
-                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
-                      prevEnd = end;
-                    });
-                    result += text.substring(prevEnd, slice.end);
-                    return result;
-                  }
-
-                  var resultItem = '';
-
-                  if (slicesOfTitle.length != 0) {
-                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
-                  } else {
-                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
-                  }
-
-                  slicesOfContent.forEach(function (slice) {
-                    resultItem += "<a href='" + articleUrl + "'>" +
-                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
-                      "...</p>" + "</a>";
-                  });
-
-                  resultItem += "</li>";
-                  resultItems.push({
-                    item: resultItem,
-                    searchTextCount: searchTextCount,
-                    hitCount: hitCount,
-                    id: resultItems.length
-                  });
-                }
-              })
-            };
-            if (keywords.length === 1 && keywords[0] === "") {
-              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
-            } else if (resultItems.length === 0) {
-              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
-            } else {
-              resultItems.sort(function (resultLeft, resultRight) {
-                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
-                  return resultRight.searchTextCount - resultLeft.searchTextCount;
-                } else if (resultLeft.hitCount !== resultRight.hitCount) {
-                  return resultRight.hitCount - resultLeft.hitCount;
-                } else {
-                  return resultRight.id - resultLeft.id;
-                }
-              });
-              var searchResultList = '<ul class=\"search-result-list\">';
-              resultItems.forEach(function (result) {
-                searchResultList += result.item;
-              })
-              searchResultList += "</ul>";
-              resultContent.innerHTML = searchResultList;
-            }
-          }
-
-          if ('auto' === 'auto') {
-            input.addEventListener('input', inputEventFunction);
-          } else {
-            $('.search-icon').click(inputEventFunction);
-            input.addEventListener('keypress', function (event) {
-              if (event.keyCode === 13) {
-                inputEventFunction();
-              }
-            });
-          }
-
-          // remove loading animation
-          $(".local-search-pop-overlay").remove();
-          $('body').css('overflow', '');
-
-          proceedsearch();
-        }
-      });
-    }
-
-    // handle and trigger popup window;
-    $('.popup-trigger').click(function(e) {
-      e.stopPropagation();
-      if (isfetched === false) {
-        searchFunc(path, 'local-search-input', 'local-search-result');
-      } else {
-        proceedsearch();
-      };
-    });
-
-    $('.popup-btn-close').click(onPopupClose);
-    $('.popup').click(function(e){
-      e.stopPropagation();
-    });
-    $(document).on('keyup', function (event) {
-      var shouldDismissSearchPopup = event.which === 27 &&
-        $('.search-popup').is(':visible');
-      if (shouldDismissSearchPopup) {
-        onPopupClose();
-      }
-    });
-  </script>
 
 
 
 
 
-  
 
-  
 
-  
 
-  
-  
 
-  
 
-  
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
 
 </body>
 </html>
