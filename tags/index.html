@@ -30,7 +30,7 @@
     scheme: 'Gemini',
     version: '7.3.0',
     sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
-    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
     copycode: {"enable":false,"show_result":false,"style":null},
     fancybox: true,
     mediumzoom: false,
@@ -43,7 +43,7 @@
       hits: {"per_page":10},
       labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
     search: {
       root: '/sainpo.github.io/',
       path: 'search.xml'
@@ -214,7 +214,34 @@
     <a href="/sainpo.github.io/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
 
   </li>
+        <li class="menu-item menu-item-search">
+          <a href="javascript:;" class="popup-trigger">
+          
+            <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
     </ul>
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+    </div>
 </nav>
 
 </div>
@@ -482,6 +509,8 @@
     </footer>
       <div class="back-to-top">
         <i class="fa fa-arrow-up"></i>
+          <span id="scrollpercent"><span>0</span>%</span>
+        
       </div>
 
     
@@ -491,6 +520,7 @@
   
   <script src="/sainpo.github.io/lib/jquery/index.js?v=3.4.1"></script>
   <script src="/sainpo.github.io/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="/sainpo.github.io/lib/reading_progress/reading_progress.js"></script>
   <script src="/sainpo.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
   <script src="/sainpo.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
@@ -541,6 +571,8 @@
 
 
 
+
+  <script src="/sainpo.github.io/js/local-search.js?v=7.3.0"></script>
 
 
 
