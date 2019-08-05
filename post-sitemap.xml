@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
+        <lastmod>2019-08-05T11:54:56.620Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
-        <lastmod>2019-08-05T10:15:07.354Z</lastmod>
+        <lastmod>2019-08-05T10:23:10.742Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
