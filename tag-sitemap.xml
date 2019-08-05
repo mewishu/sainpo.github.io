@@ -3,6 +3,13 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/awk%E5%91%BD%E4%BB%A4/</loc>
+        <lastmod>2019-08-05T12:18:56.299Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/grep%E5%91%BD%E4%BB%A4/</loc>
         <lastmod>2019-08-05T12:11:48.958Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -19,13 +26,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
         <lastmod>2019-08-05T11:59:09.236Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/awk%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-08-05T10:23:10.742Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
