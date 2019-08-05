@@ -66,7 +66,7 @@
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="基本用法1awk [options] &apos;pattern &amp;#123;action&amp;#125;&apos; file...  awk的工作过程是这样的：按行读取输入(标准输入或文件)，对于符合模式pattern的行，执行action。当pattern省略时表示匹配任何字符串；当action省略时表示执行&amp;#39;{print}&amp;#39;；它们不可以同时省略。 模式可以是以下任意一个：  /正则表达式/：使用通">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-05T10:08:48.043Z">
+<meta property="og:updated_time" content="2019-08-05T10:15:07.354Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="awk用法">
 <meta name="twitter:description" content="基本用法1awk [options] &apos;pattern &amp;#123;action&amp;#125;&apos; file...  awk的工作过程是这样的：按行读取输入(标准输入或文件)，对于符合模式pattern的行，执行action。当pattern省略时表示匹配任何字符串；当action省略时表示执行&amp;#39;{print}&amp;#39;；它们不可以同时省略。 模式可以是以下任意一个：  /正则表达式/：使用通">
@@ -302,7 +302,7 @@
                 
               
 
-              <time title="创建时间：2019-08-05 17:28:29 / 修改时间：18:08:48" itemprop="dateCreated datePublished" datetime="2019-08-05T17:28:29+08:00">2019-08-05</time>
+              <time title="创建时间：2019-08-05 17:28:29 / 修改时间：18:15:07" itemprop="dateCreated datePublished" datetime="2019-08-05T17:28:29+08:00">2019-08-05</time>
             </span>
           
             
@@ -349,7 +349,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">7.8k</span>
+              <span title="本文字数">7.9k</span>
             </span>
           
             <span class="post-meta-item">
@@ -469,9 +469,15 @@
 <p><code>match(str,regex)</code>返回字符串str中匹配正则regex的位置</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># awk 'BEGIN&#123;A=match("abc.f.11.12.1.98",/[0-9]&#123;1,3&#125;\./);print A&#125;'</span></span><br><span class="line">7</span><br></pre></td></tr></table></figure>
 
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`<span class="comment">#从file文件中找出长度大于80的行``awk` `'length&gt;80'` `file` `#按连接数查看客户端IP``netstat` `-ntu | ``awk` `'&#123;print $5&#125;'` `| ``cut` `-d: -f1 | ``sort` `| ``uniq` `-c | ``sort` `-nr` `#打印99乘法表``seq` `9 | ``sed` `'H;g'` `| ``awk` `-``v` `RS=``''` `'&#123;for(i=1;i&lt;=NF;i++)printf("%dx%d=%d%s", i, NR, i*NR, i==NR?"\n":"\t")&#125;'`</span></span><br></pre></td></tr></table></figure>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><ol>
+<li>花式用法</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`<span class="comment">#从file文件中找出长度大于80的行``awk` `'length&gt;80'` `file` `#按连接数查看客户端IP``netstat` `-ntu | ``awk` `'&#123;print $5&#125;'` `| ``cut` `-d: -f1 | ``sort` `| ``uniq` `-c | ``sort` `-nr` `#打印99乘法表``seq` `9 | ``sed` `'H;g'` `| ``awk` `-``v` `RS=``''` `'&#123;for(i=1;i&lt;=NF;i++)printf("%dx%d=%d%s", i, NR, i*NR, i==NR?"\n":"\t")&#125;'`</span></span><br></pre></td></tr></table></figure>
 
-
+<ol start="2">
+<li>条件统计</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">'$2&gt;=6 &amp;&amp; $2&lt;20 &#123; tot++ &#125; END &#123; print +tot&#125;'</span></span><br></pre></td></tr></table></figure>
     </div>
 
     
@@ -677,12 +683,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">32k</span>
+    <span title="站点总字数">33k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">29 分钟</span>
+    <span title="站点阅读时长">30 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
