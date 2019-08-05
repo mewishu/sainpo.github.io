@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
+        <lastmod>2019-08-05T09:50:14.629Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/08/05/regexp-syntax/</loc>
-        <lastmod>2019-08-05T09:19:57.231Z</lastmod>
+        <lastmod>2019-08-05T09:50:06.279Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
