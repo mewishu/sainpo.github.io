@@ -565,7 +565,7 @@
                 
               
 
-              <time title="创建时间：2019-08-05 17:28:29 / 修改时间：20:18:56" itemprop="dateCreated datePublished" datetime="2019-08-05T17:28:29+08:00">2019-08-05</time>
+              <time title="创建时间：2019-08-05 17:28:29 / 修改时间：20:22:50" itemprop="dateCreated datePublished" datetime="2019-08-05T17:28:29+08:00">2019-08-05</time>
             </span>
           
             
@@ -634,7 +634,7 @@
 <ul>
 <li>/正则表达式/：使用通配符的扩展集。</li>
 <li>关系表达式：使用运算符进行操作，可以是字符串或数字的比较测试。</li>
-<li>模式匹配表达式：用运算符<del>（匹配）和</del>!（不匹配）。</li>
+<li>模式匹配表达式：用运算符<code>~</code>(匹配) 和 <code>~!</code>(不匹配)。</li>
 <li>BEGIN语句块、pattern语句块、END语句块</li>
 </ul>
 <p>每一行输入，对<code>awk</code>来说都是一条记录(<code>record</code>)，<code>awk</code>使用<code>$0</code>来引用当前记录：</p>
@@ -645,7 +645,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 ~]<span class="comment"># head -1 /etc/passwd | awk -F: '&#123;print $1,$NF&#125;'</span></span><br><span class="line">root /bin/bash</span><br></pre></td></tr></table></figure>
 
 <p>当没有指定分隔符时，使用一到多个<code>blank</code>(空白字符，由空格键或TAB键产生)作为分隔符。输出的分隔符默认为空格。<br>如输出命令<code>ls -l *</code>的结果中，文件大小和文件名：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># ls -l * | awk '&#123;print $5,$NF&#125;'</span></span><br><span class="line">13 b.txt</span><br><span class="line">58 c.txt</span><br><span class="line">12 d.txt</span><br><span class="line">0 e.txt</span><br><span class="line">0 f.txt</span><br><span class="line">24 test.sh</span><br><span class="line">[root@centos7 temp]<span class="comment">#</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># ls -l * | awk '&#123;print $5,$NF&#125;'</span></span><br><span class="line">13 b.txt</span><br><span class="line">58 c.txt</span><br><span class="line">12 d.txt</span><br><span class="line">0 e.txt</span><br><span class="line">0 f.txt</span><br><span class="line">24 test.sh</span><br></pre></td></tr></table></figure>
 
 <p>还可以对任意列进行过滤：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># ls -l *|awk '$5&gt;20 &amp;&amp; $NF ~ /txt$/'</span></span><br><span class="line">-rw-r--r-- 1 nobody nobody 58 11月 16 16:34 c.txt</span><br></pre></td></tr></table></figure>
