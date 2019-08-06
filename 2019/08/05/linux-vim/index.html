@@ -58,18 +58,18 @@
   };
 </script>
 
-  <meta name="description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   如果你将右手放在键盘上的话，你会发现 hjkl 是排列在一起的，因此可以使用这四个按钮来移动光标。 如果想要进行多次移动的话，例如向下移动 30 行，可以使用 “30j">
+  <meta name="description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   20j 向下移动20行(以上四个命令可以配合数字使用)，在Vim中，很多命令都可以配合数字使用，比如删除10个字符10x   w 前移一个单词，光标停在下一个单词开头">
 <meta name="keywords" content="vim命令">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vim命令">
 <meta property="og:url" content="http://www.sainpo.top/2019/08/05/linux-vim/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   如果你将右手放在键盘上的话，你会发现 hjkl 是排列在一起的，因此可以使用这四个按钮来移动光标。 如果想要进行多次移动的话，例如向下移动 30 行，可以使用 “30j">
+<meta property="og:description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   20j 向下移动20行(以上四个命令可以配合数字使用)，在Vim中，很多命令都可以配合数字使用，比如删除10个字符10x   w 前移一个单词，光标停在下一个单词开头">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-06T02:26:54.834Z">
+<meta property="og:updated_time" content="2019-08-06T03:51:18.890Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="vim命令">
-<meta name="twitter:description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   如果你将右手放在键盘上的话，你会发现 hjkl 是排列在一起的，因此可以使用这四个按钮来移动光标。 如果想要进行多次移动的话，例如向下移动 30 行，可以使用 “30j">
+<meta name="twitter:description" content="一般模式光标移动   h 或 向左箭头键(←) 光标向左移动一个字符    j 或 向下箭头键(↓) 光标向下移动一个字符   k 或 向上箭头键(↑) 光标向上移动一个字符   l 或 向右箭头键(→) 光标向右移动一个字符   20j 向下移动20行(以上四个命令可以配合数字使用)，在Vim中，很多命令都可以配合数字使用，比如删除10个字符10x   w 前移一个单词，光标停在下一个单词开头">
   <link rel="canonical" href="http://www.sainpo.top/2019/08/05/linux-vim/">
 
 
@@ -315,7 +315,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-06 10:26:54" itemprop="dateModified" datetime="2019-08-06T10:26:54+08:00">2019-08-06</time>
+                <time title="修改时间：2019-08-06 11:51:18" itemprop="dateModified" datetime="2019-08-06T11:51:18+08:00">2019-08-06</time>
               </span>
             
           
@@ -359,7 +359,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">4.3k</span>
+              <span title="本文字数">4.5k</span>
             </span>
           
             <span class="post-meta-item">
@@ -402,8 +402,56 @@
 <td>光标向右移动一个字符</td>
 </tr>
 <tr>
-<td>如果你将右手放在键盘上的话，你会发现 hjkl 是排列在一起的，因此可以使用这四个按钮来移动光标。 如果想要进行多次移动的话，例如向下移动 30 行，可以使用 “30j” 或 “30↓” 的组合按键， 亦即加上想要进行的次数(数字)后，按下动作即可！</td>
-<td></td>
+<td>20j</td>
+<td>向下移动20行(以上四个命令可以配合数字使用)，在Vim中，很多命令都可以配合数字使用，比如删除10个字符<code>10x</code></td>
+</tr>
+<tr>
+<td>w</td>
+<td>前移一个单词，光标停在下一个单词开头</td>
+</tr>
+<tr>
+<td>2w</td>
+<td>重复执行w操作2次</td>
+</tr>
+<tr>
+<td>W</td>
+<td>移动下一个单词开头，但忽略一些标点</td>
+</tr>
+<tr>
+<td>e</td>
+<td>前移一个单词，光标停在下一个单词末尾</td>
+</tr>
+<tr>
+<td>E</td>
+<td>移动到下一个单词末尾，如果词尾有标点，则移动到标点</td>
+</tr>
+<tr>
+<td>b</td>
+<td>后移一个单词，光标停在上一个单词开头</td>
+</tr>
+<tr>
+<td>B</td>
+<td>移动到上一个单词开头，忽略一些标点</td>
+</tr>
+<tr>
+<td>(</td>
+<td>前移1句</td>
+</tr>
+<tr>
+<td>)</td>
+<td>后移1句</td>
+</tr>
+<tr>
+<td>3)</td>
+<td>光标移动到向下3句</td>
+</tr>
+<tr>
+<td>{</td>
+<td>前移1段</td>
+</tr>
+<tr>
+<td>}</td>
+<td>后移1段</td>
 </tr>
 <tr>
 <td>[Ctrl] + [f]</td>
@@ -468,6 +516,14 @@
 <tr>
 <td>n<enter></enter></td>
 <td>n 为数字。光标向下移动 n 行(常用)</td>
+</tr>
+<tr>
+<td>f</td>
+<td>find）命令也可以用于移动，<code>fx</code>将找到光标后第一个为x的字符，<code>3fd</code>将找到第三个为d的字符</td>
+</tr>
+<tr>
+<td>F</td>
+<td>同f，反向查找</td>
 </tr>
 </tbody></table>
 <h3 id="复制粘贴"><a href="#复制粘贴" class="headerlink" title="复制粘贴"></a>复制粘贴</h3><table>
@@ -550,7 +606,7 @@
 <td>重做上一个动作。(常用)</td>
 </tr>
 <tr>
-<td>这个 u 与 [Ctrl]+r 是很常用的指令！一个是复原，另一个则是重做一次～ 利用这两个功能按键，你的编辑，嘿嘿！很快乐的啦！</td>
+<td>这个 u 与 [Ctrl]+r 是很常用的指令！一个是复原，另一个则是重做一次～</td>
 <td></td>
 </tr>
 <tr>
