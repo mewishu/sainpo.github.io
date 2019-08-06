@@ -8,21 +8,28 @@
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/categories/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</loc>
-        <lastmod>2019-08-06T02:32:07.243Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/categories/linux%E5%91%BD%E4%BB%A4/vim%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-08-06T02:26:54.834Z</lastmod>
+        <loc>http://www.sainpo.top/categories/linux%E5%91%BD%E4%BB%A4/Bash-Shell%E5%BF%AB%E6%8D%B7%E9%94%AE/</loc>
+        <lastmod>2019-08-06T02:56:29.976Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
         <loc>http://www.sainpo.top/categories/linux%E5%91%BD%E4%BB%A4/</loc>
+        <lastmod>2019-08-06T02:56:29.976Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/categories/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</loc>
+        <lastmod>2019-08-06T02:36:04.255Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/categories/linux%E5%91%BD%E4%BB%A4/vim%E5%91%BD%E4%BB%A4/</loc>
         <lastmod>2019-08-06T02:26:54.834Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
