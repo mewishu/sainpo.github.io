@@ -8,16 +8,8 @@
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/2019/08/05/linux-vim/</loc>
-        <lastmod>2019-08-05T13:48:55.402Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
-        <lastmod>2019-08-05T12:31:05.006Z</lastmod>
+        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
+        <lastmod>2019-08-06T02:25:04.952Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -25,7 +17,7 @@
 
     <url>
         <loc>http://www.sainpo.top/2019/08/05/grep-command/</loc>
-        <lastmod>2019-08-05T12:11:48.958Z</lastmod>
+        <lastmod>2019-08-06T02:24:38.719Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -33,15 +25,23 @@
 
     <url>
         <loc>http://www.sainpo.top/2019/08/05/regexp-syntax/</loc>
-        <lastmod>2019-08-05T12:10:59.524Z</lastmod>
+        <lastmod>2019-08-06T02:24:19.390Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
-        <lastmod>2019-08-05T11:59:09.236Z</lastmod>
+        <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
+        <lastmod>2019-08-06T02:23:55.525Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/2019/08/05/linux-vim/</loc>
+        <lastmod>2019-08-06T02:23:15.942Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
