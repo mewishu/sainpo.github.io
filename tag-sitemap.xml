@@ -3,8 +3,22 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/%E8%91%9B%E5%89%91%E9%9B%84/</loc>
+        <lastmod>2019-08-10T13:10:41.505Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/%E5%8E%86%E5%8F%B2%E5%9C%B0%E7%90%86/</loc>
+        <lastmod>2019-08-10T13:10:41.505Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-08-09T02:53:25.162Z</lastmod>
+        <lastmod>2019-08-09T03:02:15.528Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
