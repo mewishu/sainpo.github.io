@@ -8,8 +8,15 @@
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/categories/%E5%8E%86%E5%8F%B2%E5%9C%B0%E7%90%86/</loc>
-        <lastmod>2019-08-11T04:16:41.137Z</lastmod>
+        <loc>http://www.sainpo.top/categories/%E5%8E%86%E5%8F%B2-%E5%9C%B0%E7%90%86/%E5%8E%86%E5%8F%B2%E5%9C%B0%E7%90%86/</loc>
+        <lastmod>2019-08-11T04:20:42.109Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/categories/%E5%8E%86%E5%8F%B2-%E5%9C%B0%E7%90%86/</loc>
+        <lastmod>2019-08-11T04:20:42.109Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
