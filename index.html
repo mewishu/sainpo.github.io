@@ -313,7 +313,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-16 10:59:39" itemprop="dateModified" datetime="2019-08-16T10:59:39+08:00">2019-08-16</time>
+                <time title="修改时间：2019-08-16 11:01:38" itemprop="dateModified" datetime="2019-08-16T11:01:38+08:00">2019-08-16</time>
               </span>
             
           
@@ -503,8 +503,8 @@
 <li><p><strong>选票PK</strong>。在进行选票PK时，符合任意一个条件就需要变更投票。</p>
 <ul>
 <li>若外部投票中推举的Leader服务器的选举轮次大于内部投票，那么需要变更投票。</li>
-<li>若选举轮次一致，那么就对比两者的ZXID，若外部投票的ZXID大，那么需要变更投票。</li>
-<li>若两者的ZXID一致，那么就对比两者的SID，若外部投票的SID大，那么就需要变更投票。</li>
+<li>若选举轮次一致，那么就对比两者的<code>zxid</code>，若外部投票的<code>zxid</code>大，那么需要变更投票。</li>
+<li>若两者的ZXID一致，那么就对比两者的<code>sid</code>，若外部投票的<code>sid</code>大，那么就需要变更投票。</li>
 </ul>
 </li>
 <li><p><strong>变更投票</strong>。经过PK后，若确定了外部投票优于内部投票，那么就变更投票，即使用外部投票的选票信息来覆盖内部投票，变更完成后，再次将这个变更后的内部投票发送出去。</p>
