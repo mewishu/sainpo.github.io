@@ -58,27 +58,17 @@
   };
 </script>
 
-  <meta name="description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
-<meta name="keywords" content="paxos,分布式一致性">
-<meta property="og:type" content="article">
-<meta property="og:title" content="paxos-by-example">
-<meta property="og:url" content="http://www.sainpo.top/2019/07/29/paxos-by-example/index.html">
+  <meta name="description" content="码农|理工男|文青">
+<meta property="og:type" content="website">
+<meta property="og:title" content="窦小固的小木屋">
+<meta property="og:url" content="http://www.sainpo.top/page/2/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
+<meta property="og:description" content="码农|理工男|文青">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Lamport.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure1-BasicPaxos.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure2-Paxos.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure3-Paxos.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure4-Paxos.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure5-Paxos.png">
-<meta property="og:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Figure6-OnceAvalueHas.png">
-<meta property="og:updated_time" content="2019-07-31T10:37:08.943Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="paxos-by-example">
-<meta name="twitter:description" content="Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。 网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文Paxos Made Simple，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。 Paxos是什么 Paxos算法">
-<meta name="twitter:image" content="http://www.sainpo.top/2019/07/29/paxos-by-example/Lamport.png">
-  <link rel="canonical" href="http://www.sainpo.top/2019/07/29/paxos-by-example/">
+<meta name="twitter:title" content="窦小固的小木屋">
+<meta name="twitter:description" content="码农|理工男|文青">
+  <link rel="canonical" href="http://www.sainpo.top/page/2/">
 
 
 <script id="page.configurations">
@@ -87,7 +77,7 @@
   };
 </script>
 
-  <title>paxos-by-example | 窦小固的小木屋</title>
+  <title>窦小固的小木屋</title>
   
 
 
@@ -126,7 +116,7 @@
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -266,10 +256,8 @@
 
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
-    
-    <div class="reading-progress-bar"></div>
+  <section id="posts" class="posts-expand">
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
   
@@ -290,8 +278,10 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">paxos-by-example
-
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/07/29/paxos-by-example/" class="post-title-link" itemprop="url">paxos-by-example</a>
               
             
           </h1>
@@ -350,15 +340,6 @@
             </span>
           
 
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon"
-              >
-                <i class="fa fa-eye"></i>
-                 阅读次数： 
-                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
-              </span>
-            </span>
           <br>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -390,7 +371,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。</p>
+          
+            <p>Paxos算法在分布式领域具有非常重要的地位。但是Paxos算法有两个比较明显的缺点：1.难以理解 2.工程实现更难。</p>
 <p>网上有很多讲解Paxos算法的文章，但是质量参差不齐。看了很多关于Paxos的资料后发现，学习Paxos最好的资料是论文<a href="https://www.cnblogs.com/YaoDD/p/6150498.html" target="_blank" rel="noopener">Paxos Made Simple</a>，其次是中、英文版维基百科对Paxos的介绍。本文试图带大家一步步揭开Paxos神秘的面纱。</p>
 <h2 id="Paxos是什么"><a href="#Paxos是什么" class="headerlink" title="Paxos是什么"></a>Paxos是什么</h2><blockquote>
 <p>Paxos算法是基于<strong>消息传递</strong>且具有<strong>高度容错特性</strong>的<strong>一致性算法</strong>，是目前公认的解决<strong>分布式一致性</strong>问题<strong>最有效</strong>的算法之一。</p>
@@ -472,6 +454,9 @@
 <li></li>
 </ul>
 
+          
+        
+      
     </div>
 
     
@@ -479,27 +464,7 @@
     
 
     <footer class="post-footer">
-          
-        
-        <div class="post-tags">
-            <a href="/tags/paxos/" rel="tag"># paxos</a>
-          
-            <a href="/tags/分布式一致性/" rel="tag"># 分布式一致性</a>
-          
-        </div>
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-              <a href="/2019/07/31/paxos-essence-and-demo/" rel="prev" title="paxos精髓及示例">
-                paxos精髓及示例 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
+        <div class="post-eof"></div>
     </footer>
   </div>
   
@@ -507,15 +472,17 @@
   
   </article>
 
-  </div>
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 
           </div>
           
-    
-    <div class="comments" id="gitalk-container"></div>
-  
-
 
         </div>
           
@@ -530,17 +497,8 @@
 
   <aside id="sidebar" class="sidebar">
     <div class="sidebar-inner">
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
 
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -665,23 +623,6 @@
 
         </div>
       </div>
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos是什么"><span class="nav-text">Paxos是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于作者-Lamport"><span class="nav-text">关于作者: Lamport</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文开始"><span class="nav-text">译文开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概述"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Paxos算法例子"><span class="nav-text">Paxos算法例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#译文结束"><span class="nav-text">译文结束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
-      
         <div class="back-to-top motion-element">
           <i class="fa fa-arrow-up"></i>
           
@@ -777,10 +718,6 @@
 
 
   
-  <script src="/js/scrollspy.js?v=7.3.0"></script>
-<script src="/js/post-details.js?v=7.3.0"></script>
-
-
 
   <script src="/js/next-boot.js?v=7.3.0"></script>
 
@@ -855,24 +792,6 @@ if ($('body').find('div.pdf').length) {
 
 
     
-<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
-<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
-
-<script>
-  var gitalk = new Gitalk({
-    clientID: '96bfad82ea05d6d64ea7',
-    clientSecret: '74d6d9a9834e4e6c3db88d702866ae41f675f888',
-    repo: 'usercomment',
-    owner: 'mewishu',
-    admin: ['mewishu'],
-    id: md5(location.pathname),
-      language: window.navigator.language || window.navigator.userLanguage,
-    
-    distractionFreeMode: 'true'
-  });
-  gitalk.render('gitalk-container');
-</script>
 
 
 </body>
