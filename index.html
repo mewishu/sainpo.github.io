@@ -313,7 +313,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-19 19:19:46" itemprop="dateModified" datetime="2019-08-19T19:19:46+08:00">2019-08-19</time>
+                <time title="修改时间：2019-08-19 19:24:57" itemprop="dateModified" datetime="2019-08-19T19:24:57+08:00">2019-08-19</time>
               </span>
             
           
@@ -485,7 +485,7 @@
 <h3 id="全量同步-SNAP同步"><a href="#全量同步-SNAP同步" class="headerlink" title="全量同步(SNAP同步)"></a>全量同步(SNAP同步)</h3><p><strong>场景: peerLastZxid小于minCommittedLog或peerLastZxid不等于lastProcessedZxid</strong></p>
 <p>Leader无法直接使用提议缓存队列和Learner进行同步，因此只能进行全量同步。Leader将本机的全量内存数据同步给Learner。Leader首先向Learner发送一个SNAP指令，通知Learner即将进行全量同步，随后，Leader会从内存数据库中获取到全量的数据节点和会话超时时间记录器，将他们序列化后传输给Learner。Learner接收到该全量数据后，会对其反序列化后载入到内存数据库中。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a href="https://book.douban.com/subject/26292004/" target="_blank" rel="noopener">从Paxos到Zookeeper分布式一致性原理与实践</a></li>
+<li><a href="https://campodesktop.com/miniProxy.php?https://ningg.top/zookeeper-lesson-9-zookeeper-data-and-storage/" target="_blank" rel="noopener">ZooKeeper 技术内幕：数据的存储</a></li>
 <li><a href="https://www.cnblogs.com/leesf456/p/6279956.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（一）之FileTxnLog</a></li>
 <li><a href="https://www.cnblogs.com/leesf456/p/6285014.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（二）之FileSnap</a></li>
 <li><a href="https://www.cnblogs.com/leesf456/p/6285703.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（三）之FileTxnSnapLog</a></li>
