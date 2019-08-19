@@ -264,6 +264,270 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/16/zookeeper-data-and-storage/" class="post-title-link" itemprop="url">zookeeper数据与存储</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-16 21:33:22" itemprop="dateCreated datePublished" datetime="2019-08-16T21:33:22+08:00">2019-08-16</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-19 19:02:00" itemprop="dateModified" datetime="2019-08-19T19:02:00+08:00">2019-08-19</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">7.3k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">7 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+            <h2 id="数据分类"><a href="#数据分类" class="headerlink" title="数据分类"></a>数据分类</h2><p>整体分为 3 类：</p>
+<ul>
+<li>内存数据</li>
+<li>磁盘数据<ul>
+<li>快照</li>
+<li>事务日志</li>
+</ul>
+</li>
+</ul>
+<p>下面是 ZooKeeper 启动过程中，3 类数据之间的关系：</p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-type-relation.png" alt="img"></p>
+<h2 id="内存数据"><a href="#内存数据" class="headerlink" title="内存数据"></a>内存数据</h2><p>Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。</p>
+<ol>
+<li>DataTree</li>
+</ol>
+<p>DataTree是内存数据存储的核心，是一个树结构，<strong>代表了内存中一份完整的数据</strong>。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。</p>
+<ol start="2">
+<li>DataNode</li>
+</ol>
+<p><strong>DataNode是数据存储的最小单元</strong>，其内部保存了: </p>
+<ul>
+<li>节点数据</li>
+<li>节点 ACL 信息</li>
+<li>节点的路径</li>
+</ul>
+<p>除此之外还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。</p>
+<ol start="3">
+<li>ZKDatabase</li>
+</ol>
+<p>Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</p>
+<ul>
+<li><p>具体实现：DataTree 和 DataNode，见下图</p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-impl-details.png" alt="img"></p>
+</li>
+</ul>
+<h2 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h2><h3 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h3><p>在配置Zookeeper集群时需要配置dataDir目录，其用来存储事务日志文件。也可以为事务日志单独分配一个文件存储目录:dataLogDir。若配置dataLogDir为/home/admin/zkData/zk_log，那么Zookeeper在运行过程中会在该目录下建立一个名字为version-2的子目录，该目录确定了当前Zookeeper使用的事务日志格式版本号，当下次某个Zookeeper版本对事务日志格式进行变更时，此目录也会变更，即在version-2子目录下会生成一系列文件大小一致(64MB)的文件。</p>
+<h3 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h3><p>在配置好日志文件目录，启动Zookeeper后，完成如下操作</p>
+<p>(1) 创建/test_log节点，初始值为v1。</p>
+<p>(2) 更新/test_log节点的数据为v2。</p>
+<p>(3) 创建/test_log/c节点，初始值为v1。</p>
+<p>(4) 删除/test_log/c节点。</p>
+<p>经过四步操作后，会在/log/version-2/目录下生成一个日志文件，笔者下是log.cec。</p>
+<p>将Zookeeper下的zookeeper-3.4.6.jar和slf4j-api-1.6.1.jar复制到/log/version-2目录下，使用如下命令打开log.cec文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath ./zookeeper-3.4.6.jar:./slf4j-api-1.6.1.jar org.apache.zookeeper.server.LogFormatter log.cec</span><br></pre></td></tr></table></figure>
+
+<p>　　<img src="/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png" alt="img"></p>
+<p>ZooKeeper Transactional Log File with dbid 0 txnlog format version 2 。是文件头信息，主要是事务日志的DBID和日志格式版本号。　　</p>
+<blockquote>
+<p>…session 0x159…0xcec createSession 30000。表示客户端会话创建操作。</p>
+</blockquote>
+<blockquote>
+<p>…session 0x159…0xced create ‘/test_log,… 。表示创建/test_log节点，数据内容为#7631(v1)。</p>
+</blockquote>
+<blockquote>
+<p>…session 0x159…0xcee setData ‘/test_log,…。表示设置了/test_log节点数据，内容为#7632(v2)。</p>
+</blockquote>
+<blockquote>
+<p>…session 0x159…0xcef create ’/test_log/c,…。表示创建节点/test_log/c。</p>
+</blockquote>
+<blockquote>
+<p>…session 0x159…0xcf0 delete ‘/test_log/c。表示删除节点/test_log/c。</p>
+</blockquote>
+<p>其他几行事务日志类似，具体可以对照Zookeeper源码类org.apache.zookeeper.server.LogFormatter自行分析。通过可视化这个文件，我们还注意到一点，由于这是一个记录事务操作的日志文件，因此里面没有任何读操作的日志记录。</p>
+<p>事务日志格式如下所示: (参见$FileTxnLog$类): </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">* The format of a Transactional log is as follows:</span><br><span class="line">* &lt;blockquote&gt;&lt;pre&gt;</span><br><span class="line">* LogFile:</span><br><span class="line">*     FileHeader TxnList ZeroPad</span><br><span class="line">*</span><br><span class="line">* FileHeader: &#123;</span><br><span class="line">*     magic <span class="number">4</span>bytes (ZKLG)</span><br><span class="line">*     version <span class="number">4</span>bytes</span><br><span class="line">*     dbid <span class="number">8</span>bytes</span><br><span class="line">*   &#125;</span><br><span class="line">*</span><br><span class="line">* TxnList:</span><br><span class="line">*     Txn || Txn TxnList</span><br><span class="line">*</span><br><span class="line">* Txn:</span><br><span class="line">*     checksum Txnlen TxnHeader Record <span class="number">0x42</span></span><br><span class="line">*</span><br><span class="line">* checksum: <span class="number">8</span>bytes Adler32 is currently used</span><br><span class="line">*   calculated across payload -- Txnlen, TxnHeader, Record and <span class="number">0x42</span></span><br><span class="line">*</span><br><span class="line">* Txnlen:</span><br><span class="line">*     len <span class="number">4</span>bytes</span><br><span class="line">*</span><br><span class="line">* TxnHeader: &#123;</span><br><span class="line">*     sessionid <span class="number">8</span>bytes</span><br><span class="line">*     cxid <span class="number">4</span>bytes</span><br><span class="line">*     zxid <span class="number">8</span>bytes</span><br><span class="line">*     time <span class="number">8</span>bytes</span><br><span class="line">*     type <span class="number">4</span>bytes</span><br><span class="line">*   &#125;</span><br><span class="line">*</span><br><span class="line">* Record:</span><br><span class="line">*     See Jute definition file <span class="keyword">for</span> details on the various record types</span><br><span class="line">*</span><br><span class="line">* ZeroPad:</span><br><span class="line">*     <span class="number">0</span> <span class="function">padded to <span class="title">EOF</span> <span class="params">(filled during preallocation stage)</span></span></span><br><span class="line"><span class="function">* &lt;/pre&gt;&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="日志写入"><a href="#日志写入" class="headerlink" title="日志写入"></a>日志写入</h3><p><code>FileTxnLog</code>负责维护事务日志对外的接口，包括事务日志的写入和读取等。事务操作写入事务日志的工作主要由append方法来负责: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">append</span><span class="params">(TxnHeader hdr, Record txn)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
+
+<p>Zookeeper的事务日志写入过程大体可以分为如下6个步骤。</p>
+<ol>
+<li><strong>确定是否有事务日志可写</strong>。当Zookeeper服务器启动完成需要进行第一次事务日志的写入，或是上一次事务日志写满时，都会处于与事务日志文件断开的状态，即Zookeeper服务器没有和任意一个日志文件相关联。因此在进行事务日志写入前，Zookeeper首先会判断FileTxnLog组件是否已经关联上一个可写的事务日志文件。若没有，则会使用该事务操作关联的ZXID作为后缀创建一个事务日志文件，同时构建事务日志的文件头信息，并立即写入这个事务日志文件中去，同时将该文件的文件流放入streamToFlush集合，该集合用来记录当前需要强制进行数据落盘的文件流。</li>
+<li><strong>确定事务日志文件是否需要扩容(预分配)</strong>。Zookeeper会采用磁盘空间预分配策略。当检测到当前事务日志文件剩余空间不足4096字节时，就会开始进行文件空间扩容，即在现有文件大小上，将文件增加65536KB(64MB)，然后使用”0”填充被扩容的文件空间。</li>
+<li><strong>事务序列化</strong>。对事务头和事务体的序列化，其中事务体又可分为会话创建事务、节点创建事务、节点删除事务、节点数据更新事务等。</li>
+<li><strong>生成Checksum</strong>。为保证日志文件的完整性和数据的准确性，Zookeeper在将事务日志写入文件前，会计算生成Checksum。</li>
+<li><strong>写入事务日志文件流</strong>。将序列化后的事务头、事务体和Checksum写入文件流中，此时并为写入到磁盘上。</li>
+<li><strong>事务日志刷入磁盘</strong>。由于步骤5中的缓存原因，无法实时地写入磁盘文件中，因此需要将缓存数据强制刷入磁盘。</li>
+</ol>
+<h3 id="日志截断"><a href="#日志截断" class="headerlink" title="日志截断"></a>日志截断</h3><p>在Zookeeper运行过程中，可能出现非Leader记录的事务ID比Leader上大，这是非法运行状态。此时，需要保证所有机器必须与该Leader的数据保持同步，即Leader会发送TRUNC命令给该机器，要求进行日志截断，Learner收到该命令后，就会删除所有包含或大于该事务ID的事务日志文件。</p>
+<h2 id="snapshot-数据快照"><a href="#snapshot-数据快照" class="headerlink" title="snapshot-数据快照"></a>snapshot-数据快照</h2><p>数据快照是Zookeeper数据存储中非常核心的运行机制，数据快照用来记录Zookeeper服务器上某一时刻的全量内存数据内容，并将其写入指定的磁盘文件中。</p>
+<h3 id="文件存储-1"><a href="#文件存储-1" class="headerlink" title="文件存储"></a>文件存储</h3><p>与事务文件类似，Zookeeper快照文件也可以指定特定磁盘目录，通过dataDir属性来配置。若指定dataDir为/home/admin/zkData/zk_data，则在运行过程中会在该目录下创建version-2的目录，该目录确定了当前Zookeeper使用的快照数据格式版本号。在Zookeeper运行时，会生成一系列文件。</p>
+<h3 id="数据快照"><a href="#数据快照" class="headerlink" title="数据快照"></a>数据快照</h3><p><code>FileSnap</code>负责维护快照数据对外的接口，包括快照数据的写入和读取等，将内存数据库写入快照数据文件其实是一个序列化过程。针对客户端的每一次事务操作，Zookeeper都会将他们记录到事务日志中，同时也会将数据变更应用到内存数据库中，Zookeeper在进行若干次事务日志记录后，将内存数据库的全量数据Dump到本地文件中，这就是数据快照。其步骤如下:</p>
+<ol>
+<li><strong>确定是否需要进行数据快照</strong>。每进行一次事务日志记录之后，Zookeeper都会检测当前是否需要进行数据快照，考虑到数据快照对于Zookeeper机器的影响，需要尽量避免Zookeeper集群中的所有机器在同一时刻进行数据快照。采用过半随机策略进行数据快照操作。</li>
+<li><strong>切换事务日志文件</strong>。表示当前的事务日志已经写满，需要重新创建一个新的事务日志。</li>
+<li><strong>创建数据快照异步线程</strong>。创建单独的异步线程来进行数据快照以避免影响Zookeeper主流程。</li>
+<li><strong>获取全量数据和会话信息</strong>。从ZKDatabase中获取到DataTree和会话信息。</li>
+<li><strong>生成快照数据文件名</strong>。Zookeeper根据当前已经提交的最大ZXID来生成数据快照文件名。</li>
+<li><strong>数据序列化</strong>。首先序列化文件头信息，然后再对会话信息和DataTree分别进行序列化，同时生成一个Checksum，一并写入快照数据文件中去。</li>
+</ol>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在Zookeeper服务器启动期间，首先会进行数据初始化工作，用于将存储在磁盘上的数据文件加载到Zookeeper服务器内存中。</p>
+<h3 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h3><p>Zookeeper的初始化过程如下图所示: </p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png" alt="img"></p>
+<p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了从快照文件中加载快照数据和根据实物日志进行数据修正两个过程。</p>
+<ol>
+<li><strong>初始化<code>FileTxnSnapLog</code></strong>。FileTxnSnapLog是Zookeeper事务日志和快照数据访问层，用于衔接上层业务和底层数据存储，底层数据包含了事务日志和快照数据两部分。FileTxnSnapLog中对应FileTxnLog和FileSnap。</li>
+<li><strong>初始化ZKDatabase</strong>。首先构建DataTree，同时将FileTxnSnapLog交付ZKDatabase，以便内存数据库能够对事务日志和快照数据进行访问。在ZKDatabase初始化时，DataTree也会进行相应的初始化工作，如创建一些默认结点，如/、/zookeeper、/zookeeper/quota三个节点。</li>
+<li><strong>创建PlayBackListener</strong>。其主要用来接收事务应用过程中的回调，在Zookeeper数据恢复后期，会有事务修正过程，此过程会回调PlayBackListener来进行对应的数据修正。</li>
+<li><strong>处理快照文件</strong>。此时可以从磁盘中恢复数据了，首先从快照文件开始加载。</li>
+<li><strong>获取最新的100个快照文件</strong>。更新时间最晚的快照文件包含了最新的全量数据。</li>
+<li><strong>解析快照文件</strong>。逐个解析快照文件，此时需要进行反序列化，生成DataTree和sessionsWithTimeouts，同时还会校验Checksum及快照文件的正确性。对于100个快找文件，如果正确性校验通过时，通常只会解析最新的那个快照文件。只有最新快照文件不可用时，才会逐个进行解析，直至100个快照文件全部解析完。若将100个快照文件解析完后还是无法成功恢复一个完整的DataTree和sessionWithTimeouts，此时服务器启动失败。</li>
+<li><strong>获取最新的ZXID</strong>。此时根据快照文件的文件名即可解析出最新的ZXID：zxid_for_snap。该ZXID代表了Zookeeper开始进行数据快照的时刻。</li>
+<li><strong>处理事务日志</strong>。此时服务器内存中已经有了一份近似全量的数据，现在开始通过事务日志来更新增量数据。</li>
+<li><strong>获取所有zxid_for_snap之后提交的事务</strong>。此时，已经可以获取快照数据的最新ZXID。只需要从事务日志中获取所有ZXID比步骤7得到的ZXID大的事务操作。</li>
+<li><strong>事务应用</strong>。获取大于zxid_for_snap的事务后，将其逐个应用到之前基于快照数据文件恢复出来的DataTree和sessionsWithTimeouts。每当有一个事务被应用到内存数据库中后，Zookeeper同时会回调PlayBackListener，将这事务操作记录转换成Proposal，并保存到ZKDatabase的committedLog中，以便Follower进行快速同步。</li>
+<li><strong>获取最新的ZXID</strong>。待所有的事务都被完整地应用到内存数据库中后，也就基本上完成了数据的初始化过程，此时再次获取ZXID，用来标识上次服务器正常运行时提交的最大事务ID。</li>
+<li><strong>校验epoch</strong>。epoch标识了当前Leader周期，集群机器相互通信时，会带上这个epoch以确保彼此在同一个Leader周期中。完成数据加载后，Zookeeper会从步骤11中确定ZXID中解析出事务处理的Leader周期：epochOfZxid。同时也会从磁盘的currentEpoch和acceptedEpoch文件中读取上次记录的最新的epoch值，进行校验。</li>
+</ol>
+<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>整个集群完成Leader选举后，Learner会向Leader进行注册，当Learner向Leader完成注册后，就进入数据同步环节，同步过程就是Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner服务器，大体过程如下: </p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png" alt="img"></p>
+<ol>
+<li><strong>获取Learner状态</strong>。在注册Learner的最后阶段，Learner服务器会发送给Leader服务器一个ACKEPOCH数据包，Leader会从这个数据包中解析出该Learner的currentEpoch和lastZxid。</li>
+<li><strong>数据同步初始化</strong>。首先从Zookeeper内存数据库中提取出事务请求对应的提议缓存队列proposals，同时完成peerLastZxid(该Learner最后处理的ZXID)、minCommittedLog(Leader提议缓存队列commitedLog中最小的ZXID)、maxCommittedLog(Leader提议缓存队列commitedLog中的最大ZXID)三个ZXID值的初始化。</li>
+</ol>
+<p>对于集群数据同步而言，通常分为四类，<strong>直接差异化同步(DIFF同步)、先回滚再差异化同步(TRUNC+DIFF同步)、仅回滚同步(TRUNC同步)、全量同步(SNAP同步)</strong>，在初始化阶段，Leader会优先以全量同步方式来同步数据。同时，会根据Leader和Learner之间的数据差异情况来决定最终的数据同步方式。</p>
+<h3 id="直接差异化同步-DIFF同步"><a href="#直接差异化同步-DIFF同步" class="headerlink" title="直接差异化同步(DIFF同步)"></a>直接差异化同步(DIFF同步)</h3><p><strong>场景: peerLastZxid介于minCommittedLog和maxCommittedLog之间</strong></p>
+<p>Leader首先向这个Learner发送一个DIFF指令，用于通知Learner进入差异化数据同步阶段，Leader即将把一些Proposal同步给自己，针对每个Proposal，Leader都会通过发送PROPOSAL内容数据包和COMMIT指令数据包来完成，</p>
+<h3 id="先回滚再差异化同步-TRUNC-DIFF同步"><a href="#先回滚再差异化同步-TRUNC-DIFF同步" class="headerlink" title="先回滚再差异化同步(TRUNC+DIFF同步)"></a>先回滚再差异化同步(TRUNC+DIFF同步)</h3><p><strong>场景: Leader已经将事务记录到本地事务日志中，但是没有成功发起Proposal流程</strong></p>
+<p>当Leader发现某个Learner包含了一条自己没有的事务记录，那么就需要该Learner进行事务回滚，回滚到Leader服务器上存在的，同时也是最接近于peerLastZxid的ZXID。</p>
+<h3 id="仅回滚同步-TRUNC同步"><a href="#仅回滚同步-TRUNC同步" class="headerlink" title="仅回滚同步(TRUNC同步)"></a>仅回滚同步(TRUNC同步)</h3><p><strong>场景: peerLastZxid大于maxCommittedLog</strong></p>
+<p>Leader要求Learner回滚到ZXID值为maxCommittedLog对应的事务操作。</p>
+<h3 id="全量同步-SNAP同步"><a href="#全量同步-SNAP同步" class="headerlink" title="全量同步(SNAP同步)"></a>全量同步(SNAP同步)</h3><p><strong>场景: peerLastZxid小于minCommittedLog或peerLastZxid不等于lastProcessedZxid</strong></p>
+<p>Leader无法直接使用提议缓存队列和Learner进行同步，因此只能进行全量同步。Leader将本机的全量内存数据同步给Learner。Leader首先向Learner发送一个SNAP指令，通知Learner即将进行全量同步，随后，Leader会从内存数据库中获取到全量的数据节点和会话超时时间记录器，将他们序列化后传输给Learner。Learner接收到该全量数据后，会对其反序列化后载入到内存数据库中。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://book.douban.com/subject/26292004/" target="_blank" rel="noopener">从Paxos到Zookeeper分布式一致性原理与实践</a></li>
+<li><a href="https://www.cnblogs.com/leesf456/p/6279956.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（一）之FileTxnLog</a></li>
+<li><a href="https://www.cnblogs.com/leesf456/p/6285014.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（二）之FileSnap</a></li>
+<li><a href="https://www.cnblogs.com/leesf456/p/6285703.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（三）之FileTxnSnapLog</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/16/zookeeper-system-model/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2630,218 +2894,6 @@
   </article>
 
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/07/31/paxos-essence-and-demo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sainpo.yxb">
-      <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="窦小固的小木屋">
-    </span>
-      <header class="post-header">
-
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/31/paxos-essence-and-demo/" class="post-title-link" itemprop="url">paxos精髓及示例</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-31 18:58:42" itemprop="dateCreated datePublished" datetime="2019-07-31T18:58:42+08:00">2019-07-31</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-01 18:21:04" itemprop="dateModified" datetime="2019-08-01T18:21:04+08:00">2019-08-01</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/paxos算法/" itemprop="url" rel="index"><span itemprop="name">paxos算法</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          <br>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">14k</span>
-            </span>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">13 分钟</span>
-            </span>
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-            <h2 id="Paxos精髓"><a href="#Paxos精髓" class="headerlink" title="Paxos精髓"></a>Paxos精髓</h2><p>paxos协议用来解决的问题可以用一句话来简化: </p>
-<blockquote>
-<p>proposer将发起提案（value）给所有accpetor，超过半数accpetor获得批准后，proposer将提案写入accpetor内，最终所有accpetor获得一致性的确定性取值，且后续不允许再修改。</p>
-</blockquote>
-<p>协议分为两大阶段，每个阶段又分为a/b两小步骤：</p>
-<h3 id="准备阶段（占坑阶段）"><a href="#准备阶段（占坑阶段）" class="headerlink" title="准备阶段（占坑阶段）"></a>准备阶段（占坑阶段）</h3><h4 id="Phase-1a-Prepare"><a href="#Phase-1a-Prepare" class="headerlink" title="Phase 1a: Prepare"></a>Phase 1a: <em>Prepare</em></h4><p>Proposer选择一个提议编号n，向所有的Acceptor广播Prepare（n）请求。</p>
-<h4 id="Phase-1b-Promise"><a href="#Phase-1b-Promise" class="headerlink" title="Phase 1b: Promise"></a>Phase 1b: <em>Promise</em></h4><p>Acceptor接收到Prepare（n）请求，若提议编号n比之前接收的Prepare请求都要大，则承诺将不会接收提议编号比n小的提议，并且带上之前Accept的提议中编号小于n的最大的提议，否则不予理会。</p>
-<h3 id="接受阶段（提交阶段）"><a href="#接受阶段（提交阶段）" class="headerlink" title="接受阶段（提交阶段）"></a>接受阶段（提交阶段）</h3><h4 id="Phase-2a-Accept"><a href="#Phase-2a-Accept" class="headerlink" title="Phase 2a: Accept"></a>Phase 2a: <em>Accept</em></h4><p>​    1. 如果未超过半数accpetor响应，直接转为提议失败；</p>
-<p>​    2. 如果超过多数Acceptor的承诺，又分为不同情况：</p>
-<p>​            2.1 如果所有Acceptor都未接收过值（都为null），那么向所有的Acceptor发起自己的值和提议编号n，记住，一定是所有Acceptor都没接受过值；</p>
-<p>​            2.2 如果有部分Acceptor接收过值，那么从所有接受过的值中选择对应的提议编号最大的作为提议的值，提议编号仍然为n。但此时Proposer就不能提议自己的值，只能信任Acceptor通过的值，维护一但获得确定性取值就不能更改原则；</p>
-<h4 id="Phase-2b-Accepted"><a href="#Phase-2b-Accepted" class="headerlink" title="Phase 2b: Accepted"></a>Phase 2b: <em>Accepted</em></h4><p>Acceptor接收到提议后，如果该提议版本号不等于自身保存记录的版本号（第一阶段记录的），不接受该请求，相等则写入本地。</p>
-<p>整个paxos协议过程看似复杂难懂，但只要把握和理解这两点就基本理解了paxos的精髓：</p>
-<ol>
-<li><p>理解第一阶段accpetor的处理流程：如果本地已经写入了，不再接受和同意后面的所有请求，并返回本地写入的值；如果本地未写入，则本地记录该请求的版本号，并不再接受其他版本号的请求，简单来说只信任最后一次提交的版本号的请求，使其他版本号写入失效；</p>
-</li>
-<li><p>理解第二阶段proposer的处理流程：未超过半数accpetor响应，提议失败；超过半数的accpetor值都为空才提交自身要写入的值，否则选择非空值里版本号最大的值提交，最大的区别在于是提交的值是自身的还是使用以前提交的。</p>
-</li>
-</ol>
-<h3 id="Basic-Paxos信息流协议过程举例"><a href="#Basic-Paxos信息流协议过程举例" class="headerlink" title="Basic Paxos信息流协议过程举例"></a>Basic Paxos信息流协议过程举例</h3><p>看这个最简单的例子：1个processor，3个Acceptor，无learner。</p>
-<p>目标：proposer向3个aceptort 将name变量写为v1。</p>
-<p>第一阶段A：proposer发起prepare（name，n1）,n1是递增提议版本号，发送给3个Acceptor，说，我现在要写name这个变量，我的版本号是n1<br>第一阶段B：Acceptor收到proposer的消息，比对自己内部保存的内容，发现之前name变量（null，null）没有被写入且未收到过提议，都返回给proposer，并在内部记录name这个变量，已经有proposer申请提议了，提议版本号是n1;<br>第二阶段A：proposer收到3个Acceptor的响应，响应内容都是：name变量现在还没有写入，你可以来写。proposer确认获得超过半数以上Acceptor同意，发起第二阶段写入操作：accept（v1,n1），告诉Acceptor我现在要把name变量协议v1,我的版本号是刚刚获得通过的n1;<br>第二阶段B：accpetor收到accept（v1,n1），比对自身的版本号是一致的，保存成功，并响应accepted（v1,n1）；<br>结果阶段：proposer收到3个accepted响应都成功，超过半数响应成功，到此name变量被确定为v1。</p>
-<p>以上是正常的paxos协议提议确定流程，是不是很简单，很容易理解呢？</p>
-<p>确定你理解了上面的例子再往后看。</p>
-<p>这是最简单也最容易理解的例子，但真实情况远比这个复杂，还有以下问题：</p>
-<p>如果其中的某个Acceptor没响应怎么处理？<br>如果只写成功了一个accpetor又怎么处理，写成功两个呢？<br>如果多个proposer并发写会导致accpetor写成不同值吗？<br>learner角色是做什么用？<br>为什么是超过半数同意？</p>
-<h4 id="paxos特殊情况下的处理"><a href="#paxos特殊情况下的处理" class="headerlink" title="paxos特殊情况下的处理"></a>paxos特殊情况下的处理</h4><p><strong>第一种情况：Proposer提议正常，未超过accpetor失败情况</strong></p>
-<p>问题：还是上面的例子，如果第二阶段B，只有2个accpetor响应接收提议成功，另外1个没有响应怎么处理呢？</p>
-<p>处理：proposer发现只有2个成功，已经超过半数，那么还是认为提议成功，并把消息传递给learner，由learner角色将确定的提议通知给所有accpetor，最终使最后未响应的accpetor也同步更新，通过learner角色使所有Acceptor达到最终一致性。</p>
-<p><strong>第二种情况：Proposer提议正常，但超过accpetor失败情况</strong></p>
-<p>问题：假设有2个accpetor失败，又该如何处理呢？</p>
-<p>处理：由于未达到超过半数同意条件，proposer要么直接提示失败，要么递增版本号重新发起提议，如果重新发起提议对于第一次写入成功的accpetor不会修改，另外两个accpetor会重新接受提议，达到最终成功。</p>
-<p><strong>情况再复杂一点：还是一样有3个accpetor，但有两个proposer。</strong></p>
-<p><strong>情况一：proposer1和proposer2串行执行</strong></p>
-<p>proposer1和最开始情况一样，把name设置为v1，并接受提议。</p>
-<p>proposer1提议结束后，proposer2发起提议流程：</p>
-<p>第一阶段A：proposer1发起prepare（name，n2）</p>
-<p>第一阶段B：Acceptor收到proposer的消息，发现内部name已经写入确定了，返回（name,v1,n1）</p>
-<p>第二阶段A：proposer收到3个Acceptor的响应，发现超过半数都是v1，说明name已经确定为v1，接受这个值，不再发起提议操作。</p>
-<p><strong>情况二：proposer1和proposer2交错执行</strong></p>
-<p>proposer1提议accpetor1成功，但写入accpetor2和accpetor3时，发现版本号已经小于accpetor内部记录的版本号（保存了proposer2的版本号），直接返回失败。</p>
-<p>proposer2写入accpetor2和accpetor3成功，写入accpetor1失败，但最终还是超过半数写入v2成功，name变量最终确定为v2；</p>
-<p>proposer1递增版本号再重试发现超过半数为v2，接受name变量为v2，也不再写入v1。name最终确定还是为v2</p>
-<p><strong>情况三：proposer1和proposer2第一次都只写成功1个Acceptor怎么办</strong></p>
-<p>都只写成功一个，未超过半数，那么Proposer会递增版本号重新发起提议，这里需要分多种情况：</p>
-<ol>
-<li>3个Acceptor都响应提议，发现Acceptor1{v1,n1} ,Acceptor2{v2,n2},Acceptor{null,null}，Processor选择最大的{v2,n2}发起第二阶段，成功后name值为v2;</li>
-<li>2个Acceptor都响应提议，<ul>
-<li>如果是Acceptor1{v1,n1} ,Acceptor2{v2,n2}，那么选择最大的{v2,n2}发起第二阶段，成功后name值为v2;</li>
-<li>如果是Acceptor1{v1,n1} ,Acceptor3{null,null}，那么选择最大的{v1,n1}发起第二阶段，成功后name值为v1;</li>
-<li>如果是Acceptor2{v2,n2} ,Acceptor3{null,null}，那么选择最大的{v2,n2}发起第二阶段，成功后name值为v2;</li>
-</ul>
-</li>
-<li>只有1个Acceptor响应提议，未达到半数，放弃或者递增版本号重新发起提议<br><strong>可以看到，都未达到半数时，最终值是不确定的！</strong></li>
-</ol>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li>paxos算法wiki: <a href="https://en.wikipedia.org/wiki/Paxos_(computer_science)#Basic_Paxos" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Paxos_(computer_science)#Basic_Paxos</a></li>
-<li>首先，推荐的是知行学社的《分布式系统与Paxos算法视频课程》： 视频讲的非常好，很适合入门，循序渐进慢慢推导，我自己看了不下5遍，视频讲解理解更深，推荐大家都看看。</li>
-<li>推荐刘杰的《分布式系统原理介绍》 ，里面有关于paxos的详细介绍，例子非常多，也有包括paxos协议的证明过程，大而全，质量相当高的一份学习资料！</li>
-<li>推荐的一份高质量ppt《可靠分布式系统基础 Paxos 的直观解释》: <a href="https://drmingdrmer.github.io/tech/distributed/2015/11/11/paxos-slide.html；" target="_blank" rel="noopener">https://drmingdrmer.github.io/tech/distributed/2015/11/11/paxos-slide.html；</a></li>
-<li>技术类的东西怎么能只停留在看上面，肯定要看代码啊，推荐微信开源的phxpaxos：<a href="https://github.com/tencent-wechat/phxpaxos，结合代码对协议理解更深。" target="_blank" rel="noopener">https://github.com/tencent-wechat/phxpaxos，结合代码对协议理解更深。</a></li>
-<li><a href="http://research.google.com/archive/paxos_made_live.html" target="_blank" rel="noopener">《Paxos Made live》</a>。这篇论文是 Google 发表的，讨论了 paxos 的工程实践，也就是 chubby 这个众所周知的分布式服务的实现，可以结合<a href="https://research.google.com/archive/chubby.html" target="_blank" rel="noopener">《The Chubby lock service for loosely-coupled distributed systems》</a> 一起看。实际应用中的难点，比如 master 租约实现、group membership 变化、Snapshot 加快复制和恢复以及实际应用中遇到的故障、测试等问题，特别是最后的测试部分。非常值得一读。<a href="https://research.google.com/archive/chubby.html" target="_blank" rel="noopener">《The Chubby lock service for loosely-coupled distributed systems》</a> 更多介绍了 Chubby 服务本身的设计决策，为什么是分布式锁服务，为什么是粗粒度的锁，为什么是目录文件模式，事件通知、多机房部署以及应用碰到的使用问题等等。</li>
-<li>Paxos 我还着重推荐阅读微信后端团队写的<a href="https://zhuanlan.zhihu.com/p/21438357?refer=lynncui" target="_blank" rel="noopener">系列博客</a>，包括他们开源的 <a href="https://github.com/tencent-wechat/phxpaxos/" target="_blank" rel="noopener">phxpaxos</a> 实现，基本上将所有问题都讨论到了，并且通俗易懂。</li>
-<li>一致性方面另一块就是 Raft 算法，按照 Google Chubby 论文里的说法，</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`Indeed, all working protocols for asynchronous consensus we have so far  encountered have Paxos at their core.`</span><br></pre></td></tr></table></figure>
-
-<p>但是 Raft 真的好理解多了，我读的是<a href="https://docs.google.com/viewer?url=https%3A%2F%2Fraft.github.io%2Fraft.pdf" target="_blank" rel="noopener">《In Search of an Understandable Consensus Algorithm》</a>，论文写到这么详细的步骤，你不想理解都难。毕竟 Raft 号称就是一个 Understandable Consensus Algorithm。无论从任何角度，都推荐阅读这一篇论文。</p>
-<p>首先能理解 paxos 的一些难点，其次是了解 Raft 的实现，加深对 Etcd 等系统的理解。这篇论文还有一个 250 多页的加强版<a href="https://ramcloud.stanford.edu/~ongaro/thesis.pdf" target="_blank" rel="noopener">《CONSENSUS: BRIDGING THEORY AND PRACTICE》</a>，教你一行一行写出一个 Raft 实现，我还没有学习，有兴趣可以自行了解。Raft 通过明确引入 leader（其实 multi paxos 引申出来也有，但是没有这么明确的表述）来负责 client 交互和日志复制，将整个算法过程非常清晰地表达出来。Raft 的算法正确性的核心在于保证 Leader Completeness ，选举算法选出来的 leader 一定是包含了所有 committed entries 的，这是因为所有 committed entries 一定会在多数派至少一个成员里存在，所以设计的选举算法一定能选出来这么一个成员作为 leader。多数派 accept 应该说是一致性算法正确性的最重要的保证。</p>
-<p>最后，我还读了<a href="https://syslab.cs.washington.edu/papers/tapir-tr14.pdf" target="_blank" rel="noopener">《Building Consistent Transactions with Inconsistent Replication》</a>，包括作者的<a href="https://www.youtube.com/watch?v=yE3eMxYJDiE" target="_blank" rel="noopener">演讲</a>，作者也开放了<a href="https://github.com/UWSysLab/tapir" target="_blank" rel="noopener">源码</a>。Google Spanner 基本是将 paxos 算法应用到了极致，但是毕竟不是所有公司都是这么财大气粗搞得起 TrueTime API，架得起全球机房，控制或者承受得了事务延时。这篇论文提出了另一个思路，论文介绍的算法分为两个层次： IR 和基于其他上的 TAPIR。前者就是 Inconsistent Replication，它将操作分为两类：</p>
-<ul>
-<li><p>inconsistent： 可以任意顺序执行，成功执行的操作将持久化，支持 failover。</p>
-</li>
-<li><p>consensus：同样可以任意顺序执行并持久化 failover，但是会返回一个唯一的一致(consensus)结果。</p>
-</li>
-</ul>
-<hr>
-<h2 id="Java简单实现Basic-Paxos算法"><a href="#Java简单实现Basic-Paxos算法" class="headerlink" title="Java简单实现Basic Paxos算法"></a>Java简单实现Basic Paxos算法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Alipay.com Inc.</span></span><br><span class="line"><span class="comment"> * Copyright (c) 2004-2019 All Rights Reserved.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">package</span> paxos;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.google.common.base.Charsets;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.lang3.StringUtils;</span><br><span class="line"><span class="keyword">import</span> com.google.common.hash.HashFunction;</span><br><span class="line"><span class="keyword">import</span> com.google.common.hash.Hashing;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.Collections;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> xbyan</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> $Id: PaxosStudy.java, v 0.1 2019-07-01 5:47 PM xbyan Exp $$</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PaxosStudy</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HashFunction HASH_FUNCTION = Hashing.murmur3_32();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Random       RAMDOM        = <span class="keyword">new</span> Random();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String[]     PROPOSALS     = &#123; <span class="string">"ProjectA"</span>, <span class="string">"ProjectB"</span>, <span class="string">"ProjectC"</span> &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        <span class="comment">//新建server组</span></span><br><span class="line">        List&lt;Acceptor&gt; acceptors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        Arrays.asList(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>, <span class="string">"D"</span>, <span class="string">"E"</span>).forEach(name -&gt; acceptors.add(<span class="keyword">new</span> Acceptor(name)));</span><br><span class="line">        <span class="comment">//开始投票</span></span><br><span class="line">        Proposer.vote(<span class="keyword">new</span> Proposal(<span class="number">1L</span>, <span class="keyword">null</span>), acceptors);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printInfo</span><span class="params">(String subject, String operation,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String result)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        System.out.println(subject + <span class="string">":"</span> + operation + <span class="string">"&lt;"</span> + result + <span class="string">"&gt;"</span>);</span><br><span class="line">        Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对于提案的约束，第三方约束要求</span></span><br><span class="line"><span class="comment">     * 如果maxVote不存在，那么没有限制，下一次表决可以使用任意提案</span></span><br><span class="line"><span class="comment">     * 否则，下一次表决要沿用maxVote提案</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> currentVoteNumber</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> proposals</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Proposal <span class="title">nextProposal</span><span class="params">(<span class="keyword">long</span> currentVoteNumber, List&lt;Proposal&gt; proposals)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> voteNumber = currentVoteNumber + <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//刚开始投票</span></span><br><span class="line">        <span class="keyword">if</span> (proposals.isEmpty()) &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber,</span><br><span class="line">                PROPOSALS[RAMDOM.nextInt(PROPOSALS.length)]);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(刚开始投票), currentVoteNumber"</span> + currentVoteNumber</span><br><span class="line">                               + <span class="string">",proposal="</span> + proposal);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//为之前的票排序</span></span><br><span class="line">        Collections.sort(proposals);</span><br><span class="line">        Proposal maxVote = proposals.get(proposals.size() - <span class="number">1</span>);</span><br><span class="line">        <span class="comment">//列表里最大值</span></span><br><span class="line">        <span class="keyword">long</span> maxVoteNumber = maxVote.getVoteNumber();</span><br><span class="line">        String content = maxVote.getContent();</span><br><span class="line">        <span class="keyword">if</span> (maxVoteNumber &gt;= currentVoteNumber) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"illegal state maxVoteNumber"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (content != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber, content);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(content不为空), voteNumber="</span> + voteNumber + <span class="string">",proposal="</span></span><br><span class="line">                               + proposal + <span class="string">",maxVote="</span> + maxVote);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            Proposal proposal = <span class="keyword">new</span> Proposal(voteNumber,</span><br><span class="line">                PROPOSALS[RAMDOM.nextInt(PROPOSALS.length)]);</span><br><span class="line">            System.out.println(<span class="string">"NEXT PROPOSER(content为空), voteNumber="</span> + voteNumber + <span class="string">",proposal="</span></span><br><span class="line">                               + proposal + <span class="string">",maxVote="</span> + maxVote);</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proposer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> proposal</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> acceptors</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">vote</span><span class="params">(Proposal proposal,</span></span></span><br><span class="line"><span class="function"><span class="params">                                Collection&lt;Acceptor&gt; acceptors)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//法定人数 n/2+1</span></span><br><span class="line">            <span class="keyword">int</span> quorum = Math.floorDiv(acceptors.size(), <span class="number">2</span>) + <span class="number">1</span>;</span><br><span class="line">            System.out.println(<span class="string">"quorum  "</span> + quorum);</span><br><span class="line">            <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                <span class="comment">//开始投票</span></span><br><span class="line">                printInfo(<span class="string">"VOTE_ROUND"</span>, <span class="string">"START"</span>, ++count + <span class="string">"：开始向acceptor发送信息"</span>);</span><br><span class="line">                List&lt;Proposal&gt; proposals = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (Acceptor acceptor : acceptors) &#123;</span><br><span class="line">                    Promise promise = acceptor.onPrepare(proposal);</span><br><span class="line">                    <span class="keyword">if</span> (promise != <span class="keyword">null</span> &amp;&amp; promise.isAck()) &#123;</span><br><span class="line">                        <span class="comment">//Acceptor批准后就可以将发起者加入发起者列表里</span></span><br><span class="line">                        System.out</span><br><span class="line">                            .println(<span class="string">"--------------------------------------------------ACCEPTOR批准,将发起者加入队列里,proposal="</span> + promise.getProposal());</span><br><span class="line">                        proposals.add(promise.getProposal());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (proposals.size() &lt; quorum) &#123;</span><br><span class="line">                    <span class="comment">//小于法定人数</span></span><br><span class="line">                    printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>,</span><br><span class="line">                        <span class="string">"NOT PREPARED：接收到消息的acceptor小于半数"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"onPrepare阶段编号增加 重新发起投票"</span>);</span><br><span class="line">                    proposal = nextProposal(proposal.getVoteNumber(), proposals);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(<span class="string">"接收到消息的acceptor大于半数，开始提案内容"</span>);</span><br><span class="line">                <span class="keyword">int</span> acceptCount = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span> (Acceptor acceptor1 : acceptors) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (acceptor1.onAccept(proposal))</span><br><span class="line">                        acceptCount++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (acceptCount &lt; quorum) &#123;</span><br><span class="line">                    printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>, <span class="string">"NOT ACCEPTED,接受提案的少于半数"</span>);</span><br><span class="line">                    System.out.println(<span class="string">"onAccept阶段编号增加 重新发起投票"</span>);</span><br><span class="line">                    proposal = nextProposal(proposal.getVoteNumber(), proposals);</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            printInfo(<span class="string">"PROPOSER["</span> + proposal + <span class="string">"]"</span>, <span class="string">"VOTE"</span>, <span class="string">"SUCCESS，接受提案成功"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Acceptor</span> </span>&#123;</span><br><span class="line">        <span class="comment">//上次表决结果</span></span><br><span class="line">        <span class="keyword">private</span> Proposal last = <span class="keyword">new</span> Proposal();</span><br><span class="line">        <span class="keyword">private</span> String   name;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Acceptor</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.name = name;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Promise <span class="title">onPrepare</span><span class="params">(Proposal proposal)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//假设这个过程有50%的几率失败</span></span><br><span class="line">            <span class="keyword">if</span> (Math.random() - <span class="number">0.5</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"NO RESPONSE 向"</span> + name + <span class="string">" 发送失败"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (proposal == <span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"null proposal"</span>);</span><br><span class="line">            <span class="comment">//大于</span></span><br><span class="line">            <span class="keyword">if</span> (proposal.getVoteNumber() &gt; last.getVoteNumber()) &#123;</span><br><span class="line">                Promise response = <span class="keyword">new</span> Promise(<span class="keyword">true</span>, last);</span><br><span class="line">                last = proposal;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"OK "</span> + name + <span class="string">" 记下编号，返回信息,last="</span> + last);</span><br><span class="line">                <span class="keyword">return</span> response;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"PREPARE"</span>, <span class="string">"REJECTED "</span> + name + <span class="string">" 已保存有选定的编号，拒绝"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> Promise(<span class="keyword">false</span>, <span class="keyword">null</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onAccept</span><span class="params">(Proposal proposal)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">            <span class="comment">//假设这个过程有50%的几率失败</span></span><br><span class="line">            <span class="keyword">if</span> (Math.random() - <span class="number">0.5</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"ACCEPT"</span>, <span class="string">"NO RESPONSE "</span> + name + <span class="string">" 发送提案失败"</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">boolean</span> accepted = last.equals(proposal);</span><br><span class="line">            printInfo(<span class="string">"ACCEPTER_"</span> + name, <span class="string">"ACCEPT"</span>,</span><br><span class="line">                name + (accepted ? <span class="string">"OK：通过"</span> : <span class="string">"NO: 不通过"</span>) + <span class="string">"last="</span> + last + <span class="string">",proposal="</span> + proposal);</span><br><span class="line">            <span class="keyword">return</span> accepted;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Promise</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>  ack;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Proposal proposal;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="title">Promise</span><span class="params">(<span class="keyword">boolean</span> ack, Proposal proposal)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.ack = ack;</span><br><span class="line">            <span class="keyword">this</span>.proposal = proposal;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isAck</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> ack;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Proposal <span class="title">getProposal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> proposal;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proposal</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Proposal</span>&gt; </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>   voteNumber;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> String content;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Proposal</span><span class="params">(<span class="keyword">long</span> voteNumber, String content)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.voteNumber = voteNumber;</span><br><span class="line">            <span class="keyword">this</span>.content = content;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Proposal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>(<span class="number">0</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getVoteNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> voteNumber;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getContent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> content;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Proposal o)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> Long.compare(voteNumber, o.voteNumber);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (obj == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!(obj <span class="keyword">instanceof</span> Proposal))</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            Proposal proposal = (Proposal) obj;</span><br><span class="line">            <span class="keyword">return</span> voteNumber == proposal.voteNumber</span><br><span class="line">                   &amp;&amp; StringUtils.equals(content, proposal.content);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> HASH_FUNCTION.newHasher().putLong(voteNumber).putString(content, Charsets.UTF_8)</span><br><span class="line">                .hash().asInt();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> StringBuilder().append(voteNumber).append(<span class="string">':'</span>).append(content).toString();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </section>
 
   
@@ -2879,7 +2931,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3019,12 +3071,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">115k</span>
+    <span title="站点总字数">122k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:45</span>
+    <span title="站点阅读时长">1:51</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
