@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/19/zookeeper-session/</loc>
+        <lastmod>2019-08-19T13:35:36.200Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/</loc>
-        <lastmod>2019-08-19T11:36:23.601Z</lastmod>
+        <lastmod>2019-08-19T11:37:56.082Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

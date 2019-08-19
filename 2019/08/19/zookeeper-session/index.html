@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: 'search.xml'
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="用途客户端与服务端之间任何交互操作都与会话息息相关，如临时节点的生命周期、客户端请求的顺序执行、Watcher通知机制等。Zookeeper的连接与会话就是客户端通过实例化Zookeeper对象来实现客户端与服务端创建并保持TCP连接的过程。本质上，就是：Session 映射到一个 TCP 长连接，并且标识这条长连接  通过 TCP 长连接，发送请求、接受响应 接收来自 Server 的 Watc">
+<meta name="keywords" content="zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zookeeper会话">
+<meta property="og:url" content="http://www.sainpo.top/2019/08/19/zookeeper-session/index.html">
+<meta property="og:site_name" content="窦小固的小木屋">
+<meta property="og:description" content="用途客户端与服务端之间任何交互操作都与会话息息相关，如临时节点的生命周期、客户端请求的顺序执行、Watcher通知机制等。Zookeeper的连接与会话就是客户端通过实例化Zookeeper对象来实现客户端与服务端创建并保持TCP连接的过程。本质上，就是：Session 映射到一个 TCP 长连接，并且标识这条长连接  通过 TCP 长连接，发送请求、接受响应 接收来自 Server 的 Watc">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-session/616953-20161126160605690-2108890253.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-session/616953-20161126165451643-351272465.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-session/616953-20161126171119628-1511238863.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-session/616953-20161126171348878-1972526661.png">
+<meta property="og:updated_time" content="2019-08-19T13:35:36.200Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="zookeeper会话">
+<meta name="twitter:description" content="用途客户端与服务端之间任何交互操作都与会话息息相关，如临时节点的生命周期、客户端请求的顺序执行、Watcher通知机制等。Zookeeper的连接与会话就是客户端通过实例化Zookeeper对象来实现客户端与服务端创建并保持TCP连接的过程。本质上，就是：Session 映射到一个 TCP 长连接，并且标识这条长连接  通过 TCP 长连接，发送请求、接受响应 接收来自 Server 的 Watc">
+<meta name="twitter:image" content="http://www.sainpo.top/2019/08/19/zookeeper-session/616953-20161126160605690-2108890253.png">
+  <link rel="canonical" href="http://www.sainpo.top/2019/08/19/zookeeper-session/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>zookeeper会话 | 窦小固的小木屋</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">窦小固的小木屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">西河书生</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+          <a href="javascript:;" class="popup-trigger">
+          
+            <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+    </div>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    <div class="reading-progress-bar"></div>
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/19/zookeeper-session/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">zookeeper会话
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-19 19:42:43 / 修改时间：21:35:36" itemprop="dateCreated datePublished" datetime="2019-08-19T19:42:43+08:00">2019-08-19</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">5.1k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">5 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h2><p>客户端与服务端之间任何交互操作都与会话息息相关，如临时节点的生命周期、客户端请求的顺序执行、Watcher通知机制等。Zookeeper的连接与会话就是客户端通过实例化Zookeeper对象来实现客户端与服务端创建并保持TCP连接的过程。本质上，就是：Session 映射到一个 TCP 长连接，并且标识这条长连接</p>
+<ul>
+<li>通过 TCP 长连接，发送请求、接受响应</li>
+<li>接收来自 Server 的 Watcher 事件通知</li>
+</ul>
+<h2 id="会话状态"><a href="#会话状态" class="headerlink" title="会话状态"></a>会话状态</h2><p>在Zookeeper客户端与服务端成功完成连接创建后，就创建了一个会话，Zookeeper会话在整个运行期间的生命周期中，会在不同的会话状态中之间进行切换，这些状态可以分为<strong>CONNECTING、CONNECTED、RECONNECTING、RECONNECTED、CLOSE</strong>等。</p>
+<p>一旦客户端开始创建Zookeeper对象，那么客户端状态就会变成CONNECTING状态，同时客户端开始尝试连接服务端，连接成功后，客户端状态变为CONNECTED，通常情况下，由于断网或其他原因，客户端与服务端之间会出现断开情况，一旦碰到这种情况，<strong>Zookeeper客户端会自动进行重连服务，同时客户端状态再次变成CONNCTING，直到重新连上服务端后，状态又变为CONNECTED</strong>，在通常情况下，客户端的状态总是介于CONNECTING和CONNECTED之间。但是，如果出现诸如会话超时、权限检查或是客户端主动退出程序等情况，客户端的状态就会直接变更为CLOSE状态。</p>
+<p><img src="/2019/08/19/zookeeper-session/616953-20161126160605690-2108890253.png" alt="Zookeeper会话状态变更"></p>
+<h2 id="会话创建"><a href="#会话创建" class="headerlink" title="会话创建"></a>会话创建</h2><p>Session是Zookeeper中的会话实体，代表了一个客户端会话，其包含了如下四个属性:</p>
+<ol>
+<li>sessionID：服务节点启动时，时间戳 + sid（<code>myid</code>中的数字），经过一定算法计算得到 <code>基准 sessionID</code> 之后的 SessionID，都为<code>基准 SessionID</code>自增得到。</li>
+<li>TimeOut：超时时间，时间段</li>
+<li>TickTime：下次超时时间点，<code>TickTime 约为 currentTime + TimeOut</code>，方便 ZK Server 对会话<code>分桶策略</code>管理，高效的进行会话检查和清理。</li>
+<li>isClosing：ZK Server 判定 Session 超时后，将会话标记为<code>已关闭</code>，确保不再处理其新请求；</li>
+</ol>
+<p>Zookeeper为了保证请求会话的全局唯一性，在SessionTracker初始化时，调用initializeNextSession方法生成一个sessionID，之后在Zookeeper运行过程中，会在该sessionID的基础上为每个会话进行分配，初始化算法如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SessionTrackerImpl</span> <span class="keyword">extends</span> <span class="title">ZooKeeperCriticalThread</span> <span class="keyword">implements</span></span></span><br><span class="line"><span class="class">        <span class="title">SessionTracker</span> </span>&#123;</span><br><span class="line">... </span><br><span class="line"></span><br><span class="line">		<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Generates an initial sessionId. High order byte is serverId, next 5</span></span><br><span class="line"><span class="comment">     * 5 bytes are from timestamp, and low order 2 bytes are 0s.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">initializeNextSession</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> nextSid;</span><br><span class="line">        nextSid = (Time.currentElapsedTime() &lt;&lt; <span class="number">24</span>) &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">        nextSid =  nextSid | (id &lt;&lt;<span class="number">56</span>);</span><br><span class="line">        <span class="keyword">if</span> (nextSid == EphemeralType.CONTAINER_EPHEMERAL_OWNER) &#123;</span><br><span class="line">            ++nextSid;  <span class="comment">// this is an unlikely edge case, but check it just in case</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nextSid;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中的id表示配置在myid文件中的值，通常是一个整数，如1、2、3。该算法的高8位确定了所在机器，后56位使用当前时间的毫秒表示进行随机。SessionTracker是Zookeeper服务端的会话管理器，负责会话的创建、管理和清理等工作。</p>
+<h2 id="会话管理"><a href="#会话管理" class="headerlink" title="会话管理"></a>会话管理</h2><h3 id="分桶策略"><a href="#分桶策略" class="headerlink" title="分桶策略"></a>分桶策略</h3><p>Zookeeper的会话管理主要是通过SessionTracker来负责，其采用了<strong>分桶策略</strong>（将类似的会话放在同一区块中进行管理）进行管理，以便Zookeeper对会话进行不同区块的隔离处理以及同一区块的统一处理。</p>
+<p><img src="/2019/08/19/zookeeper-session/616953-20161126165451643-351272465.png" alt="Session的分桶管理策略"></p>
+<p>Zookeeper将所有的会话都分配在不同的区块之中，分配的原则是每个会话的下次超时时间点（ExpirationTime）。ExpirationTime指该会话最近一次可能超时的时间点。同时，Zookeeper Leader服务器在运行过程中会定时地进行会话超时检查，时间间隔是ExpirationInterval，默认为tickTime的值，ExpirationTime的计算时间如下</p>
+<p>　　ExpirationTime = ((CurrentTime + SessionTimeOut) / ExpirationInterval + 1) * ExpirationInterval</p>
+<h3 id="会话激活"><a href="#会话激活" class="headerlink" title="会话激活"></a>会话激活</h3><p>为了保持客户端会话的有效性，<strong>客户端会在会话超时时间过期范围内向服务端发送PING请求来保持会话的有效性（心跳检测）</strong>。同时，服务端需要不断地接收来自客户端的心跳检测，并且需要重新激活对应的客户端会话，这个重新激活过程称为TouchSession。会话激活不仅能够使服务端检测到对应客户端的存货性，同时也能让客户端自己保持连接状态，其流程如下:</p>
+<p><img src="/2019/08/19/zookeeper-session/616953-20161126171119628-1511238863.png" alt="Leader服务器激活客户端会话流程"><br>　　如上图所示，整个流程分为四步</p>
+<ol>
+<li><p><strong>检查该会话是否已经被关闭</strong>。若已经被关闭，则直接返回即可。</p>
+</li>
+<li><p><strong>计算该会话新的超时时间ExpirationTime_New</strong>。使用上面提到的公式计算下一次超时时间点。</p>
+</li>
+<li><p><strong>获取该会话上次超时时间ExpirationTime_Old</strong>。计算该值是为了定位其所在的区块。</p>
+</li>
+<li><p><strong>迁移会话</strong>。将该会话从老的区块中取出，放入ExpirationTime_New对应的新区块中。</p>
+</li>
+</ol>
+<p><img src="/2019/08/19/zookeeper-session/616953-20161126171348878-1972526661.png" alt="会话迁移"></p>
+<p>在上面会话激活过程中，只要客户端发送心跳检测，服务端就会进行一次会话激活，心跳检测由客户端主动发起，以PING请求形式向服务端发送，在Zookeeper的实际设计中，<strong>只要客户端有请求发送到服务端，那么就会触发一次会话激活</strong>，以下两种情况都会触发会话激活。</p>
+<ul>
+<li>客户端向服务端发送请求，包括读写请求，就会触发会话激活。</li>
+<li>客户端发现在sessionTimeout/3时间内尚未和服务端进行任何通信，那么就会主动发起PING请求，服务端收到该请求后，就会触发会话激活。</li>
+</ul>
+<h3 id="会话超时检查"><a href="#会话超时检查" class="headerlink" title="会话超时检查"></a>会话超时检查</h3><p>对于会话的超时检查而言，Zookeeper使用SessionTracker来负责，SessionTracker使用单独的线程（超时检查线程）专门进行会话超时检查，即逐个一次地对会话桶中剩下的会话进行清理。如果一个会话被激活，那么Zookeeper就会将其从上一个会话桶迁移到下一个会话桶中，如ExpirationTime 1 的session n 迁移到ExpirationTime n 中，此时ExpirationTime 1中留下的所有会话都是尚未被激活的，超时检查线程就定时检查这个会话桶中所有剩下的未被迁移的会话，超时检查线程只需要在这些指定时间点（ExpirationTime 1、ExpirationTime 2…）上进行检查即可，这样提高了检查的效率，性能也非常好。</p>
+<h2 id="会话清理"><a href="#会话清理" class="headerlink" title="会话清理"></a>会话清理</h2><p>当SessionTracker的会话超时线程检查出已经过期的会话后，就开始进行会话清理工作，大致可以分为如下七步。</p>
+<ol>
+<li><strong>标记会话状态为已关闭</strong>。由于会话清理过程需要一段时间，为了保证在此期间不再处理来自该客户端的请求，SessionTracker会首先将该会话的isClosing标记为true，这样在会话清理期间接收到该客户端的心情求也无法继续处理了。</li>
+<li><strong>发起会话关闭请求</strong>。为了使对该会话的关闭操作在整个服务端集群都生效，Zookeeper使用了提交会话关闭请求的方式，并立即交付给PreRequestProcessor进行处理。</li>
+<li><strong>收集需要清理的临时节点</strong>。一旦某个会话失效后，那么和该会话相关的临时节点都需要被清理，因此，在清理之前，首先需要将服务器上所有和该会话相关的临时节点都整理出来。Zookeeper在内存数据库中会为每个会话都单独保存了一份由该会话维护的所有临时节点集合，在Zookeeper处理会话关闭请求之前，若正好有以下两类请求到达了服务端并正在处理中。<ul>
+<li>节点删除请求，删除的目标节点正好是上述临时节点中的一个。</li>
+<li>临时节点创建请求，创建的目标节点正好是上述临时节点中的一个。</li>
+</ul>
+</li>
+</ol>
+<p>对于第一类请求，需要将所有请求对应的数据节点路径从当前临时节点列表中移出，以避免重复删除，对于第二类请求，需要将所有这些请求对应的数据节点路径添加到当前临时节点列表中，以删除这些即将被创建但是尚未保存到内存数据库中的临时节点。</p>
+<ol start="4">
+<li><strong>添加节点删除事务变更</strong>。完成该会话相关的临时节点收集后，Zookeeper会逐个将这些临时节点转换成”节点删除”请求，并放入事务变更队列outstandingChanges中。</li>
+<li><strong>删除临时节点</strong>。FinalRequestProcessor会触发内存数据库，删除该会话对应的所有临时节点。</li>
+<li><strong>移除会话</strong>。完成节点删除后，需要将会话从SessionTracker中删除。</li>
+<li><strong>关闭NIOServerCnxn</strong>。最后，从NIOServerCnxnFactory找到该会话对应的NIOServerCnxn，将其关闭。</li>
+</ol>
+<h2 id="重连"><a href="#重连" class="headerlink" title="重连"></a>重连</h2><p>当客户端与服务端之间的网络连接断开时，Zookeeper客户端会自动进行反复的重连，直到最终成功连接上Zookeeper集群中的一台机器。此时，再次连接上服务端的客户端有可能处于以下两种状态之一</p>
+<ul>
+<li><strong>CONNECTED</strong>。如果在会话超时时间内重新连接上集群中一台服务器 。</li>
+<li><strong>EXPIRED</strong>。如果在会话超时时间以外重新连接上，那么服务端其实已经对该会话进行了会话清理操作，此时会话被视为非法会话。</li>
+</ul>
+<p>在客户端与服务端之间维持的是一个长连接，在sessionTimeout时间内，服务端会不断地检测该客户端是否还处于正常连接，服务端会将客户端的每次操作视为一次有效的心跳检测来反复地进行会话激活。因此，在正常情况下，客户端会话时一直有效的。然而，当客户端与服务端之间的连接断开后，用户在客户端可能主要看到两类异常：<strong>CONNECTION_LOSS（连接断开）和SESSION_EXPIRED（会话过期）</strong>。</p>
+<h3 id="连接断开-CONNECTION-LOSS"><a href="#连接断开-CONNECTION-LOSS" class="headerlink" title="连接断开: CONNECTION_LOSS"></a>连接断开: CONNECTION_LOSS</h3><p>此时，客户端会自动从地址列表中重新逐个选取新的地址并尝试进行重新连接，直到最终成功连接上服务器。若客户端在setData时出现了CONNECTION_LOSS现象，此时客户端会收到None-Disconnected通知，同时会抛出异常。应用程序需要捕捉异常并且等待Zookeeper客户端自动完成重连，一旦重连成功，那么客户端会收到None-SyncConnected通知，之后就可以重试setData操作。</p>
+<h3 id="会话失效-SESSION-EXPIRED"><a href="#会话失效-SESSION-EXPIRED" class="headerlink" title="会话失效: SESSION_EXPIRED"></a>会话失效: SESSION_EXPIRED</h3><p>客户端与服务端断开连接后，重连时间耗时太长，超过了会话超时时间限制后没有成功连上服务器，服务器会进行会话清理，此时，客户端不知道会话已经失效，状态还是DISCONNECTED，如果客户端重新连上了服务器，此时状态为SESSION_EXPIRED，用于需要重新实例化Zookeeper对象，并且看应用的复杂情况，重新恢复临时数据。</p>
+<h3 id="会话转移-SESSION-MOVED"><a href="#会话转移-SESSION-MOVED" class="headerlink" title="会话转移: SESSION_MOVED"></a>会话转移: SESSION_MOVED</h3><p>客户端会话从一台服务器转移到另一台服务器，即客户端与服务端S1断开连接后，重连上了服务端S2，此时会话就从S1转移到了S2。当多个客户端使用相同的sessionId/sessionPasswd创建会话时，会收到SessionMovedException异常。因为一旦有第二个客户端连接上了服务端，就被认为是会话转移了。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/zookeeper/" rel="tag"># zookeeper</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/08/16/zookeeper-data-and-storage/" rel="next" title="zookeeper数据与存储">
+                <i class="fa fa-chevron-left"></i> zookeeper数据与存储
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="gitalk-container"></div>
+  
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">sainpo.yxb</p>
+  <div class="site-description motion-element" itemprop="description">码农|理工男|文青</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/mewishu" title="GitHub &rarr; https://github.com/mewishu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:xbyan88@163.com" title="E-Mail &rarr; mailto:xbyan88@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+  </div>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#用途"><span class="nav-text">用途</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话状态"><span class="nav-text">会话状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建"><span class="nav-text">会话创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话管理"><span class="nav-text">会话管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分桶策略"><span class="nav-text">分桶策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话激活"><span class="nav-text">会话激活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话超时检查"><span class="nav-text">会话超时检查</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话清理"><span class="nav-text">会话清理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重连"><span class="nav-text">重连</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接断开-CONNECTION-LOSS"><span class="nav-text">连接断开: CONNECTION_LOSS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话失效-SESSION-EXPIRED"><span class="nav-text">会话失效: SESSION_EXPIRED</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话转移-SESSION-MOVED"><span class="nav-text">会话转移: SESSION_MOVED</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sainpo.yxb</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">128k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:56</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.3.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if ($('body').find('div.pdf').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      $('body').find('div.pdf').each(function(i, o) {
+        PDFObject.embed($(o).attr('target'), $(o), {
+          pdfOpenParams: {
+            navpanes: 0,
+            toolbar: 0,
+            statusbar: 0,
+            pagemode: 'thumbs',
+            view: 'FitH'
+          },
+          PDFJS_URL: '/lib/pdf/web/viewer.html',
+          height: $(o).attr('height') || '500px'
+        });
+      });
+    },
+  });
+}
+</script>
+
+
+
+
+
+    
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '96bfad82ea05d6d64ea7',
+    clientSecret: '74d6d9a9834e4e6c3db88d702866ae41f675f888',
+    repo: 'usercomment',
+    owner: 'mewishu',
+    admin: ['mewishu'],
+    id: md5(location.pathname),
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+
+</body>
+</html>
