@@ -281,7 +281,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/2019/08/19/zookeeper-request-processor/" class="post-title-link" itemprop="url">zookeeper-request-processor</a>
+                <a href="/2019/08/19/zookeeper-request-processor/" class="post-title-link" itemprop="url">zookeeper请求处理</a>
               
             
           </h1>
@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-19 21:46:50 / 修改时间：21:59:10" itemprop="dateCreated datePublished" datetime="2019-08-19T21:46:50+08:00">2019-08-19</time>
+              <time title="创建时间：2019-08-19 21:46:50 / 修改时间：22:00:18" itemprop="dateCreated datePublished" datetime="2019-08-19T21:46:50+08:00">2019-08-19</time>
             </span>
           
             
@@ -434,17 +434,18 @@
 <li>创建请求事务体SetDataTxn。</li>
 <li>保存事务操作到outstandingChanges队列中。</li>
 </ol>
-<h3 id="事务处理-1"><a href="#事务处理-1" class="headerlink" title="事务处理"></a>事务处理</h3><p>　　对于事务请求，服务端都会发起事务处理流程。所有事务请求都是由ProposalRequestProcessor处理器处理，通过Sync、Proposal、Commit三个子流程相互协作完成。</p>
-<h3 id="事务应用-1"><a href="#事务应用-1" class="headerlink" title="事务应用"></a>事务应用</h3><p>　　(1) 交付给FinalRequestProcessor处理器。</p>
-<p>　　(2) 事务应用。将请求事务头和事务体直接交给内存数据库ZKDatabase进行事务应用，同时返回ProcessTxnResult对象，包含了数据节点内容更新后的stat。</p>
-<p>　　(3) 将事务请求放入commitProposal队列。</p>
-<p>　　4. 请求响应</p>
+<h3 id="事务处理-1"><a href="#事务处理-1" class="headerlink" title="事务处理"></a>事务处理</h3><p>对于事务请求，服务端都会发起事务处理流程。所有事务请求都是由ProposalRequestProcessor处理器处理，通过Sync、Proposal、Commit三个子流程相互协作完成。</p>
+<h3 id="事务应用-1"><a href="#事务应用-1" class="headerlink" title="事务应用"></a>事务应用</h3><ol>
+<li>交付给FinalRequestProcessor处理器。</li>
+<li>事务应用。将请求事务头和事务体直接交给内存数据库ZKDatabase进行事务应用，同时返回ProcessTxnResult对象，包含了数据节点内容更新后的stat。</li>
+<li>将事务请求放入commitProposal队列。</li>
+<li>请求响应</li>
+</ol>
 <p>　　(1) 创建响应体SetDataResponse。其包含了当前数据节点的最新状态stat。</p>
 <p>　　(2) 创建响应头。包含当前响应对应的事务ZXID和请求处理是否成功的标识。</p>
 <p>　　(3) 序列化响应。</p>
 <p>　　(4) I/O层发送响应给客户端。</p>
-<p>　　2.3 GetData请求</p>
-<p>　　服务端对于GetData请求的处理，大致分为三步，预处理、非事务处理、请求响应。</p>
+<h2 id="GetData请求"><a href="#GetData请求" class="headerlink" title="GetData请求"></a>GetData请求</h2><p>　　服务端对于GetData请求的处理，大致分为三步，预处理、非事务处理、请求响应。</p>
 <p>　　<strong>1. 预处理</strong></p>
 <p>　　(1) I/O层接收来自客户端的请求。</p>
 <p>　　(2) 判断是否是客户端”会话创建”请求。</p>
