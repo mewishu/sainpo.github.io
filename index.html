@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-19 19:42:43 / 修改时间：21:35:36" itemprop="dateCreated datePublished" datetime="2019-08-19T19:42:43+08:00">2019-08-19</time>
+              <time title="创建时间：2019-08-19 19:42:43 / 修改时间：21:41:05" itemprop="dateCreated datePublished" datetime="2019-08-19T19:42:43+08:00">2019-08-19</time>
             </span>
           
             
@@ -430,6 +430,9 @@
 <h3 id="连接断开-CONNECTION-LOSS"><a href="#连接断开-CONNECTION-LOSS" class="headerlink" title="连接断开: CONNECTION_LOSS"></a>连接断开: CONNECTION_LOSS</h3><p>此时，客户端会自动从地址列表中重新逐个选取新的地址并尝试进行重新连接，直到最终成功连接上服务器。若客户端在setData时出现了CONNECTION_LOSS现象，此时客户端会收到None-Disconnected通知，同时会抛出异常。应用程序需要捕捉异常并且等待Zookeeper客户端自动完成重连，一旦重连成功，那么客户端会收到None-SyncConnected通知，之后就可以重试setData操作。</p>
 <h3 id="会话失效-SESSION-EXPIRED"><a href="#会话失效-SESSION-EXPIRED" class="headerlink" title="会话失效: SESSION_EXPIRED"></a>会话失效: SESSION_EXPIRED</h3><p>客户端与服务端断开连接后，重连时间耗时太长，超过了会话超时时间限制后没有成功连上服务器，服务器会进行会话清理，此时，客户端不知道会话已经失效，状态还是DISCONNECTED，如果客户端重新连上了服务器，此时状态为SESSION_EXPIRED，用于需要重新实例化Zookeeper对象，并且看应用的复杂情况，重新恢复临时数据。</p>
 <h3 id="会话转移-SESSION-MOVED"><a href="#会话转移-SESSION-MOVED" class="headerlink" title="会话转移: SESSION_MOVED"></a>会话转移: SESSION_MOVED</h3><p>客户端会话从一台服务器转移到另一台服务器，即客户端与服务端S1断开连接后，重连上了服务端S2，此时会话就从S1转移到了S2。当多个客户端使用相同的sessionId/sessionPasswd创建会话时，会收到SessionMovedException异常。因为一旦有第二个客户端连接上了服务端，就被认为是会话转移了。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="http://ningg.top/zookeeper-lesson-3-session/" target="_blank" rel="noopener">ZooKeeper 技术内幕：会话</a></li>
+</ul>
 
           
         
