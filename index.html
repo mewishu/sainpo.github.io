@@ -313,7 +313,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-19 19:02:00" itemprop="dateModified" datetime="2019-08-19T19:02:00+08:00">2019-08-19</time>
+                <time title="修改时间：2019-08-19 19:12:07" itemprop="dateModified" datetime="2019-08-19T19:12:07+08:00">2019-08-19</time>
               </span>
             
           
@@ -381,8 +381,6 @@
 </ul>
 </li>
 </ul>
-<p>下面是 ZooKeeper 启动过程中，3 类数据之间的关系：</p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-type-relation.png" alt="img"></p>
 <h2 id="内存数据"><a href="#内存数据" class="headerlink" title="内存数据"></a>内存数据</h2><p>Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。</p>
 <ol>
 <li>DataTree</li>
@@ -404,7 +402,7 @@
 <p>Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</p>
 <ul>
 <li><p>具体实现：DataTree 和 DataNode，见下图</p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-impl-details.png" alt="img"></p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-impl-details.png" alt="DataTree 和 DataNode及其关系"></p>
 </li>
 </ul>
 <h2 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h2><h3 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h3><p>在配置Zookeeper集群时需要配置dataDir目录，其用来存储事务日志文件。也可以为事务日志单独分配一个文件存储目录:dataLogDir。若配置dataLogDir为/home/admin/zkData/zk_log，那么Zookeeper在运行过程中会在该目录下建立一个名字为version-2的子目录，该目录确定了当前Zookeeper使用的事务日志格式版本号，当下次某个Zookeeper版本对事务日志格式进行变更时，此目录也会变更，即在version-2子目录下会生成一系列文件大小一致(64MB)的文件。</p>
@@ -417,21 +415,13 @@
 <p>将Zookeeper下的zookeeper-3.4.6.jar和slf4j-api-1.6.1.jar复制到/log/version-2目录下，使用如下命令打开log.cec文件。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath ./zookeeper-3.4.6.jar:./slf4j-api-1.6.1.jar org.apache.zookeeper.server.LogFormatter log.cec</span><br></pre></td></tr></table></figure>
 
-<p>　　<img src="/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png" alt="img"></p>
+<p>　　<img src="/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png" alt="Zookeeper事务日志格式"></p>
 <p>ZooKeeper Transactional Log File with dbid 0 txnlog format version 2 。是文件头信息，主要是事务日志的DBID和日志格式版本号。　　</p>
 <blockquote>
 <p>…session 0x159…0xcec createSession 30000。表示客户端会话创建操作。</p>
-</blockquote>
-<blockquote>
 <p>…session 0x159…0xced create ‘/test_log,… 。表示创建/test_log节点，数据内容为#7631(v1)。</p>
-</blockquote>
-<blockquote>
 <p>…session 0x159…0xcee setData ‘/test_log,…。表示设置了/test_log节点数据，内容为#7632(v2)。</p>
-</blockquote>
-<blockquote>
 <p>…session 0x159…0xcef create ’/test_log/c,…。表示创建节点/test_log/c。</p>
-</blockquote>
-<blockquote>
 <p>…session 0x159…0xcf0 delete ‘/test_log/c。表示删除节点/test_log/c。</p>
 </blockquote>
 <p>其他几行事务日志类似，具体可以对照Zookeeper源码类org.apache.zookeeper.server.LogFormatter自行分析。通过可视化这个文件，我们还注意到一点，由于这是一个记录事务操作的日志文件，因此里面没有任何读操作的日志记录。</p>
@@ -465,7 +455,7 @@
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在Zookeeper服务器启动期间，首先会进行数据初始化工作，用于将存储在磁盘上的数据文件加载到Zookeeper服务器内存中。</p>
 <h3 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h3><p>Zookeeper的初始化过程如下图所示: </p>
 <p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png" alt="img"></p>
-<p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了从快照文件中加载快照数据和根据实物日志进行数据修正两个过程。</p>
+<p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了从快照文件中<strong>加载快照数据</strong>和<strong>根据事务日志进行数据修正</strong>两个过程。</p>
 <ol>
 <li><strong>初始化<code>FileTxnSnapLog</code></strong>。FileTxnSnapLog是Zookeeper事务日志和快照数据访问层，用于衔接上层业务和底层数据存储，底层数据包含了事务日志和快照数据两部分。FileTxnSnapLog中对应FileTxnLog和FileSnap。</li>
 <li><strong>初始化ZKDatabase</strong>。首先构建DataTree，同时将FileTxnSnapLog交付ZKDatabase，以便内存数据库能够对事务日志和快照数据进行访问。在ZKDatabase初始化时，DataTree也会进行相应的初始化工作，如创建一些默认结点，如/、/zookeeper、/zookeeper/quota三个节点。</li>
