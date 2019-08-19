@@ -70,7 +70,8 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png">
-<meta property="og:updated_time" content="2019-08-19T11:24:57.308Z">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/zk-data-leader-follower-sync-time.png">
+<meta property="og:updated_time" content="2019-08-19T11:33:59.173Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper数据与存储">
 <meta name="twitter:description" content="数据分类整体分为 3 类：  内存数据 磁盘数据 快照 事务日志    内存数据Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。  DataTree  DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处">
@@ -320,7 +321,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-19 19:24:57" itemprop="dateModified" datetime="2019-08-19T19:24:57+08:00">2019-08-19</time>
+                <time title="修改时间：2019-08-19 19:33:59" itemprop="dateModified" datetime="2019-08-19T19:33:59+08:00">2019-08-19</time>
               </span>
             
           
@@ -484,13 +485,21 @@
 <li><strong>获取最新的ZXID</strong>。待所有的事务都被完整地应用到内存数据库中后，也就基本上完成了数据的初始化过程，此时再次获取ZXID，用来标识上次服务器正常运行时提交的最大事务ID。</li>
 <li><strong>校验epoch</strong>。epoch标识了当前Leader周期，集群机器相互通信时，会带上这个epoch以确保彼此在同一个Leader周期中。完成数据加载后，Zookeeper会从步骤11中确定ZXID中解析出事务处理的Leader周期：epochOfZxid。同时也会从磁盘的currentEpoch和acceptedEpoch文件中读取上次记录的最新的epoch值，进行校验。</li>
 </ol>
-<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>整个集群完成Leader选举后，Learner会向Leader进行注册，当Learner向Leader完成注册后，就进入数据同步环节，同步过程就是Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner服务器，大体过程如下: </p>
+<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>ZK 集群服务器启动之后，会进行 2 个动作：</p>
+<ol>
+<li>选举 Leader：分配角色</li>
+<li>Learner 向 Leader 服务器注册，然后进行数据同步</li>
+</ol>
+<p>数据同步的<strong>本质</strong>：Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner。大体过程如下: </p>
 <p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png" alt="Zookeeper数据同步过程"></p>
 <ol>
 <li><strong>获取Learner状态</strong>。在注册Learner的最后阶段，Learner服务器会发送给Leader服务器一个ACKEPOCH数据包，Leader会从这个数据包中解析出该Learner的currentEpoch和lastZxid。</li>
 <li><strong>数据同步初始化</strong>。首先从Zookeeper内存数据库中提取出事务请求对应的提议缓存队列proposals，同时完成peerLastZxid(该Learner最后处理的ZXID)、minCommittedLog(Leader提议缓存队列commitedLog中最小的ZXID)、maxCommittedLog(Leader提议缓存队列commitedLog中的最大ZXID)三个ZXID值的初始化。</li>
 </ol>
 <p>对于集群数据同步而言，通常分为四类，<strong>直接差异化同步(DIFF同步)、先回滚再差异化同步(TRUNC+DIFF同步)、仅回滚同步(TRUNC同步)、全量同步(SNAP同步)</strong>，在初始化阶段，Leader会优先以全量同步方式来同步数据。同时，会根据Leader和Learner之间的数据差异情况来决定最终的数据同步方式。</p>
+<p>下面一张图，能够清晰描述发生上述同步的时机：</p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-leader-follower-sync-time.png" alt="集群数据同步分类"></p>
+<p>关键点：Learner 上的 zxid 与 Leader Proposals 中 min 和 max 的关系</p>
 <h3 id="直接差异化同步-DIFF同步"><a href="#直接差异化同步-DIFF同步" class="headerlink" title="直接差异化同步(DIFF同步)"></a>直接差异化同步(DIFF同步)</h3><p><strong>场景: peerLastZxid介于minCommittedLog和maxCommittedLog之间</strong></p>
 <p>Leader首先向这个Learner发送一个DIFF指令，用于通知Learner进入差异化数据同步阶段，Leader即将把一些Proposal同步给自己，针对每个Proposal，Leader都会通过发送PROPOSAL内容数据包和COMMIT指令数据包来完成，</p>
 <h3 id="先回滚再差异化同步-TRUNC-DIFF同步"><a href="#先回滚再差异化同步-TRUNC-DIFF同步" class="headerlink" title="先回滚再差异化同步(TRUNC+DIFF同步)"></a>先回滚再差异化同步(TRUNC+DIFF同步)</h3><p><strong>场景: Leader已经将事务记录到本地事务日志中，但是没有成功发起Proposal流程</strong></p>
