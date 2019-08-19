@@ -70,7 +70,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png">
-<meta property="og:updated_time" content="2019-08-19T11:12:07.046Z">
+<meta property="og:updated_time" content="2019-08-19T11:19:46.464Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper数据与存储">
 <meta name="twitter:description" content="数据分类整体分为 3 类：  内存数据 磁盘数据 快照 事务日志    内存数据Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。  DataTree  DataTree是内存数据存储的核心，是一个树结构，代表了内存中一份完整的数据。DataTree不包含任何与网络、客户端连接及请求处">
@@ -320,7 +320,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-19 19:12:07" itemprop="dateModified" datetime="2019-08-19T19:12:07+08:00">2019-08-19</time>
+                <time title="修改时间：2019-08-19 19:19:46" itemprop="dateModified" datetime="2019-08-19T19:19:46+08:00">2019-08-19</time>
               </span>
             
           
@@ -468,8 +468,7 @@
 <li><strong>数据序列化</strong>。首先序列化文件头信息，然后再对会话信息和DataTree分别进行序列化，同时生成一个Checksum，一并写入快照数据文件中去。</li>
 </ol>
 <h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在Zookeeper服务器启动期间，首先会进行数据初始化工作，用于将存储在磁盘上的数据文件加载到Zookeeper服务器内存中。</p>
-<h3 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h3><p>Zookeeper的初始化过程如下图所示: </p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png" alt="img"></p>
+<h3 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h3><p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png" alt="Zookeeper初始化流程"></p>
 <p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了从快照文件中<strong>加载快照数据</strong>和<strong>根据事务日志进行数据修正</strong>两个过程。</p>
 <ol>
 <li><strong>初始化<code>FileTxnSnapLog</code></strong>。FileTxnSnapLog是Zookeeper事务日志和快照数据访问层，用于衔接上层业务和底层数据存储，底层数据包含了事务日志和快照数据两部分。FileTxnSnapLog中对应FileTxnLog和FileSnap。</li>
@@ -486,7 +485,7 @@
 <li><strong>校验epoch</strong>。epoch标识了当前Leader周期，集群机器相互通信时，会带上这个epoch以确保彼此在同一个Leader周期中。完成数据加载后，Zookeeper会从步骤11中确定ZXID中解析出事务处理的Leader周期：epochOfZxid。同时也会从磁盘的currentEpoch和acceptedEpoch文件中读取上次记录的最新的epoch值，进行校验。</li>
 </ol>
 <h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>整个集群完成Leader选举后，Learner会向Leader进行注册，当Learner向Leader完成注册后，就进入数据同步环节，同步过程就是Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner服务器，大体过程如下: </p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png" alt="img"></p>
+<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png" alt="Zookeeper数据同步过程"></p>
 <ol>
 <li><strong>获取Learner状态</strong>。在注册Learner的最后阶段，Learner服务器会发送给Leader服务器一个ACKEPOCH数据包，Leader会从这个数据包中解析出该Learner的currentEpoch和lastZxid。</li>
 <li><strong>数据同步初始化</strong>。首先从Zookeeper内存数据库中提取出事务请求对应的提议缓存队列proposals，同时完成peerLastZxid(该Learner最后处理的ZXID)、minCommittedLog(Leader提议缓存队列commitedLog中最小的ZXID)、maxCommittedLog(Leader提议缓存队列commitedLog中的最大ZXID)三个ZXID值的初始化。</li>
