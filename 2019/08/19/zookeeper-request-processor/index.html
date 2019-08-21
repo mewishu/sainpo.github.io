@@ -68,7 +68,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/616953-20161207095042507-929689583.png">
 <meta property="og:image" content="https://images2015.cnblogs.com/blog/616953/201612/616953-20161207103040257-77514359.png">
-<meta property="og:updated_time" content="2019-08-19T14:00:18.619Z">
+<meta property="og:updated_time" content="2019-08-21T13:02:39.014Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper请求处理">
 <meta name="twitter:description" content="会话创建请求Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如  请求接收 I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。 判断是否是客户">
@@ -305,11 +305,21 @@
                 
               
 
-              <time title="创建时间：2019-08-19 21:46:50 / 修改时间：22:00:18" itemprop="dateCreated datePublished" datetime="2019-08-19T21:46:50+08:00">2019-08-19</time>
+              <time title="创建时间：2019-08-19 21:46:50" itemprop="dateCreated datePublished" datetime="2019-08-19T21:46:50+08:00">2019-08-19</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-21 21:02:39" itemprop="dateModified" datetime="2019-08-21T21:02:39+08:00">2019-08-21</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -352,7 +362,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">4.6k</span>
+              <span title="本文字数">4.4k</span>
             </span>
           
             <span class="post-meta-item">
@@ -452,32 +462,35 @@
 <li>交付给FinalRequestProcessor处理器。</li>
 <li>事务应用。将请求事务头和事务体直接交给内存数据库ZKDatabase进行事务应用，同时返回ProcessTxnResult对象，包含了数据节点内容更新后的stat。</li>
 <li>将事务请求放入commitProposal队列。</li>
-<li>请求响应</li>
 </ol>
-<p>　　(1) 创建响应体SetDataResponse。其包含了当前数据节点的最新状态stat。</p>
-<p>　　(2) 创建响应头。包含当前响应对应的事务ZXID和请求处理是否成功的标识。</p>
-<p>　　(3) 序列化响应。</p>
-<p>　　(4) I/O层发送响应给客户端。</p>
-<h2 id="GetData请求"><a href="#GetData请求" class="headerlink" title="GetData请求"></a>GetData请求</h2><p>　　服务端对于GetData请求的处理，大致分为三步，预处理、非事务处理、请求响应。</p>
-<p>　　<strong>1. 预处理</strong></p>
-<p>　　(1) I/O层接收来自客户端的请求。</p>
-<p>　　(2) 判断是否是客户端”会话创建”请求。</p>
-<p>　　(3) 将请求交给PrepRequestProcessor处理器进行处理。</p>
-<p>　　(4) 会话检查。</p>
-<p>　　<strong>2. 非事务处理</strong></p>
-<p>　　(1) 反序列化GetDataRequest请求。</p>
-<p>　　(2) 获取数据节点。</p>
-<p>　　(3) ACL检查。</p>
-<p>　　(4) 获取数据内容和stat，注册Watcher。</p>
-<p>　　<strong>3. 请求响应</strong></p>
-<p>　　(1) 创建响应体GetDataResponse。响应体包含当前数据节点的内容和状态stat。</p>
-<p>　　(2) 创建响应头。</p>
-<p>　　(3) 统计处理。</p>
-<p>　　(4) 序列化响应。</p>
-<p>　　(5) I/O层发送响应给客户端。</p>
+<h3 id="请求响应"><a href="#请求响应" class="headerlink" title="请求响应"></a>请求响应</h3><ol>
+<li>创建响应体SetDataResponse。其包含了当前数据节点的最新状态stat。</li>
+<li>创建响应头。包含当前响应对应的事务ZXID和请求处理是否成功的标识。</li>
+<li>序列化响应。</li>
+<li>I/O层发送响应给客户端。</li>
+</ol>
+<h2 id="GetData请求"><a href="#GetData请求" class="headerlink" title="GetData请求"></a>GetData请求</h2><p>服务端对于GetData请求的处理，大致分为三步，预处理、非事务处理、请求响应。</p>
+<h3 id="预处理-2"><a href="#预处理-2" class="headerlink" title="预处理"></a>预处理</h3><ol>
+<li>I/O层接收来自客户端的请求。</li>
+<li>判断是否是客户端”会话创建”请求。</li>
+<li>将请求交给PrepRequestProcessor处理器进行处理。</li>
+<li>会话检查。</li>
+</ol>
+<h3 id="非事务处理"><a href="#非事务处理" class="headerlink" title="非事务处理"></a>非事务处理</h3><ol>
+<li>反序列化GetDataRequest请求。</li>
+<li>获取数据节点。</li>
+<li>ACL检查。</li>
+<li>获取数据内容和stat，注册Watcher。</li>
+</ol>
+<h3 id="请求响应-1"><a href="#请求响应-1" class="headerlink" title="请求响应"></a>请求响应</h3><ol>
+<li>创建响应体GetDataResponse。响应体包含当前数据节点的内容和状态stat。</li>
+<li>创建响应头。</li>
+<li>统计处理。</li>
+<li>序列化响应。</li>
+<li>I/O层发送响应给客户端。</li>
+</ol>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a href="https://www.cnblogs.com/leesf456/p/6140503.html" target="_blank" rel="noopener">【分布式】Zookeeper请求处理</a></li>
-<li></li>
 </ul>
 
     </div>
@@ -681,7 +694,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建请求"><span class="nav-text">会话创建请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求接收"><span class="nav-text">请求接收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话创建"><span class="nav-text">会话创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话响应"><span class="nav-text">会话响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetData请求"><span class="nav-text">SetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-1"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理-1"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用-1"><span class="nav-text">事务应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetData请求"><span class="nav-text">GetData请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建请求"><span class="nav-text">会话创建请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求接收"><span class="nav-text">请求接收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话创建"><span class="nav-text">会话创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话响应"><span class="nav-text">会话响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetData请求"><span class="nav-text">SetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-1"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理-1"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用-1"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetData请求"><span class="nav-text">GetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-2"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非事务处理"><span class="nav-text">非事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应-1"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
