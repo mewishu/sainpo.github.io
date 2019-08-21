@@ -313,7 +313,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-21 21:02:39" itemprop="dateModified" datetime="2019-08-21T21:02:39+08:00">2019-08-21</time>
+                <time title="修改时间：2019-08-21 21:06:00" itemprop="dateModified" datetime="2019-08-21T21:06:00+08:00">2019-08-21</time>
               </span>
             
           
@@ -398,7 +398,7 @@
 <h3 id="事务处理"><a href="#事务处理" class="headerlink" title="事务处理"></a>事务处理</h3><ol>
 <li>将请求交给ProposalRequestProcessor处理器。与提议相关的处理器，从ProposalRequestProcessor开始，请求的处理将会进入三个子处理流程，分别是Sync流程、Proposal流程、Commit流程。</li>
 </ol>
-<p><img src="https://images2015.cnblogs.com/blog/616953/201612/616953-20161207103040257-77514359.png" alt="img"></p>
+<p><img src="/2019/08/19/zookeeper-request-processor/616953-20161207103040257-77514359.png" alt="事务处理流程"></p>
 <p>　　<strong>Sync流程</strong></p>
 <p>　　使用SyncRequestProcessor处理器记录事务日志，针对每个事务请求，都会通过事务日志的形式将其记录，完成日志记录后，每个Follower都会向Leader发送ACK消息，表明自身完成了事务日志的记录，以便Leader统计每个事务请求的投票情况。</p>
 <p>　　<strong>Proposal流程</strong></p>
