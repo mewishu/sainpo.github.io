@@ -58,20 +58,20 @@
   };
 </script>
 
-  <meta name="description" content="会话创建请求Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如  请求接收 I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。 判断是否是客户">
+  <meta name="description" content="请求处理链对于请求处理链而言，所有请求处理器的父接口为RequestProcessor:  1234567891011public interface RequestProcessor &amp;#123;    public static class RequestProcessorException extends Exception &amp;#123;        public RequestProce">
 <meta name="keywords" content="zookeeper">
 <meta property="og:type" content="article">
 <meta property="og:title" content="zookeeper请求处理">
 <meta property="og:url" content="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="会话创建请求Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如  请求接收 I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。 判断是否是客户">
+<meta property="og:description" content="请求处理链对于请求处理链而言，所有请求处理器的父接口为RequestProcessor:  1234567891011public interface RequestProcessor &amp;#123;    public static class RequestProcessorException extends Exception &amp;#123;        public RequestProce">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/616953-20161207095042507-929689583.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/616953-20161207103040257-77514359.png">
-<meta property="og:updated_time" content="2019-08-21T13:06:00.970Z">
+<meta property="og:updated_time" content="2019-08-22T12:24:48.076Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper请求处理">
-<meta name="twitter:description" content="会话创建请求Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如  请求接收 I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。 判断是否是客户">
+<meta name="twitter:description" content="请求处理链对于请求处理链而言，所有请求处理器的父接口为RequestProcessor:  1234567891011public interface RequestProcessor &amp;#123;    public static class RequestProcessorException extends Exception &amp;#123;        public RequestProce">
 <meta name="twitter:image" content="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/616953-20161207095042507-929689583.png">
   <link rel="canonical" href="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/">
 
@@ -318,7 +318,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-21 21:06:00" itemprop="dateModified" datetime="2019-08-21T21:06:00+08:00">2019-08-21</time>
+                <time title="修改时间：2019-08-22 20:24:48" itemprop="dateModified" datetime="2019-08-22T20:24:48+08:00">2019-08-22</time>
               </span>
             
           
@@ -362,7 +362,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">4.4k</span>
+              <span title="本文字数">5.3k</span>
             </span>
           
             <span class="post-meta-item">
@@ -372,7 +372,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">4 分钟</span>
+              <span title="阅读时长">5 分钟</span>
             </span>
           
 
@@ -385,7 +385,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="会话创建请求"><a href="#会话创建请求" class="headerlink" title="会话创建请求"></a>会话创建请求</h2><p>Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如</p>
+        <h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>对于请求处理链而言，所有请求处理器的父接口为RequestProcessor: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RequestProcessor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestProcessorException</span> <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">RequestProcessorException</span><span class="params">(String msg, Throwable t)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(msg, t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">processRequest</span><span class="params">(Request request)</span> <span class="keyword">throws</span> RequestProcessorException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理的主要逻辑在processRequest中，通过processRequest方法可以将请求传递到下个处理器，通常是单线程的。而shutdown表示关闭处理器，其意味着该处理器要关闭和其他处理器的连接。</p>
+<ol>
+<li>PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创建节点、更新数据、删除节点、创建会话等），PrepRequestProcessor能够识别出当前客户端请求是否是事务请求。对于事务请求，PrepRequestProcessor处理器会对其进行一系列预处理，如创建请求事务头、事务体、会话检查、ACL检查和版本检查等。</li>
+<li>SyncRequestProcessor。事务日志记录处理器。用来将事务请求记录到事务日志文件中，同时会触发Zookeeper进行数据快照。</li>
+<li>FinalRequestProcessor。用来进行客户端请求返回之前的操作，包括创建客户端请求的响应，针对事务请求，该处理还会负责将事务应用到内存数据库中去。</li>
+</ol>
+<h2 id="会话创建请求"><a href="#会话创建请求" class="headerlink" title="会话创建请求"></a>会话创建请求</h2><p>Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如下: </p>
 <p><img src="/2019/08/19/zookeeper-request-processor/616953-20161207095042507-929689583.png" alt="会话创建处理-服务器流程示意图"></p>
 <h3 id="请求接收"><a href="#请求接收" class="headerlink" title="请求接收"></a>请求接收</h3><ol>
 <li>I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。</li>
@@ -412,10 +421,10 @@
 <li>将请求交给ProposalRequestProcessor处理器。与提议相关的处理器，从ProposalRequestProcessor开始，请求的处理将会进入三个子处理流程，分别是Sync流程、Proposal流程、Commit流程。</li>
 </ol>
 <p><img src="/2019/08/19/zookeeper-request-processor/616953-20161207103040257-77514359.png" alt="事务处理流程"></p>
-<p>　　<strong>Sync流程</strong></p>
-<p>　　使用SyncRequestProcessor处理器记录事务日志，针对每个事务请求，都会通过事务日志的形式将其记录，完成日志记录后，每个Follower都会向Leader发送ACK消息，表明自身完成了事务日志的记录，以便Leader统计每个事务请求的投票情况。</p>
-<p>　　<strong>Proposal流程</strong></p>
-<p>　　每个事务请求都需要集群中过半机器投票认可才能被真正应用到内存数据库中，这个投票与统计过程就是Proposal流程。</p>
+<p><strong>Sync流程</strong></p>
+<p>使用SyncRequestProcessor处理器记录事务日志，针对每个事务请求，都会通过事务日志的形式将其记录，完成日志记录后，每个Follower都会向Leader发送ACK消息，表明自身完成了事务日志的记录，以便Leader统计每个事务请求的投票情况。</p>
+<p><strong>Proposal流程</strong></p>
+<p>每个事务请求都需要集群中过半机器投票认可才能被真正应用到内存数据库中，这个投票与统计过程就是Proposal流程。</p>
 <ol>
 <li>发起投票。若当前请求是事务请求，Leader会发起一轮事务投票，在发起事务投票之前，会检查当前服务端的ZXID是否可用。</li>
 <li>生成提议Proposal。若ZXID可用，Zookeeper会将已创建的请求头和事务体以及ZXID和请求本身序列化到Proposal对象中，此Proposal对象就是一个提议。</li>
@@ -424,14 +433,14 @@
 <li>将请求放入toBeApplied队列中。</li>
 <li>广播Commit消息。Leader向Follower和Observer发送COMMIT消息。向Observer发送INFORM消息，向Leader发送ZXID。</li>
 </ol>
-<p>　　<strong>Commit流程</strong></p>
+<p><strong>Commit流程</strong></p>
 <ol>
 <li>将请求交付CommitProcessor。CommitProcessor收到请求后，将其放入queuedRequests队列中。</li>
 <li>处理queuedRequest队列请求。CommitProcessor中单独的线程处理queuedRequests队列中的请求。</li>
 <li>标记nextPending。若从queuedRequests中取出的是事务请求，则需要在集群中进行投票处理，同时将nextPending标记位当前请求。</li>
 <li>等待Proposal投票。在进行Commit流程的同时，Leader会生成Proposal并广播给所有Follower服务器，此时，Commit流程等待，直到投票结束。</li>
 <li>投票通过。若提议获得过半机器认可，则进入请求提交阶段，该请求会被放入commitedRequests队列中，同时唤醒Commit流程。</li>
-<li>提交请求。若commitedRequests队列中存在可以提交的请求，那么Commit流程则开始提交请求，将请求放入toProcess队列中，然后交付下一个请求处理器：FinalRequestProcessor。</li>
+<li>提交请求。若commitedRequests队列中存在可以提交的请求，那么Commit流程则开始提交请求，将请求放入toProcess队列中，然后交付下一个请求处理器: FinalRequestProcessor。</li>
 </ol>
 <h3 id="事务应用"><a href="#事务应用" class="headerlink" title="事务应用"></a>事务应用</h3><ol>
 <li>交付给FinalRequestProcessor处理器。FinalRequestProcessor处理器检查outstandingChanges队列中请求的有效性，若发现这些请求已经落后于当前正在处理的请求，那么直接从outstandingChanges队列中移除。</li>
@@ -694,7 +703,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建请求"><span class="nav-text">会话创建请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求接收"><span class="nav-text">请求接收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话创建"><span class="nav-text">会话创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话响应"><span class="nav-text">会话响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetData请求"><span class="nav-text">SetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-1"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理-1"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用-1"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetData请求"><span class="nav-text">GetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-2"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非事务处理"><span class="nav-text">非事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应-1"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求处理链"><span class="nav-text">请求处理链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话创建请求"><span class="nav-text">会话创建请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求接收"><span class="nav-text">请求接收</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话创建"><span class="nav-text">会话创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#会话响应"><span class="nav-text">会话响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SetData请求"><span class="nav-text">SetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-1"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务处理-1"><span class="nav-text">事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#事务应用-1"><span class="nav-text">事务应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetData请求"><span class="nav-text">GetData请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理-2"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非事务处理"><span class="nav-text">非事务处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求响应-1"><span class="nav-text">请求响应</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -728,7 +737,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">132k</span>
+    <span title="站点总字数">133k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
