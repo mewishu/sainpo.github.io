@@ -67,7 +67,7 @@
 <meta property="og:description" content="2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。  CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availabil">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/distributed-systems-cap/1460000014918854.png">
-<meta property="og:updated_time" content="2019-08-23T08:28:10.682Z">
+<meta property="og:updated_time" content="2019-08-23T08:33:09.993Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统CAP定理">
 <meta name="twitter:description" content="2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。  CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availabil">
@@ -304,7 +304,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：16:28:10" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：16:33:09" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
             </span>
           
             
@@ -399,7 +399,7 @@
 <p>我们分三种情况来阐述一下。</p>
 <h3 id="CA-without-P"><a href="#CA-without-P" class="headerlink" title="CA without P"></a>CA without P</h3><p>这种情况在分布式系统中几乎是不存在的。首先在分布式环境下，网络分区是一个自然的事实。因为分区是必然的，所以如果舍弃P，意味着要舍弃分布式系统。那也就没有必要再讨论CAP理论了。这也是为什么在前面的CAP证明中，我们以系统满足P为前提论述了无法同时满足C和A。</p>
 <p>比如我们熟知的关系型数据库，如MySql和Oracle就是保证了可用性和数据一致性，但是他并不是个分布式系统。一旦关系型数据库要考虑主备同步、集群部署等就必须要把P也考虑进来。</p>
-<p>其实，在CAP理论中。C，A，P三者并不是平等的，CAP之父在《Spanner，真时，CAP理论》一文中写到：</p>
+<p>其实，在CAP理论中。C，A，P三者并不是平等的，CAP之父在《Spanner, TrueTime and the CAP Theorem》一文中写到：</p>
 <blockquote>
 <p>如果说Spanner真有什么特别之处，那就是谷歌的广域网。Google通过建立私有网络以及强大的网络工程能力来保证P，在多年运营改进的基础上，在生产环境中可以最大程度的减少分区发生，从而实现高可用性。</p>
 </blockquote>
