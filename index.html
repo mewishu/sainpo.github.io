@@ -466,7 +466,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：20:04:22" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：20:55:58" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
             </span>
           
             
@@ -504,7 +504,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">8.8k</span>
+              <span title="本文字数">8.7k</span>
             </span>
           
             <span class="post-meta-item">
@@ -575,12 +575,16 @@
 <p><img src="/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png" alt="Zookeeper事务操作"></p>
 <p>ZAB协议的二阶段提交过程中，移除了中断逻辑（事务回滚），所有follower服务器要么正常反馈leader提出的事务proposal，要么就抛弃leader服务器。follower收到proposal后的处理很简单，将该proposal写入到事务日志，然后立马反馈ACK给leader，也就是说如果不是网络、内存或磁盘等问题，follower肯定会写入成功，并正常反馈ACK。leader收到过半follower的ACK后，会广播commit消息给所有learner，并将事务应用到内存；learner收到commit消息后会将事务应用到内存。</p>
 <p><strong>ZAB协议中多次用到“过半”设计策略 ，该策略是zk在A（可用性）与C（一致性）间做的取舍，也是zk具有高容错特性的本质。相较分布式事务中的2PC（二阶段提交协议）的“全量通过”，ZAB协议可用性更高（牺牲了部分一致性），能在集群半数以下服务宕机时正常对外提供服务。</strong></p>
-<h1 id="ZooKeeper的数据一致性保障"><a href="#ZooKeeper的数据一致性保障" class="headerlink" title="ZooKeeper的数据一致性保障"></a>ZooKeeper的数据一致性保障</h1><h2 id="顺序一致性"><a href="#顺序一致性" class="headerlink" title="顺序一致性"></a>顺序一致性</h2><p><strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，针对同一个Follower A提交的写请求request1、request2，某些Follower虽然可能不能在请求提交成功后立即看到（也就是强一致性），但经过自身与Leader之间的同步后，这些Follower在看到这两个请求时，一定是先看到request1，然后再看到request2，两个请求之间不会乱序，即顺序一致性</p>
+<h1 id="ZooKeeper的数据一致性保障"><a href="#ZooKeeper的数据一致性保障" class="headerlink" title="ZooKeeper的数据一致性保障"></a>ZooKeeper的数据一致性保障</h1><p><strong>顺序一致性</strong>: <strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，针对同一个Follower A提交的写请求request1、request2，某些Follower虽然可能不能在请求提交成功后立即看到（也就是强一致性），但经过自身与Leader之间的同步后，这些Follower在看到这两个请求时，一定是先看到request1，然后再看到request2，两个请求之间不会乱序，即顺序一致性。如下图: </p>
 <p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="zookeeper写请求流程.png"></p>
 <blockquote>
 <p>Leader在处理第4步Follower的ack回复时，采用过半数响应即成功原则，也就是这时候有的Follower是还没有处理或者处理成功这个请求的</p>
 </blockquote>
-<h3 id="那么问题来了，怎么保证顺序一致性的呢？"><a href="#那么问题来了，怎么保证顺序一致性的呢？" class="headerlink" title="那么问题来了，怎么保证顺序一致性的呢？"></a>那么问题来了，怎么保证顺序一致性的呢？</h3><ul>
+<p><strong>原子性</strong>：<strong>每个更新要么成功，要么失败</strong>。这意味着如果一个更新失败，则不会有客户端会看到这个更新的结果。</p>
+<p><strong>单一系统映像</strong>：<strong>一个客户端无论连接到哪一台服务器，它看到的都是同样的系统视图</strong>。这意味着，如果一个客户端在同一个会话中连接到一台新的服务器，它所看到的系统状态不会比在之前服务器上所看到的更老。当一台服务器出现故障，导致它的一个客户端需要尝试连接集合体中其他的服务器时，所有滞后于故障服务器的服务器都不会接受该连接请求，除非这些服务器赶上故障服务器。</p>
+<p><strong>持久性</strong>：<strong>一个更新一旦成功，其结果就会持久存在并且不会被撤销</strong>。这表明更新不会受到服务器故障的影响。</p>
+<p><strong>实时性</strong>：在特定的一段时间内，客户端看到的系统需要被保证是实时的（在十几秒的时间里）。在此时间段内，任何系统的改变将被客户端看到，或者被客户端侦测到。</p>
+<h2 id="如何保证顺序一致性"><a href="#如何保证顺序一致性" class="headerlink" title="如何保证顺序一致性"></a>如何保证顺序一致性</h2><ul>
 <li>FollowerRequestProcessor为Follower的首个处理器，如果是写请求，先将请求写入commitprocessor的queuedRequests（方便后续commit时判断是否本Follower提交的写请求），然后转Leader</li>
 <li>Leader为每个请求生成zxid，下发proposal给Follower，Follower会将请求写入到<code>pendingTxns阻塞队列及txnLog</code>中，然后发送ack给Leader</li>
 </ul>
@@ -601,10 +605,6 @@
 <blockquote>
 <p>总之：Follower通过队列和zxid等顺序标识保证请求的顺序处理，一言不合就会退出或者重新同步Leader</p>
 </blockquote>
-<p><strong>原子性</strong>：<strong>每个更新要么成功，要么失败</strong>。这意味着如果一个更新失败，则不会有客户端会看到这个更新的结果。</p>
-<p><strong>单一系统映像</strong>：<strong>一个客户端无论连接到哪一台服务器，它看到的都是同样的系统视图</strong>。这意味着，如果一个客户端在同一个会话中连接到一台新的服务器，它所看到的系统状态不会比在之前服务器上所看到的更老。当一台服务器出现故障，导致它的一个客户端需要尝试连接集合体中其他的服务器时，所有滞后于故障服务器的服务器都不会接受该连接请求，除非这些服务器赶上故障服务器。</p>
-<p><strong>持久性</strong>：<strong>一个更新一旦成功，其结果就会持久存在并且不会被撤销</strong>。这表明更新不会受到服务器故障的影响。</p>
-<p><strong>实时性</strong>：在特定的一段时间内，客户端看到的系统需要被保证是实时的（在十几秒的时间里）。在此时间段内，任何系统的改变将被客户端看到，或者被客户端侦测到。</p>
 <h1 id="用CAP理论来分析ZooKeeper"><a href="#用CAP理论来分析ZooKeeper" class="headerlink" title="用CAP理论来分析ZooKeeper"></a>用CAP理论来分析ZooKeeper</h1><p>在此ZooKeeper保证的是CP，参见<a href="https://sainpo.top/2019/08/23/distributed-systems-cap" target="_blank" rel="noopener">CAP定理</a>。</p>
 <p><strong>分析：可用性（A:Available）</strong></p>
 <p><strong>不能保证每次服务请求的可用性</strong>。任何时刻对ZooKeeper的访问请求能得到一致的数据结果，同时系统对网络分割具备容错性；但是它不能保证每次服务请求的可用性（注：也就是在极端环境下，ZooKeeper可能会丢弃一些请求，消费者程序需要重新请求才能获得结果）。所以说，ZooKeeper不能保证服务可用性。</p>
