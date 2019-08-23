@@ -58,19 +58,19 @@
   };
 </script>
 
-  <meta name="description" content="CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availability，可用性，系统具有好的响应性能。 ③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说">
+  <meta name="description" content="2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。  CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availabil">
 <meta name="keywords" content="CAP理论">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式系统CAP定理">
 <meta property="og:url" content="http://www.sainpo.top/2019/08/23/distributed-systems-cap/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availability，可用性，系统具有好的响应性能。 ③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说">
+<meta property="og:description" content="2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。  CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availabil">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/distributed-systems-cap/1460000014918854.png">
-<meta property="og:updated_time" content="2019-08-23T08:11:09.342Z">
+<meta property="og:updated_time" content="2019-08-23T08:12:17.761Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统CAP定理">
-<meta name="twitter:description" content="CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availability，可用性，系统具有好的响应性能。 ③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说">
+<meta name="twitter:description" content="2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。  CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availabil">
 <meta name="twitter:image" content="http://www.sainpo.top/2019/08/23/distributed-systems-cap/1460000014918854.png">
   <link rel="canonical" href="http://www.sainpo.top/2019/08/23/distributed-systems-cap/">
 
@@ -304,7 +304,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：16:11:09" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：16:12:17" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
             </span>
           
             
@@ -351,7 +351,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">3.6k</span>
+              <span title="本文字数">3.8k</span>
             </span>
           
             <span class="post-meta-item">
@@ -374,7 +374,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="CAP理论概述"><a href="#CAP理论概述" class="headerlink" title="CAP理论概述"></a>CAP理论概述</h1><p>分布式领域中存在CAP理论：</p>
+        <blockquote>
+<p>2000年7月，加州大学伯克利分校的Eric Brewer教授在ACM PODC会议上提出CAP猜想。2年后，麻省理工学院的Seth Gilbert和Nancy Lynch从理论上证明了CAP。之后，CAP理论正式成为分布式计算领域的公认定理。</p>
+</blockquote>
+<h1 id="CAP理论概述"><a href="#CAP理论概述" class="headerlink" title="CAP理论概述"></a>CAP理论概述</h1><p>分布式领域中存在CAP理论：</p>
 <p>① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。</p>
 <p>② A：Availability，可用性，系统具有好的响应性能。</p>
 <p>③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说无论任何消息丢失，系统都可用。</p>
