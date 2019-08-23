@@ -67,7 +67,7 @@
 <meta property="og:description" content="CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availability，可用性，系统具有好的响应性能。 ③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/distributed-systems-cap/1460000014918854.png">
-<meta property="og:updated_time" content="2019-08-23T03:56:22.471Z">
+<meta property="og:updated_time" content="2019-08-23T04:02:16.846Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式系统CAP定理">
 <meta name="twitter:description" content="CAP理论概述分布式领域中存在CAP理论： ① C：Consistency，一致性，数据一致更新，所有数据变动都是同步的。 ② A：Availability，可用性，系统具有好的响应性能。 ③ P：Partition tolerance，分区容错性。以实际效果而言，分区相当于对通信的时限要求。系统如果不能在时限内达成数据一致性，就意味着发生了分区的情况，必须就当前操作在C和A之间做出选择，也就是说">
@@ -304,7 +304,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：11:56:22" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：12:02:16" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
             </span>
           
             
@@ -351,7 +351,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">2.7k</span>
+              <span title="本文字数">1.6k</span>
             </span>
           
             <span class="post-meta-item">
@@ -361,7 +361,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">2 分钟</span>
+              <span title="阅读时长">1 分钟</span>
             </span>
           
 
@@ -386,30 +386,12 @@
 <h2 id="分区容错性（P-Partition-Tolerance）"><a href="#分区容错性（P-Partition-Tolerance）" class="headerlink" title="分区容错性（P:Partition Tolerance）"></a>分区容错性（P:Partition Tolerance）</h2><p>分区容错性约束了一个分布式系统需要具有如下特性：<strong>分布式系统在遇到任何网络分区故障的时候，仍然需要能够保证对外提供满足一致性和可用性的服务，除非是整个网络环境都发生了故障</strong>。</p>
 <p>网络分区是指在分布式系统中，不同的节点分布在不同的子网络（机房或异地网络等）中，由于一些特殊的原因导致这些子网络之间出现网络不连通的状况，但各个子网络的内部网络是正常的，从而导致整个系统的网络环境被切分成了若干个孤立的区域。需要注意的是，组成一个分布式系统的每个节点的加入与退出都可以看作是一个特殊的网络分区。</p>
 <p>由于一个分布式系统无法同时满足上面的三个需求，而只能满足其中的两项，因此在进行对CAP定理的应用的时候，需要根据业务的要求抛弃其中的一项，下表所示是抛弃CAP定理中任意一项特性的场景说明。</p>
-<p>因此，将精力浪费在思考如何设计能满足三者的完美系统上是愚钝的，应该根据应用场景进行适当取舍。</p>
 <h1 id="一致性的分类"><a href="#一致性的分类" class="headerlink" title="一致性的分类"></a>一致性的分类</h1><p>一致性是指从系统外部读取系统内部的数据时，在一定约束条件下相同，即数据变动在系统内部各节点应该是同步的。根据一致性的强弱程度不同，可以将一致性的分类为如下几种：</p>
-<p><strong>强一致性</strong>：（strong consistency）。任何时刻，任何用户都能读取到最近一次成功更新的数据。</p>
-<p><strong>单调一致性</strong>：（monotonic consistency）。任何时刻，任何用户一旦读到某个数据在某次更新后的值，那么就不会再读到比这个值更旧的值。也就是说，可获取的数据顺序必是单调递增的。</p>
-<p><strong>会话一致性</strong>：（session consistency）。任何用户在某次会话中，一旦读到某个数据在某次更新后的值，那么在本次会话中就不会再读到比这值更旧的值，会话一致性是在单调一致性的基础上进一步放松约束，只保证单个用户单个会话内的单调性，在不同用户或同一用户不同会话间则没有保障。</p>
-<p><strong>最终一致性</strong>：（eventual consistency）。用户只能读到某次更新后的值，但系统保证数据将最终达到完全一致的状态，只是所需时间不能保障。</p>
-<p><strong>弱一致性</strong>：（weak consistency）。用户无法在确定时间内读到最新更新的值。</p>
-<h1 id="ZooKeeper提供的一致性服务"><a href="#ZooKeeper提供的一致性服务" class="headerlink" title="ZooKeeper提供的一致性服务"></a>ZooKeeper提供的一致性服务</h1><p>ZooKeeper从以下几点保证了数据的一致性</p>
-<p><strong>顺序一致性</strong>：<strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，如果一个客户端将Znode z的值更新为a，在之后的操作中，它又将z的值更新为b，则没有客户端能够在看到z的值是b之后再看到值a（如果没有其他对z的更新）。</p>
-<p><strong>原子性</strong>：<strong>每个更新要么成功，要么失败</strong>。这意味着如果一个更新失败，则不会有客户端会看到这个更新的结果。</p>
-<p><strong>单一系统映像</strong>：<strong>一个客户端无论连接到哪一台服务器，它看到的都是同样的系统视图</strong>。这意味着，如果一个客户端在同一个会话中连接到一台新的服务器，它所看到的系统状态不会比 在之前服务器上所看到的更老。当一台服务器出现故障，导致它的一个客户端需要尝试连接集合体中其他的服务器时，所有滞后于故障服务器的服务器都不会接受该 连接请求，除非这些服务器赶上故障服务器。</p>
-<p><strong>持久性</strong>：<strong>一个更新一旦成功，其结果就会持久存在并且不会被撤销</strong>。这表明更新不会受到服务器故障的影响。</p>
-<p><strong>实时性</strong>：在特定的一段时间内，客户端看到的系统需要被保证是实时的（在十几秒的时间里）。在此时间段内，任何系统的改变将被客户端看到，或者被客户端侦测到。</p>
-<h1 id="用CAP理论来分析ZooKeeper"><a href="#用CAP理论来分析ZooKeeper" class="headerlink" title="用CAP理论来分析ZooKeeper"></a>用CAP理论来分析ZooKeeper</h1><p>CAP理论告诉我们，一个分布式系统不可能同时满足以下三种</p>
-<ul>
-<li>一致性（C:Consistency）</li>
-<li>可用性（A:Available）</li>
-<li>分区容错性（P:Partition Tolerance）</li>
-</ul>
-<p>这三个基本需求，最多只能同时满足其中的两项，<strong>因为P是必须的,因此往往选择就在CP或者AP中</strong>。</p>
-<p><strong>在此ZooKeeper保证的是CP</strong></p>
-<p><strong>分析：可用性（A:Available）</strong></p>
-<p><strong>不能保证每次服务请求的可用性</strong>。任何时刻对ZooKeeper的访问请求能得到一致的数据结果，同时系统对网络分割具备容错性；但是它不能保证每次服务请求的可用性（注：也就是在极端环境下，ZooKeeper可能会丢弃一些请求，消费者程序需要重新请求才能获得结果）。所以说，ZooKeeper不能保证服务可用性。</p>
-<p><strong>进行leader选举时集群都是不可用</strong>。在使用ZooKeeper获取服务列表时，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。所以说，ZooKeeper不能保证服务可用性。</p>
+<p><strong>① 强一致性（strong consistency）。</strong>任何时刻，任何用户都能读取到最近一次成功更新的数据。</p>
+<p><strong>② 单调一致性（monotonic consistency）。</strong>任何时刻，任何用户一旦读到某个数据在某次更新后的值，那么就不会再读到比这个值更旧的值。也就是说，可获取的数据顺序必是单调递增的。</p>
+<p><strong>③ 会话一致性（session consistency）。</strong>任何用户在某次会话中，一旦读到某个数据在某次更新后的值，那么在本次会话中就不会再读到比这个值更旧的值。会话一致性是在单调一致性的基础上进一步放松约束，只保证单个用户单个会话内的单调性，在不同用户或同一用户不同会话间则没有保障。</p>
+<p><strong>④ 最终一致性（eventual consistency）。</strong>用户只能读到某次更新后的值，但系统保证数据将最终达到完全一致的状态，只是所需时间不能保障。</p>
+<p><strong>⑤ 弱一致性（weak consistency）。</strong>用户无法在确定时间内读到最新更新的值。</p>
 
     </div>
 
@@ -616,7 +598,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CAP理论概述"><span class="nav-text">CAP理论概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性（C-Consistency）"><span class="nav-text">一致性（C:Consistency）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可用性（A-Available）"><span class="nav-text">可用性（A:Available）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区容错性（P-Partition-Tolerance）"><span class="nav-text">分区容错性（P:Partition Tolerance）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一致性的分类"><span class="nav-text">一致性的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper提供的一致性服务"><span class="nav-text">ZooKeeper提供的一致性服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用CAP理论来分析ZooKeeper"><span class="nav-text">用CAP理论来分析ZooKeeper</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CAP理论概述"><span class="nav-text">CAP理论概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性（C-Consistency）"><span class="nav-text">一致性（C:Consistency）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可用性（A-Available）"><span class="nav-text">可用性（A:Available）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区容错性（P-Partition-Tolerance）"><span class="nav-text">分区容错性（P:Partition Tolerance）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一致性的分类"><span class="nav-text">一致性的分类</span></a></li></ol></div>
             
 
           </div>
