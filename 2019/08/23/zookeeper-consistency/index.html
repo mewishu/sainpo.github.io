@@ -68,9 +68,12 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-eb7ef77baca83ba8b56654dd50daa4b1_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-2ada754396f7dfda6b3c007774ae25fe_hd.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/Zookeeper-read-write.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/zookeeper-cluster.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/zookeeper-componments.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png">
-<meta property="og:updated_time" content="2019-08-23T12:55:58.410Z">
+<meta property="og:updated_time" content="2019-08-23T14:07:59.383Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper一致性保证">
 <meta name="twitter:description" content="zookeeper（简称zk），顾名思义，为动物园管理员的意思，动物对应服务节点，zk是这些节点的管理者。在分布式场景中，zk的应用非常广泛，如：数据发布/订阅、命名服务、配置中心、分布式锁、集群管理、选主与服务发现等等。这不仅得益于zk类文件系统的数据模型和基于Watcher机制的分布式事件通知，也得益于zk特殊的高容错数据一致性协议。  这里的一致性，是指数据在多个副本之间保持一致的特性。分布">
@@ -307,7 +310,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：20:55:58" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：22:07:59" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
             </span>
           
             
@@ -354,7 +357,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">8.7k</span>
+              <span title="本文字数">11k</span>
             </span>
           
             <span class="post-meta-item">
@@ -364,7 +367,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">8 分钟</span>
+              <span title="阅读时长">10 分钟</span>
             </span>
           
 
@@ -399,30 +402,49 @@
 <li>完成leader与learner间的数据同步：集群中节点角色确定后，leader会重新加载本地快照及日志文件，以此作为基准数据，再结合各个learner的本地提交数据，leader再确定需要给具体learner回滚哪些数据及同步哪些数据；</li>
 <li>当leader收到过半的learner完成数据同步的ACK，集群开始正常工作，可以接收并处理客户端请求，在此之前集群不可用。</li>
 </ul>
+<h1 id="ZooKeeper的读写机制"><a href="#ZooKeeper的读写机制" class="headerlink" title="ZooKeeper的读写机制"></a>ZooKeeper的读写机制</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>ZooKeeper</strong>的<strong>核心思想</strong>是，提供一个非锁机制的Wait Free的用于分布式系统同步的核心服务。提供简单的文件创建、读写操作接口，其系统核心本身对<strong>文件读写</strong>并不提供加锁互斥的服务，但是提供基于版本比对的更新操作，客户端可以基于此自己实现加锁逻辑。如下图所示: </p>
+<p><img src="/2019/08/23/zookeeper-consistency/Zookeeper-read-write.png" alt="Using versions to prevent inconsistencies due to concurrent updates"></p>
+<h2 id="ZK集群服务"><a href="#ZK集群服务" class="headerlink" title="ZK集群服务"></a>ZK集群服务</h2><p> Zookeeper是一个由多个Server组成的集群，该集群有一个Leader，多个Follower。客户端可以连接任意ZooKeeper服务节点来读写数据，如下图所示: </p>
+<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-cluster.png" alt="ZooKeeper集群服务"></p>
+<p>ZK集群中每个Server，都保存一份数据副本。Zookeeper使用简单的同步策略，通过以下两条基本保证来实现数据的一致性：</p>
+<p>① 全局<strong>串行化</strong>所有的<strong>写操作</strong></p>
+<p>② 保证<strong>同一客户</strong>端的指令被FIFO执行（以及消息通知的FIFO）</p>
+<p>所有的读请求由Zk Server 本地响应，所有的更新请求将转发给Leader，由Leader实施。</p>
+<h2 id="ZK组件"><a href="#ZK组件" class="headerlink" title="ZK组件"></a>ZK组件</h2><p>ZK组件如下图所示。ZK组件除了<strong>请求处理器</strong>（Request Processor）以外，组成ZK服务的每一个Server会复制这些组件的副本。 </p>
+<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-componments.png" alt="ZooKeeper组件图"></p>
+<p><strong>ReplicatedDatabase</strong>是一个内存数据库，它包含了整个Data Tree。为了恢复，更新会被记录到磁盘，并且写在被应用到内存数据库之前，先被序列化到磁盘。</p>
+<p>每一个ZK Server，可服务于多个Client。Client可以连接到一台Server，来提交请求。<strong>读请求</strong>，由每台Server数据库的本地副本来进行服务。改变服务器的状态的写请求，需要通过一致性协议来处理。</p>
+<p>作为一致性协议的一部分，来自Client的所有写请求，都要被转发到一个单独的Server，称作Leader。ZK集群中其他Server 称作Follower，负责接收Leader发来的提议消息，并且对消息转发达成一致。消息层处理leader失效，同步Followers和Leader。</p>
+<p>ZooKeeper使用自定义的原子性消息协议。由于消息传送层是原子性的，ZooKeeper能够保证本地副本不产生分歧。当leader收到一个写请求，它会计算出当写操作完成后系统将会是什么状态，接着将之转变为一个捕获状态的事务。</p>
+<h2 id="ZK性能"><a href="#ZK性能" class="headerlink" title="ZK性能"></a>ZK性能</h2><p>ZooKeeper被应用程序广泛使用，并有数以千计的客户端同时的访问它，所以我们需要高吞吐量。我们为ZooKeeper 设计的工作负载的读写比例是 2：1以上。然而我们发现，ZooKeeper的高写入吞吐量，也允许它被用于一些写占主导的工作负载。ZooKeeper通过每台Server上的本地 ZK的状态副本，来提供高读取吞吐量。因此，<strong>容错性</strong>和<strong>读吞吐量</strong>是以添加到该服务的服务器数量为尺度。<strong>写吞吐量</strong>并不以添加到该服务的机器数量为尺度。</p>
+<p>例如，在它的诞生地Yahoo公司，对于写占主导的工作负载来说，ZooKeeper的基准吞吐量已经超过每秒10000个操作；对于常规的以读为主导的工作负载来说，吞吐量更是高出了好几倍。</p>
 <h1 id="zookeeper一致性协议"><a href="#zookeeper一致性协议" class="headerlink" title="zookeeper一致性协议"></a>zookeeper一致性协议</h1><p>zookeeper实现数据一致性的核心是ZAB协议（Zookeeper原子消息广播协议）。该协议需要做到以下几点：</p>
 <ol>
 <li>集群在半数以下节点宕机的情况下，能正常对外提供服务；</li>
 <li>客户端的写请求全部转交给leader来处理，leader需确保写变更能实时同步给所有follower及observer；</li>
 <li>leader宕机或整个集群重启时，需要确保那些已经在leader服务器上提交的事务最终被所有服务器都提交，确保丢弃那些只在leader服务器上被提出的事务，并保证集群能快速恢复到故障前的状态。</li>
 </ol>
-<p>Zab协议有两种模式， 崩溃恢复（选主+数据同步）和消息广播（事务操作）。任何时候都需要保证只有一个主进程负责进行事务操作，而如果主进程崩溃了，就需要迅速选举出一个新的主进程。主进程的选举机制与事务操作机制是紧密相关的。下面详细讲解这三个场景的协议规则，从细节去探索ZAB协议的数据一致性原理。</p>
-<h2 id="选主"><a href="#选主" class="headerlink" title="选主"></a>选主</h2><p>leader选举是zk中最重要的技术之一，也是保证分布式数据一致性的关键所在。当集群中的一台服务器处于如下两种情况之一时，就会进入leader选举阶段——服务器初始化启动、服务器运行期间无法与leader保持连接。</p>
+<p><strong>Zab协议有两种模式， 崩溃恢复（选主+数据同步）和消息广播（事务操作）。</strong>任何时候都需要保证只有一个主进程负责进行事务操作，而如果主进程崩溃了，就需要迅速选举出一个新的主进程。主进程的选举机制与事务操作机制是紧密相关的。下面详细讲解这三个场景的协议规则，从细节去探索ZAB协议的数据一致性原理。</p>
+<h2 id="崩溃恢复-选主"><a href="#崩溃恢复-选主" class="headerlink" title="崩溃恢复(选主)"></a>崩溃恢复(选主)</h2><p>leader选举是zk中最重要的技术之一，也是保证分布式数据一致性的关键所在。当集群中的一台服务器处于如下两种情况之一时，就会进入leader选举阶段——服务器初始化启动、服务器运行期间无法与leader保持连接。</p>
 <p>选举阶段，集群间互传的消息称为投票，投票Vote主要包括二个维度的信息：ID、ZXID<br>ID 被推举的leader的服务器ID，集群中的每个zk节点启动前就要配置好这个全局唯一的ID。ZXID 被推举的leader的事务ID ，该值是从机器DataTree内存中取的，即事务已经在机器上被commit过了。</p>
 <ol>
 <li>节点进入选举阶段后的大体执行逻辑如下：<br>设置状态为LOOKING，初始化内部投票Vote (id,zxid) 数据至内存，并将其广播到集群其它节点。节点首次投票都是选举自己作为leader，将自身的服务ID、处理的最近一个事务请求的ZXID（ZXID是从内存数据库里取的，即该节点最近一个完成commit的事务id）及当前状态广播出去。然后进入循环等待及处理其它节点的投票信息的流程中。</li>
 <li>循环等待流程中，节点每收到一个外部的Vote信息，都需要将其与自己内存Vote数据进行PK，规则为取ZXID大的，若ZXID相等，则取ID大的那个投票。若外部投票胜选，节点需要将该选票覆盖之前的内存Vote数据，并再次广播出去；同时还要统计是否有过半的赞同者与新的内存投票数据一致，无则继续循环等待新的投票，有则需要判断leader是否在赞同者之中，在则退出循环，选举结束，根据选举结果及各自角色切换状态，leader切换成LEADING、follower切换到FOLLOWING、observer切换到OBSERVING状态。 </li>
 </ol>
 <p>算法细节可参照FastLeaderElection.lookForLeader()，主要有三个线程在工作：选举线程（主动调用lookForLeader方法的线程，通过阻塞队列sendqueue及recvqueue与其它两个线程协作）、WorkerReceiver线程（选票接收器，不断获取其它服务器发来的选举消息，筛选后会保存到recvqueue队列中。zk服务器启动时，开始正常工作，不停止）以及WorkerSender线程（选票发送器，会不断地从sendqueue队列中获取待发送的选票，并广播至集群）。WorkerReceiver线程一直在工作，即使当前节点处于LEADING或者FOLLOWING状态，它起到了一个过滤的作用，当前节点为LOOKING时，才会将外部投票信息转交给选举线程处理；如果当前节点处于非LOOKING状态，收到了处于LOOKING状态的节点投票数据（外部节点重启或网络抖动情况下），说明发起投票的节点数据跟集群不一致，这时，当前节点需要向集群广播出最新的内存Vote(id，zxid)，落后节点收到该Vote后，会及时注册到leader上，并完成数据同步，跟上集群节奏，提供正常服务。</p>
-<h2 id="选主后的数据同步"><a href="#选主后的数据同步" class="headerlink" title="选主后的数据同步"></a>选主后的数据同步</h2><p>选主算法中的zxid是从内存数据库中取的最新事务id，事务操作是分两阶段的（提出阶段和提交阶段），leader生成提议并广播给followers，收到半数以上的ACK后，再广播commit消息，同时将事务操作应用到内存中。follower收到提议后先将事务写到本地事务日志，然后反馈ACK，等接到leader的commit消息时，才会将事务操作应用到内存中。可见，选主只是选出了内存数据是最新的节点，仅仅靠这个是无法保证已经在leader服务器上提交的事务最终被所有服务器都提交。比如leader发起提议P1,并收到半数以上follower关于P1的ACK后，在广播commit消息之前宕机了，选举产生的新leader之前是follower，未收到关于P1的commit消息，内存中是没有P1的数据。而ZAB协议的设计是需要保证选主后，P1是需要应用到集群中的。这块的逻辑是通过选主后的数据同步来弥补。 </p>
+<h2 id="崩溃恢复-选主后的数据同步"><a href="#崩溃恢复-选主后的数据同步" class="headerlink" title="崩溃恢复(选主后的数据同步)"></a>崩溃恢复(选主后的数据同步)</h2><p>选主算法中的zxid是从内存数据库中取的最新事务id，事务操作是分两阶段的（提出阶段和提交阶段），leader生成提议并广播给followers，收到半数以上的ACK后，再广播commit消息，同时将事务操作应用到内存中。follower收到提议后先将事务写到本地事务日志，然后反馈ACK，等接到leader的commit消息时，才会将事务操作应用到内存中。可见，选主只是选出了内存数据是最新的节点，仅仅靠这个是无法保证已经在leader服务器上提交的事务最终被所有服务器都提交。比如leader发起提议P1,并收到半数以上follower关于P1的ACK后，在广播commit消息之前宕机了，选举产生的新leader之前是follower，未收到关于P1的commit消息，内存中是没有P1的数据。而ZAB协议的设计是需要保证选主后，P1是需要应用到集群中的。这块的逻辑是通过选主后的数据同步来弥补。 </p>
 <p>选主后，节点需要切换状态，leader切换成LEADING状态后的流程如下：</p>
 <ol>
 <li>重新加载本地磁盘上的数据快照至内存，并从日志文件中取出快照之后的所有事务操作，逐条应用至内存，并添加到已提交事务缓存commitedProposals。这样能保证日志文件中的事务操作，必定会应用到leader的内存数据库中。</li>
 <li>获取learner发送的FOLLOWERINFO/OBSERVERINFO信息，并与自身commitedProposals比对，确定采用哪种同步方式，不同的learner可能采用不同同步方式（DIFF同步、TRUNC+DIFF同步、SNAP同步）。这里是拿learner内存中的zxid与leader内存中的commitedProposals（min、max）比对，如果zxid介于min与max之间，但又不存在于commitedProposals中时，说明该zxid对应的事务需要TRUNC回滚；如果 zxid 介于min与max之间且存在于commitedProposals中，则leader需要将zxid+1~max 间所有事务同步给learner，这些内存缺失数据，很可能是因为leader切换过程中造成commit消息丢失，learner只完成了事务日志写入，未完成提交事务，未应用到内存。</li>
 <li>leader主动向所有learner发送同步数据消息，每个learner有自己的发送队列，互不干扰。同步结束时，leader会向learner发送NEWLEADER指令，同时learner会反馈一个ACK。当leader接收到来自learner的ACK消息后，就认为当前learner已经完成了数据同步，同时进入“过半策略”等待阶段。当leader统计到收到了一半已上的ACK时，会向所有已经完成数据同步的learner发送一个UPTODATE指令，用来通知learner集群已经完成了数据同步，可以对外服务了。<br>细节可参照Leader.lead() 、Follower.followLeader()及LearnerHandler类。</li>
 </ol>
-<h2 id="事务操作"><a href="#事务操作" class="headerlink" title="事务操作"></a>事务操作</h2><p>ZAB协议对于事务操作的处理是一个类似于二阶段提交过程。针对客户端的事务请求，leader服务器会为其生成对应的事务proposal，并将其发送给集群中所有follower机器，然后收集各自的选票，最后进行事务提交。流程如下图。</p>
+<h2 id="消息广播-事务操作"><a href="#消息广播-事务操作" class="headerlink" title="消息广播(事务操作)"></a>消息广播(事务操作)</h2><p>一旦Leader已经和多数的Follower进行了状态同步后，他就可以开始广播消息了，即进入广播状态。ZooKeeper服务一直维持在Broadcast状态，直到Leader崩溃了或者Leader失去了大部分的Followers支持。</p>
+<p>ZAB协议对于事务操作的处理是一个类似于二阶段提交过程。针对客户端的事务请求，leader服务器会为其生成对应的事务proposal，并将其发送给集群中所有follower机器，然后收集各自的选票，最后进行事务提交。流程如下图。</p>
 <p><img src="/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png" alt="Zookeeper事务操作"></p>
-<p>ZAB协议的二阶段提交过程中，移除了中断逻辑（事务回滚），所有follower服务器要么正常反馈leader提出的事务proposal，要么就抛弃leader服务器。follower收到proposal后的处理很简单，将该proposal写入到事务日志，然后立马反馈ACK给leader，也就是说如果不是网络、内存或磁盘等问题，follower肯定会写入成功，并正常反馈ACK。leader收到过半follower的ACK后，会广播commit消息给所有learner，并将事务应用到内存；learner收到commit消息后会将事务应用到内存。</p>
+<p>ZAB协议的二阶段提交过程中，移除了中断(aborts)逻辑（事务回滚），所有follower服务器要么正常反馈leader提出的事务proposal，要么丢弃该Leader的Propose。没有”aborts”意味着，只要有指定数量的机器确认了该Propose，而不是等待所有机器的回应。</p>
+<p>广播协议在所有的通讯过程中使用TCP的FIFO信道，通过使用该信道，使保持有序性变得非常的容易。通过FIFO信道，消息被有序的deliver。只要收到的消息一被处理，其顺序就会被保存下来。</p>
+<p>Leader会广播已经被deliver的Proposal消息。在发出一个Proposal消息前，Leader会分配给Proposal一个单调递增的唯一id，称之为zxid。因为Zab保证了因果有序， 所以递交的消息也会按照zxid进行排序。广播是把Proposal封装到消息当中，并添加到指向Follower的输出队列中，通过FIFO信道发送到 Follower。当Follower收到一个Proposal时，会将该proposal写入到事务日志，然后立马反馈ACK给leader，也就是说如果不是网络、内存或磁盘等问题，follower肯定会写入成功，并正常反馈ACK。leader收到过半follower的ACK后，会广播commit消息给所有learner，并将事务应用到内存；learner收到commit消息后会将事务应用到内存。这个用来达成共识的协议被设计成具有原子性，因此每个修改要么成功要么失败。</p>
 <p><strong>ZAB协议中多次用到“过半”设计策略 ，该策略是zk在A（可用性）与C（一致性）间做的取舍，也是zk具有高容错特性的本质。相较分布式事务中的2PC（二阶段提交协议）的“全量通过”，ZAB协议可用性更高（牺牲了部分一致性），能在集群半数以下服务宕机时正常对外提供服务。</strong></p>
 <h1 id="ZooKeeper的数据一致性保障"><a href="#ZooKeeper的数据一致性保障" class="headerlink" title="ZooKeeper的数据一致性保障"></a>ZooKeeper的数据一致性保障</h1><p><strong>顺序一致性</strong>: <strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，针对同一个Follower A提交的写请求request1、request2，某些Follower虽然可能不能在请求提交成功后立即看到（也就是强一致性），但经过自身与Leader之间的同步后，这些Follower在看到这两个请求时，一定是先看到request1，然后再看到request2，两个请求之间不会乱序，即顺序一致性。如下图: </p>
 <p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="zookeeper写请求流程.png"></p>
@@ -672,7 +694,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据模型"><span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群架构"><span class="nav-text">集群架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#zookeeper一致性协议"><span class="nav-text">zookeeper一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选主"><span class="nav-text">选主</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选主后的数据同步"><span class="nav-text">选主后的数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务操作"><span class="nav-text">事务操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper的数据一致性保障"><span class="nav-text">ZooKeeper的数据一致性保障</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证顺序一致性"><span class="nav-text">如何保证顺序一致性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用CAP理论来分析ZooKeeper"><span class="nav-text">用CAP理论来分析ZooKeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据模型"><span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群架构"><span class="nav-text">集群架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper的读写机制"><span class="nav-text">ZooKeeper的读写机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZK集群服务"><span class="nav-text">ZK集群服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZK组件"><span class="nav-text">ZK组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZK性能"><span class="nav-text">ZK性能</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#zookeeper一致性协议"><span class="nav-text">zookeeper一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#崩溃恢复-选主"><span class="nav-text">崩溃恢复(选主)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#崩溃恢复-选主后的数据同步"><span class="nav-text">崩溃恢复(选主后的数据同步)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消息广播-事务操作"><span class="nav-text">消息广播(事务操作)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper的数据一致性保障"><span class="nav-text">ZooKeeper的数据一致性保障</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何保证顺序一致性"><span class="nav-text">如何保证顺序一致性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用CAP理论来分析ZooKeeper"><span class="nav-text">用CAP理论来分析ZooKeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -706,12 +728,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">146k</span>
+    <span title="站点总字数">147k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:12</span>
+    <span title="站点阅读时长">2:14</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
