@@ -70,7 +70,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-2ada754396f7dfda6b3c007774ae25fe_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png">
-<meta property="og:updated_time" content="2019-08-23T10:29:30.209Z">
+<meta property="og:updated_time" content="2019-08-23T12:04:22.748Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper一致性保证">
 <meta name="twitter:description" content="zookeeper（简称zk），顾名思义，为动物园管理员的意思，动物对应服务节点，zk是这些节点的管理者。在分布式场景中，zk的应用非常广泛，如：数据发布/订阅、命名服务、配置中心、分布式锁、集群管理、选主与服务发现等等。这不仅得益于zk类文件系统的数据模型和基于Watcher机制的分布式事件通知，也得益于zk特殊的高容错数据一致性协议。  这里的一致性，是指数据在多个副本之间保持一致的特性。分布">
@@ -307,7 +307,7 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：18:29:30" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：20:04:22" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
             </span>
           
             
@@ -429,11 +429,11 @@
 <blockquote>
 <p>Leader在处理第4步Follower的ack回复时，采用过半数响应即成功原则，也就是这时候有的Follower是还没有处理或者处理成功这个请求的</p>
 </blockquote>
-<h2 id="那么问题来了，怎么保证顺序一致性的呢？"><a href="#那么问题来了，怎么保证顺序一致性的呢？" class="headerlink" title="那么问题来了，怎么保证顺序一致性的呢？"></a>那么问题来了，怎么保证顺序一致性的呢？</h2><ul>
+<h3 id="那么问题来了，怎么保证顺序一致性的呢？"><a href="#那么问题来了，怎么保证顺序一致性的呢？" class="headerlink" title="那么问题来了，怎么保证顺序一致性的呢？"></a>那么问题来了，怎么保证顺序一致性的呢？</h3><ul>
 <li>FollowerRequestProcessor为Follower的首个处理器，如果是写请求，先将请求写入commitprocessor的queuedRequests（方便后续commit时判断是否本Follower提交的写请求），然后转Leader</li>
 <li>Leader为每个请求生成zxid，下发proposal给Follower，Follower会将请求写入到<code>pendingTxns阻塞队列及txnLog</code>中，然后发送ack给Leader</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logRequest</span><span class="params">(TxnHeader hdr, Record txn)</span> </span>&#123;</span><br><span class="line">    Request request = <span class="keyword">new</span> Request(hdr.getClientId(), hdr.getCxid(), hdr.getType(), hdr, txn, hdr.getZxid());</span><br><span class="line">    <span class="keyword">if</span> ((request.zxid &amp; <span class="number">0xffffffffL</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        pendingTxns.add(request);</span><br><span class="line">    &#125;</span><br><span class="line">    syncProcessor.processRequest(request);</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logRequest</span><span class="params">(TxnHeader hdr, Record txn)</span> </span>&#123;</span><br><span class="line">    Request request = <span class="keyword">new</span> Request(hdr.getClientId(), hdr.getCxid(), hdr.getType(), hdr, txn, hdr.getZxid());</span><br><span class="line">    <span class="keyword">if</span> ((request.zxid &amp; <span class="number">0xffffffffL</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        pendingTxns.add(request);</span><br><span class="line">    &#125;</span><br><span class="line">    syncProcessor.processRequest(request);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>proposal这步是会发给所有的follower的（放到LearnerHandler的请求处理队列中，一个Follower一个LearnerHandler），之后Follower的ack就不一定全返回了</p>
@@ -441,7 +441,7 @@
 <ul>
 <li>ack过半，Leader发送commit请求给所有Follower，Follower对比commit request的zxid和前面提到的pendingTxns的zxid，不一致的话Follower退出，重新跟Leader同步</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> firstElementZxid = pendingTxns.element().zxid;</span><br><span class="line"><span class="keyword">if</span> (firstElementZxid != zxid) &#123;</span><br><span class="line">    LOG.error(<span class="string">"Committing zxid 0x"</span> + Long.toHexString(zxid)</span><br><span class="line">        + <span class="string">" but next pending txn 0x"</span></span><br><span class="line">        + Long.toHexString(firstElementZxid));</span><br><span class="line">    System.exit(<span class="number">12</span>);</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> firstElementZxid = pendingTxns.element().zxid;</span><br><span class="line"><span class="keyword">if</span> (firstElementZxid != zxid) &#123;</span><br><span class="line">    LOG.error(<span class="string">"Committing zxid 0x"</span> + Long.toHexString(zxid)</span><br><span class="line">        + <span class="string">" but next pending txn 0x"</span></span><br><span class="line">        + Long.toHexString(firstElementZxid));</span><br><span class="line">    System.exit(<span class="number">12</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>Follower处理commit请求，如果不是本Follower提交的写请求，直接调用FinalRequestProcessor做持久化，触发watches；如果是本Follower提交，则做一些特殊处理（主要针对客户端连接断开的场景），然后调用FinalRequestProcessor等后续处理流程</li>
@@ -672,7 +672,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据模型"><span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群架构"><span class="nav-text">集群架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#zookeeper一致性协议"><span class="nav-text">zookeeper一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选主"><span class="nav-text">选主</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选主后的数据同步"><span class="nav-text">选主后的数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务操作"><span class="nav-text">事务操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper的数据一致性保障"><span class="nav-text">ZooKeeper的数据一致性保障</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#顺序一致性"><span class="nav-text">顺序一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#那么问题来了，怎么保证顺序一致性的呢？"><span class="nav-text">那么问题来了，怎么保证顺序一致性的呢？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用CAP理论来分析ZooKeeper"><span class="nav-text">用CAP理论来分析ZooKeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据模型"><span class="nav-text">数据模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群架构"><span class="nav-text">集群架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#zookeeper一致性协议"><span class="nav-text">zookeeper一致性协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#选主"><span class="nav-text">选主</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选主后的数据同步"><span class="nav-text">选主后的数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务操作"><span class="nav-text">事务操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ZooKeeper的数据一致性保障"><span class="nav-text">ZooKeeper的数据一致性保障</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#顺序一致性"><span class="nav-text">顺序一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#那么问题来了，怎么保证顺序一致性的呢？"><span class="nav-text">那么问题来了，怎么保证顺序一致性的呢？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用CAP理论来分析ZooKeeper"><span class="nav-text">用CAP理论来分析ZooKeeper</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
