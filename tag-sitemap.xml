@@ -3,8 +3,15 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/CAP/</loc>
+        <lastmod>2019-08-23T03:54:10.690Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/zookeeper/</loc>
-        <lastmod>2019-08-23T03:35:40.796Z</lastmod>
+        <lastmod>2019-08-23T03:45:11.687Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
