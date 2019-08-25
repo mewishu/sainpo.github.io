@@ -479,7 +479,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-25 20:50:19" itemprop="dateModified" datetime="2019-08-25T20:50:19+08:00">2019-08-25</time>
+                <time title="修改时间：2019-08-25 20:57:16" itemprop="dateModified" datetime="2019-08-25T20:57:16+08:00">2019-08-25</time>
               </span>
             
           
@@ -642,13 +642,13 @@
 <p><img src="/2019/08/23/zookeeper-consistency/031301251394117.png" alt="图 14 Server1再次成为Leader"></p>
 <h2 id="消息广播-事务操作"><a href="#消息广播-事务操作" class="headerlink" title="消息广播(事务操作)"></a>消息广播(事务操作)</h2><p>一旦Leader已经和多数的Follower进行了状态同步后，他就可以开始广播消息了，即进入广播状态。ZooKeeper服务一直维持在Broadcast状态，直到Leader崩溃了或者Leader失去了大部分的Followers支持。</p>
 <p>ZAB协议对于事务操作的处理是一个类似于二阶段提交过程。针对客户端的事务请求，leader服务器会为其生成对应的事务proposal，并将其发送给集群中所有follower机器，然后收集各自的选票，最后进行事务提交。流程如下图。</p>
-<p><img src="/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png" alt="Zookeeper事务操作"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png" alt="图15 Zookeeper事务操作"></p>
 <p>ZAB协议的二阶段提交过程中，移除了中断(aborts)逻辑（事务回滚），所有follower服务器要么正常反馈leader提出的事务proposal，要么丢弃该Leader的Propose。没有”aborts”意味着，只要有指定数量的机器确认了该Propose，而不是等待所有机器的回应。</p>
 <p>广播协议在所有的通讯过程中使用TCP的FIFO信道，通过使用该信道，使保持有序性变得非常的容易。通过FIFO信道，消息被有序的deliver。只要收到的消息一被处理，其顺序就会被保存下来。</p>
 <p>Leader会广播已经被deliver的Proposal消息。在发出一个Proposal消息前，Leader会分配给Proposal一个单调递增的唯一id，称之为zxid。因为Zab保证了因果有序， 所以递交的消息也会按照zxid进行排序。广播是把Proposal封装到消息当中，并添加到指向Follower的输出队列中，通过FIFO信道发送到 Follower。当Follower收到一个Proposal时，会将该proposal写入到事务日志，然后立马反馈ACK给leader，也就是说如果不是网络、内存或磁盘等问题，follower肯定会写入成功，并正常反馈ACK。leader收到过半follower的ACK后，会广播commit消息给所有learner，并将事务应用到内存；learner收到commit消息后会将事务应用到内存。这个用来达成共识的协议被设计成具有原子性，因此每个修改要么成功要么失败。</p>
 <p><strong>ZAB协议中多次用到“过半”设计策略 ，该策略是zk在A（可用性）与C（一致性）间做的取舍，也是zk具有高容错特性的本质。相较分布式事务中的2PC（二阶段提交协议）的“全量通过”，ZAB协议可用性更高（牺牲了部分一致性），能在集群半数以下服务宕机时正常对外提供服务。</strong></p>
 <h1 id="ZooKeeper的数据一致性保障"><a href="#ZooKeeper的数据一致性保障" class="headerlink" title="ZooKeeper的数据一致性保障"></a>ZooKeeper的数据一致性保障</h1><p><strong>顺序一致性</strong>: <strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，针对同一个Follower A提交的写请求request1、request2，某些Follower虽然可能不能在请求提交成功后立即看到（也就是强一致性），但经过自身与Leader之间的同步后，这些Follower在看到这两个请求时，一定是先看到request1，然后再看到request2，两个请求之间不会乱序，即顺序一致性。如下图: </p>
-<p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="zookeeper写请求流程"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="图16 zookeeper写请求流程"></p>
 <blockquote>
 <p>Leader在处理第4步Follower的ack回复时，采用过半数响应即成功原则，也就是这时候有的Follower是还没有处理或者处理成功这个请求的</p>
 </blockquote>
