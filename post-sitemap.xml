@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/25/zookeeper-server-role/</loc>
+        <lastmod>2019-08-25T13:21:25.453Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/08/23/zookeeper-consistency/</loc>
-        <lastmod>2019-08-25T12:57:16.057Z</lastmod>
+        <lastmod>2019-08-25T13:21:00.399Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

@@ -58,19 +58,27 @@
   };
 </script>
 
-  <meta name="description" content="移动光标 ctrl+b: 前移一个字符(backward) ctrl+f: 后移一个字符(forward) alt+b: 前移一个单词 alt+f: 后移一个单词 ctrl+a: 移到行首（a是首字母） ctrl+e: 移到行尾（end） ctrl+xx: 行首到当前光标替换  编辑命令 alt+.: 粘帖最后一次命令最后的参数（通常用于mkdir long-long-dir后, cd配合着alt">
-<meta name="keywords" content="Bash Shell">
+  <meta name="description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
+<meta name="keywords" content="zookeeper">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Bash Shell常用快捷键">
-<meta property="og:url" content="http://www.sainpo.top/2019/08/06/bash-shortcuts/index.html">
+<meta property="og:title" content="Zookeeper的服务器角色">
+<meta property="og:url" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="移动光标 ctrl+b: 前移一个字符(backward) ctrl+f: 后移一个字符(forward) alt+b: 前移一个单词 alt+f: 后移一个单词 ctrl+a: 移到行首（a是首字母） ctrl+e: 移到行尾（end） ctrl+xx: 行首到当前光标替换  编辑命令 alt+.: 粘帖最后一次命令最后的参数（通常用于mkdir long-long-dir后, cd配合着alt">
+<meta property="og:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-06T02:56:29.976Z">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206205916319-94850171.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206210521179-2100336705.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206211659288-380771789.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206213138194-152453727.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206214318897-1132940651.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/xbyan/Documents/blog/sainpo.blog/source/_posts/zookeeper-server-role/616953-20161206215016601-1432875769.png">
+<meta property="og:updated_time" content="2019-08-25T13:21:25.453Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Bash Shell常用快捷键">
-<meta name="twitter:description" content="移动光标 ctrl+b: 前移一个字符(backward) ctrl+f: 后移一个字符(forward) alt+b: 前移一个单词 alt+f: 后移一个单词 ctrl+a: 移到行首（a是首字母） ctrl+e: 移到行尾（end） ctrl+xx: 行首到当前光标替换  编辑命令 alt+.: 粘帖最后一次命令最后的参数（通常用于mkdir long-long-dir后, cd配合着alt">
-  <link rel="canonical" href="http://www.sainpo.top/2019/08/06/bash-shortcuts/">
+<meta name="twitter:title" content="Zookeeper的服务器角色">
+<meta name="twitter:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
+<meta name="twitter:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png">
+  <link rel="canonical" href="http://www.sainpo.top/2019/08/25/zookeeper-server-role/">
 
 
 <script id="page.configurations">
@@ -79,7 +87,7 @@
   };
 </script>
 
-  <title>Bash Shell常用快捷键 | 窦小固的小木屋</title>
+  <title>Zookeeper的服务器角色 | 窦小固的小木屋</title>
   
 
 
@@ -268,7 +276,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/06/bash-shortcuts/">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/25/zookeeper-server-role/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="sainpo.yxb">
@@ -282,7 +290,7 @@
       <header class="post-header">
 
         
-          <h1 class="post-title" itemprop="name headline">Bash Shell常用快捷键
+          <h1 class="post-title" itemprop="name headline">Zookeeper的服务器角色
 
               
             
@@ -302,7 +310,7 @@
                 
               
 
-              <time title="创建时间：2019-08-06 10:51:07 / 修改时间：10:56:29" itemprop="dateCreated datePublished" datetime="2019-08-06T10:51:07+08:00">2019-08-06</time>
+              <time title="创建时间：2019-08-25 21:05:51 / 修改时间：21:21:25" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
             </span>
           
             
@@ -317,14 +325,14 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/" itemprop="url" rel="index"><span itemprop="name">linux命令</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
 
                 
                 
                   ，
                 
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/Bash-Shell快捷键/" itemprop="url" rel="index"><span itemprop="name">Bash Shell快捷键</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
 
                 
                 
@@ -349,7 +357,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">648</span>
+              <span title="本文字数">2.5k</span>
             </span>
           
             <span class="post-meta-item">
@@ -359,7 +367,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">1 分钟</span>
+              <span title="阅读时长">2 分钟</span>
             </span>
           
 
@@ -372,39 +380,46 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="移动光标"><a href="#移动光标" class="headerlink" title="移动光标"></a>移动光标</h2><ul>
-<li><code>ctrl+b</code>: 前移一个字符(backward)</li>
-<li><code>ctrl+f</code>: 后移一个字符(forward)</li>
-<li><code>alt+b</code>: 前移一个单词</li>
-<li><code>alt+f</code>: 后移一个单词</li>
-<li><code>ctrl+a</code>: 移到行首（a是首字母）</li>
-<li><code>ctrl+e</code>: 移到行尾（end）</li>
-<li><code>ctrl+xx</code>: 行首到当前光标替换</li>
+        <h1 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h1><p>Leader服务器是Zookeeper集群工作的核心，其主要工作如下</p>
+<p>(1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</p>
+<p>(2) 集群内部各服务器的调度者。</p>
+<h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png" alt="Leader服务器请求处理链"></p>
+<ol>
+<li>PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创建节点、更新数据、删除节点、创建会话等），PrepRequestProcessor能够识别出当前客户端请求是否是事务请求。对于事务请求，PrepRequestProcessor处理器会对其进行一系列预处理，如创建请求事务头、事务体、会话检查、ACL检查和版本检查等。</li>
+<li>ProposalRequestProcessor。事务投票处理器。Leader服务器事务处理流程的发起者，对于非事务性请求，ProposalRequestProcessor会直接将请求转发到CommitProcessor处理器，不再做任何处理，而对于事务性请求，处理将请求转发到CommitProcessor外，还会根据请求类型创建对应的Proposal提议，并发送给所有的Follower服务器来发起一次集群内的事务投票。同时，ProposalRequestProcessor还会将事务请求交付给SyncRequestProcessor进行事务日志的记录。</li>
+<li>SyncRequestProcessor。事务日志记录处理器。用来将事务请求记录到事务日志文件中，同时会触发Zookeeper进行数据快照。</li>
+<li>AckRequestProcessor。负责在SyncRequestProcessor完成事务日志记录后，向Proposal的投票收集器发送ACK反馈，以通知投票收集器当前服务器已经完成了对该Proposal的事务日志记录。</li>
+<li>CommitProcessor。事务提交处理器。对于非事务请求，该处理器会直接将其交付给下一级处理器处理；对于事务请求，其会等待集群内针对Proposal的投票直到该Proposal可被提交，利用CommitProcessor，每个服务器都可以很好地控制对事务请求的顺序处理。</li>
+<li>ToBeCommitProcessor。该处理器有一个toBeApplied队列，用来存储那些已经被CommitProcessor处理过的可被提交的Proposal。其会将这些请求交付给FinalRequestProcessor处理器处理，待其处理完后，再将其从toBeApplied队列中移除。</li>
+<li>FinalRequestProcessor。用来进行客户端请求返回之前的操作，包括创建客户端请求的响应，针对事务请求，该处理还会负责将事务应用到内存数据库中去。</li>
+</ol>
+<h2 id="LearnerHandler"><a href="#LearnerHandler" class="headerlink" title="LearnerHandler"></a>LearnerHandler</h2><p>为了保证整个集群内部的实时通信，同时为了确保可以控制所有的Follower/Observer服务器，Leader服务器会与每个Follower/Observer服务器建立一个TCP长连接。同时也会为每个Follower/Observer服务器创建一个名为LearnerHandler的实体。LearnerHandler是Learner服务器的管理者，主要负责Follower/Observer服务器和Leader服务器之间的一系列网络通信，包括数据同步、请求转发和Proposal提议的投票等。Leader服务器中保存了所有Follower/Observer对应的LearnerHandler。</p>
+<h1 id="Follower"><a href="#Follower" class="headerlink" title="Follower"></a>Follower</h1><p>Follower是Zookeeper集群的跟随者，其主要工作如下</p>
+<ul>
+<li>处理客户端非事务性请求（读取数据），转发事务请求给Leader服务器。</li>
+<li>参与事务请求Proposal的投票。</li>
+<li>参与Leader选举投票。</li>
 </ul>
-<h2 id="编辑命令"><a href="#编辑命令" class="headerlink" title="编辑命令"></a>编辑命令</h2><ul>
-<li><code>alt+.</code>: 粘帖最后一次命令最后的参数（通常用于<code>mkdir long-long-dir</code>后, <code>cd</code>配合着<code>alt+.</code>）</li>
-<li><code>alt+d</code>: 删除当前光标到临近右边单词开始(delete)</li>
-<li><code>ctrl+w</code>: 删除当前光标到临近左边单词结束(word)</li>
-<li><code>ctrl+h</code>: 删除光标前一个字符（相当于backspace）</li>
-<li><code>ctrl+d</code>: 删除光标后一个字符（相当于delete）</li>
-<li><code>ctrl+u</code>: 删除光标左边所有</li>
-<li><code>ctrl+k</code>: 删除光标右边所有</li>
-<li><code>ctrl+l</code>: 清屏</li>
-<li><code>ctrl+shift+c</code>: 复制（相当于鼠标左键拖拽）</li>
-<li><code>ctrl+shift+v</code>: 粘贴（相当于鼠标中键）</li>
-</ul>
-<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><ul>
-<li><code>ctrl+n</code>: 下一条命令</li>
-<li><code>ctrl+p</code>: 上一条命令</li>
-<li><code>alt+n</code>: 下一条命令（例如输入<code>ls</code>, 然后按’alt+n’, 就会找到历史记录下的<code>ls</code>命令）</li>
-<li><code>alt+p</code>: 上一条命令（跟<code>alt+n</code>相似）</li>
-<li><code>shift+PageUp</code>: 向上翻页</li>
-<li><code>shift+PageDown</code>: 向下翻页</li>
-<li><code>ctrl+r</code>: 进入历史查找命令记录， 输入关键字。 多次按返回下一个匹配项</li>
-</ul>
-<h2 id="zsh"><a href="#zsh" class="headerlink" title="zsh"></a>zsh</h2><ul>
-<li><code>d</code>: 列出以前的打开的命令</li>
-<li><code>j</code>: jump到以前某个目录，模糊匹配</li>
+<p>Follower也采用了责任链模式组装的请求处理链来处理每一个客户端请求，由于不需要对事务请求的投票处理，因此Follower的请求处理链会相对简单，其处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206205916319-94850171.png" alt="Follower服务器请求处理链"></p>
+<ol>
+<li>FollowerRequestProcessor。其用作识别当前请求是否是事务请求，若是，那么Follower就会将该请求转发给Leader服务器，Leader服务器是在接收到这个事务请求后，就会将其提交到请求处理链，按照正常事务请求进行处理。</li>
+<li>SendAckRequestProcessor。其承担了事务日志记录反馈的角色，在完成事务日志记录后，会向Leader服务器发送ACK消息以表明自身完成了事务日志的记录工作。</li>
+</ol>
+<h1 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h1><p>Observer充当观察者角色，观察Zookeeper集群的最新状态变化并将这些状态同步过来，其对于非事务请求可以进行独立处理，对于事务请求，则会转发给Leader服务器进行处理。Observer不会参与任何形式的投票，包括事务请求Proposal的投票和Leader选举投票。其处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206210521179-2100336705.png" alt="Observer服务器请求处理链"></p>
+<h1 id="集群间消息通信"><a href="#集群间消息通信" class="headerlink" title="集群间消息通信"></a>集群间消息通信</h1><p>Zookeeper的消息类型大体分为数据同步型、服务器初始化型、请求处理型和会话管理型。</p>
+<h2 id="数据同步型"><a href="#数据同步型" class="headerlink" title="数据同步型"></a>数据同步型</h2><p>指在Learner和Leader服务器进行数据同步时，网络通信所用到的消息，通常有DIFF、TRUNC、SNAP、UPTODATE。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206211659288-380771789.png" alt="Zookeeper集群间数据同步过程中的消息类型"></p>
+<h2 id="服务器初始化型"><a href="#服务器初始化型" class="headerlink" title="服务器初始化型"></a>服务器初始化型</h2><p>指在整个集群或是某些新机器初始化时，Leader和Learner之间相互通信所使用的消息类型，常见的有OBSERVERINFO、FOLLOWERINFO、LEADERINFO、ACKEPOCH和NEWLEADER五种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206213138194-152453727.png" alt="Zookeeper集群服务器初始化过程中的消息类型"></p>
+<h2 id="请求处理型"><a href="#请求处理型" class="headerlink" title="请求处理型"></a>请求处理型</h2><p>指在进行清理时，Leader和Learner服务器之间互相通信所使用的消息，常见的有REQUEST、PROPOSAL、ACK、COMMIT、INFORM和SYNC六种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206214318897-1132940651.png" alt="Zookeeper集群请求处理过程中的消息类型"></p>
+<h2 id="会话管理型"><a href="#会话管理型" class="headerlink" title="会话管理型"></a>会话管理型</h2><p>指Zookeeper在进行会话管理时和Learner服务器之间互相通信所使用的消息，常见的有PING和REVALIDATE两种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/xbyan/Documents/blog/sainpo.blog/source/_posts/zookeeper-server-role/616953-20161206215016601-1432875769.png" alt="Zookeeper集群会话管理过程中的消息类型"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li>【分布式】Zookeeper的服务器角色: <a href="https://www.cnblogs.com/leesf456/p/6139266.html" target="_blank" rel="noopener">https://www.cnblogs.com/leesf456/p/6139266.html</a></li>
 </ul>
 
     </div>
@@ -417,13 +432,13 @@
           
         
         <div class="post-tags">
-            <a href="/tags/Bash-Shell/" rel="tag"># Bash Shell</a>
+            <a href="/tags/zookeeper/" rel="tag"># zookeeper</a>
           
         </div>
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
-              <a href="/2019/08/05/linux-vim/" rel="next" title="vim命令">
-                <i class="fa fa-chevron-left"></i> vim命令
+              <a href="/2019/08/23/distributed-systems-cap/" rel="next" title="分布式系统CAP定理">
+                <i class="fa fa-chevron-left"></i> 分布式系统CAP定理
               </a>
             
           </div>
@@ -431,10 +446,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-              <a href="/2019/08/10/gejianxiong-xingwanlilu/" rel="prev" title="行万里路:葛剑雄旅行">
-                行万里路:葛剑雄旅行 <i class="fa fa-chevron-right"></i>
-              </a>
-            
           </div>
         </div>
     </footer>
@@ -616,7 +627,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#移动光标"><span class="nav-text">移动光标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编辑命令"><span class="nav-text">编辑命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它"><span class="nav-text">其它</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zsh"><span class="nav-text">zsh</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Leader"><span class="nav-text">Leader</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#请求处理链"><span class="nav-text">请求处理链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LearnerHandler"><span class="nav-text">LearnerHandler</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Follower"><span class="nav-text">Follower</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Observer"><span class="nav-text">Observer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#集群间消息通信"><span class="nav-text">集群间消息通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据同步型"><span class="nav-text">数据同步型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器初始化型"><span class="nav-text">服务器初始化型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#请求处理型"><span class="nav-text">请求处理型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话管理型"><span class="nav-text">会话管理型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
