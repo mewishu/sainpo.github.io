@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-25 21:05:51 / 修改时间：21:21:25" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
+              <time title="创建时间：2019-08-25 21:05:51 / 修改时间：21:24:53" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
             </span>
           
             
@@ -363,8 +363,10 @@
       
           
             <h1 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h1><p>Leader服务器是Zookeeper集群工作的核心，其主要工作如下</p>
-<p>(1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</p>
-<p>(2) 集群内部各服务器的调度者。</p>
+<ul>
+<li>事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</li>
+<li>集群内部各服务器的调度者。</li>
+</ul>
 <h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下</p>
 <p><img src="/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png" alt="Leader服务器请求处理链"></p>
 <ol>

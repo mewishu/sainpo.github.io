@@ -58,13 +58,13 @@
   };
 </script>
 
-  <meta name="description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
+  <meta name="description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下  事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 集群内部各服务器的调度者。  请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（">
 <meta name="keywords" content="zookeeper">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Zookeeper的服务器角色">
 <meta property="og:url" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/index.html">
 <meta property="og:site_name" content="窦小固的小木屋">
-<meta property="og:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
+<meta property="og:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下  事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 集群内部各服务器的调度者。  请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206205916319-94850171.png">
@@ -73,10 +73,10 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206213138194-152453727.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206214318897-1132940651.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/xbyan/Documents/blog/sainpo.blog/source/_posts/zookeeper-server-role/616953-20161206215016601-1432875769.png">
-<meta property="og:updated_time" content="2019-08-25T13:21:25.453Z">
+<meta property="og:updated_time" content="2019-08-25T13:24:53.646Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Zookeeper的服务器角色">
-<meta name="twitter:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下 (1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 (2) 集群内部各服务器的调度者。 请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称">
+<meta name="twitter:description" content="LeaderLeader服务器是Zookeeper集群工作的核心，其主要工作如下  事务请求的唯一调度和处理者，保证集群事务处理的顺序性。 集群内部各服务器的调度者。  请求处理链使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下   PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（">
 <meta name="twitter:image" content="http://www.sainpo.top/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png">
   <link rel="canonical" href="http://www.sainpo.top/2019/08/25/zookeeper-server-role/">
 
@@ -310,7 +310,7 @@
                 
               
 
-              <time title="创建时间：2019-08-25 21:05:51 / 修改时间：21:21:25" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
+              <time title="创建时间：2019-08-25 21:05:51 / 修改时间：21:24:53" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
             </span>
           
             
@@ -381,8 +381,10 @@
 
       
         <h1 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h1><p>Leader服务器是Zookeeper集群工作的核心，其主要工作如下</p>
-<p>(1) 事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</p>
-<p>(2) 集群内部各服务器的调度者。</p>
+<ul>
+<li>事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</li>
+<li>集群内部各服务器的调度者。</li>
+</ul>
 <h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下</p>
 <p><img src="/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png" alt="Leader服务器请求处理链"></p>
 <ol>
