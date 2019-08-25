@@ -466,11 +466,21 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:09:52 / 修改时间：22:07:59" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:09:52" itemprop="dateCreated datePublished" datetime="2019-08-23T11:09:52+08:00">2019-08-23</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-25 20:50:19" itemprop="dateModified" datetime="2019-08-25T20:50:19+08:00">2019-08-25</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -504,7 +514,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">11k</span>
+              <span title="本文字数">15k</span>
             </span>
           
             <span class="post-meta-item">
@@ -514,7 +524,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">10 分钟</span>
+              <span title="阅读时长">13 分钟</span>
             </span>
           
 
@@ -539,8 +549,8 @@
 <li>过半：所谓“过半”是指大于集群机器数量的一半，即大于或等于（n/2+1），此处的“集群机器数量”不包括observer角色节点。leader广播一个事务消息后，当收到半数以上的ack信息时，就认为集群中所有节点都收到了消息，然后leader就不需要再等待剩余节点的ack，直接广播commit消息，提交事务。选举中的投票提议及数据同步时，也是如此，leader不需要等到所有learner节点的反馈，只要收到过半的反馈就可进行下一步操作。</li>
 </ul>
 <h1 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h1><p>zk维护的数据主要有：客户端的会话（session）状态及数据节点（dataNode）信息。zk在内存中构造了个DataTree的数据结构，维护着path到dataNode的映射以及dataNode间的树状层级关系。为了提高读取性能，集群中每个服务节点都是将数据全量存储在内存中。可见，zk最适于读多写少且轻量级数据（默认设置下单个dataNode限制为1MB大小）的应用场景。数据仅存储在内存是很不安全的，zk采用事务日志文件及快照文件的方案来落盘数据，保障数据在不丢失的情况下能快速恢复。</p>
-<h1 id="集群架构"><a href="#集群架构" class="headerlink" title="集群架构"></a>集群架构</h1><p><img src="/2019/08/23/zookeeper-consistency/v2-eb7ef77baca83ba8b56654dd50daa4b1_hd.png" alt="Zookeeper集群架构"><br>zk集群由多个节点组成，其中有且仅有一个leader，处理所有事务请求；follower及observer统称learner。learner需要同步leader的数据。follower还参与选举及事务决策过程。zk客户端会打散配置文件中的serverAddress 顺序并随机组成新的list，然后循环按序取一个服务器地址进行连接，直到成功。follower及observer会将事务请求转交给leader处理。 </p>
-<p><img src="/2019/08/23/zookeeper-consistency/v2-2ada754396f7dfda6b3c007774ae25fe_hd.png" alt="Zookeeper角色"></p>
+<h1 id="集群架构"><a href="#集群架构" class="headerlink" title="集群架构"></a>集群架构</h1><p><img src="/2019/08/23/zookeeper-consistency/v2-eb7ef77baca83ba8b56654dd50daa4b1_hd.png" alt="图1 Zookeeper集群架构"><br>zk集群由多个节点组成，其中有且仅有一个leader，处理所有事务请求；follower及observer统称learner。learner需要同步leader的数据。follower还参与选举及事务决策过程。zk客户端会打散配置文件中的serverAddress 顺序并随机组成新的list，然后循环按序取一个服务器地址进行连接，直到成功。follower及observer会将事务请求转交给leader处理。 </p>
+<p><img src="/2019/08/23/zookeeper-consistency/v2-2ada754396f7dfda6b3c007774ae25fe_hd.png" alt="图2 Zookeeper角色"></p>
 <p>要搭建一个高可用的zk集群，我们首先需要确定好集群规模。一般我们将节点（指leader及follower节点，不包括observer节点）个数设置为 2*n+1 ，n为可容忍宕机的个数。 zk使用“过半”设计原则，很好地解决了单点问题，提升了集群容灾能力。但是zk的集群伸缩不是很灵活，集群中所有机器ip及port都是事先配置在每个服务的zoo.cfg 文件里的。如果要往集群增加一个follower节点，首先需要更改所有机器的zoo.cfg，然后逐个重启。<br>集群模式下，单个zk服务节点启动时的工作流程大体如下：</p>
 <ul>
 <li>统一由QuorumPeerMain作为启动类，加载解析zoo.cfg配置文件；</li>
@@ -551,15 +561,15 @@
 <li>当leader收到过半的learner完成数据同步的ACK，集群开始正常工作，可以接收并处理客户端请求，在此之前集群不可用。</li>
 </ul>
 <h1 id="ZooKeeper的读写机制"><a href="#ZooKeeper的读写机制" class="headerlink" title="ZooKeeper的读写机制"></a>ZooKeeper的读写机制</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><strong>ZooKeeper</strong>的<strong>核心思想</strong>是，提供一个非锁机制的Wait Free的用于分布式系统同步的核心服务。提供简单的文件创建、读写操作接口，其系统核心本身对<strong>文件读写</strong>并不提供加锁互斥的服务，但是提供基于版本比对的更新操作，客户端可以基于此自己实现加锁逻辑。如下图所示: </p>
-<p><img src="/2019/08/23/zookeeper-consistency/Zookeeper-read-write.png" alt="Using versions to prevent inconsistencies due to concurrent updates"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/Zookeeper-read-write.png" alt="图3 Using versions to prevent inconsistencies due to concurrent updates"></p>
 <h2 id="ZK集群服务"><a href="#ZK集群服务" class="headerlink" title="ZK集群服务"></a>ZK集群服务</h2><p> Zookeeper是一个由多个Server组成的集群，该集群有一个Leader，多个Follower。客户端可以连接任意ZooKeeper服务节点来读写数据，如下图所示: </p>
-<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-cluster.png" alt="ZooKeeper集群服务"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-cluster.png" alt="图4 ZooKeeper集群服务"></p>
 <p>ZK集群中每个Server，都保存一份数据副本。Zookeeper使用简单的同步策略，通过以下两条基本保证来实现数据的一致性：</p>
 <p>① 全局<strong>串行化</strong>所有的<strong>写操作</strong></p>
 <p>② 保证<strong>同一客户</strong>端的指令被FIFO执行（以及消息通知的FIFO）</p>
 <p>所有的读请求由Zk Server 本地响应，所有的更新请求将转发给Leader，由Leader实施。</p>
 <h2 id="ZK组件"><a href="#ZK组件" class="headerlink" title="ZK组件"></a>ZK组件</h2><p>ZK组件如下图所示。ZK组件除了<strong>请求处理器</strong>（Request Processor）以外，组成ZK服务的每一个Server会复制这些组件的副本。 </p>
-<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-componments.png" alt="ZooKeeper组件图"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/zookeeper-componments.png" alt="图5 ZooKeeper组件图"></p>
 <p><strong>ReplicatedDatabase</strong>是一个内存数据库，它包含了整个Data Tree。为了恢复，更新会被记录到磁盘，并且写在被应用到内存数据库之前，先被序列化到磁盘。</p>
 <p>每一个ZK Server，可服务于多个Client。Client可以连接到一台Server，来提交请求。<strong>读请求</strong>，由每台Server数据库的本地副本来进行服务。改变服务器的状态的写请求，需要通过一致性协议来处理。</p>
 <p>作为一致性协议的一部分，来自Client的所有写请求，都要被转发到一个单独的Server，称作Leader。ZK集群中其他Server 称作Follower，负责接收Leader发来的提议消息，并且对消息转发达成一致。消息层处理leader失效，同步Followers和Leader。</p>
@@ -587,6 +597,49 @@
 <li>获取learner发送的FOLLOWERINFO/OBSERVERINFO信息，并与自身commitedProposals比对，确定采用哪种同步方式，不同的learner可能采用不同同步方式（DIFF同步、TRUNC+DIFF同步、SNAP同步）。这里是拿learner内存中的zxid与leader内存中的commitedProposals（min、max）比对，如果zxid介于min与max之间，但又不存在于commitedProposals中时，说明该zxid对应的事务需要TRUNC回滚；如果 zxid 介于min与max之间且存在于commitedProposals中，则leader需要将zxid+1~max 间所有事务同步给learner，这些内存缺失数据，很可能是因为leader切换过程中造成commit消息丢失，learner只完成了事务日志写入，未完成提交事务，未应用到内存。</li>
 <li>leader主动向所有learner发送同步数据消息，每个learner有自己的发送队列，互不干扰。同步结束时，leader会向learner发送NEWLEADER指令，同时learner会反馈一个ACK。当leader接收到来自learner的ACK消息后，就认为当前learner已经完成了数据同步，同时进入“过半策略”等待阶段。当leader统计到收到了一半已上的ACK时，会向所有已经完成数据同步的learner发送一个UPTODATE指令，用来通知learner集群已经完成了数据同步，可以对外服务了。<br>细节可参照Leader.lead() 、Follower.followLeader()及LearnerHandler类。</li>
 </ol>
+<h3 id="恢复阶段的保证"><a href="#恢复阶段的保证" class="headerlink" title="恢复阶段的保证"></a>恢复阶段的保证</h3><p>该恢复过程的复杂部分是在一个给定的时间内，提议冲突的绝对数量。最大数量冲突提议是一个可配置的选项，但是默认是1000。为了使该协议能够即使在Leader故障的情况下也能正常运作。我们需要做出两条具体的保证：</p>
+<p><strong>①</strong> 我们绝不能遗忘已经被deliver的消息，<strong>若一条消息在一台机器上被deliver，那么该消息必须将在每台机器上deliver，即使那台机器故障了</strong>。</p>
+<p>例如，出现了这样<strong>一种情况</strong>：Leader发送了commit消息，但在该commit消息到达其他任何机器之前，Leader发生了故障。也就是说，只有Leader自己收到了<strong>commit</strong>消息。如图6中的<strong>C2</strong>。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301222178375.png" alt="图6 The flow of message with protocol"></p>
+<blockquote>
+<p>“第一条保证”（deliver消息不能忘记）的一个示例。在该图中Server1是一个<strong>Leader，</strong>我们用<strong>L1</strong>表示，Server2和Server3为<strong>Follower</strong>。首先Leader发起了两个Proposal，P1和P2，并将P1、P2发送给了Server1和Server2。然后Leader对P1发起了Commit即C1，之后又发起了一个Proposal即P3，再后来又对P2发起了commit即C2，就在此时我们的Leader挂了。那么这时候，P3和C2这两个消息只有<strong>Leader自己</strong>收到了。</p>
+</blockquote>
+<p>因为Leader已经deliver了该C2消息，client能够在消息中看到该事务的结果。所以该事务必须能够在其他所有的Server中deliver，最终使得client看到了一个一致性的服务视图。</p>
+<p><strong>②</strong> 我们必须丢弃已经被skip的消息。<strong>一个被skip的消息，必须仍然需要被skip。</strong></p>
+<p>例如，发生了这样<strong>一种情况：</strong>Leader发送了propose消息，但在该propose消息到达其他任何机器之前，Leader发生了故障。也就是说，只有Leader自己收到了propose消息。如图6的P3所示。</p>
+<p>在图6中没有任何一个server能够看到<strong>3号提议</strong>，所以在图7中当server 1恢复时他需要在系统恢复时丢弃三号提议P3。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301225149818.png" alt="图7"></p>
+<blockquote>
+<p>“第二条保证”（skip消息必须被丢弃）的一个示例。Server1挂掉以后，Server3被选举为Leader，我们用L2表示。L2中还有未被deliver的消息P1、P2，所以，L2在发出新提议P10000001、P10000002之前，L2先将P1、P2两个消息<strong>deliver</strong>。因此，L2先发出了两个<strong>commit</strong>消息C1、C2，之后L2才发出了新的提议P10000001和P10000002。</p>
+</blockquote>
+<p>如果Server1 恢复之后<strong>再次成为了Leader</strong>，此时再次将<strong>P3</strong>在P10000001和P10000002之后<strong>deliver</strong>，那么将违背顺序性的保障。</p>
+<h3 id="保证的实现"><a href="#保证的实现" class="headerlink" title="保证的实现"></a>保证的实现</h3><p>如果Leader选举协议保证了<strong>新Leader</strong>在<strong>Quorum Server</strong>中具有最高的提议编号，即Zxid最高。那么新选举出来的leader将具有所有已deliver的消息。新选举出来的Leader，在提出一个新消息之前，首先要保证<strong>事务日志</strong>中的所有消息都由<strong>Quorum Follower</strong>已Propose并deliver。需要注意的是，我们可以让新Leader成为一个用最高zxid来处理事务的server，来作为一个优化。这样，作为新被选举出来的Leader，就不必去从一组Followers中找出包含最高zxid的Followers和获取丢失的事务。</p>
+<p><strong>① 第一条</strong></p>
+<p>所有的正确启动的Servers，将会成为Leader或者<strong>跟随</strong>一个<strong>Leader</strong>。Leader能够确保它的Followers看到所有的提议，并deliver所有已经deliver的消息。通过将新连接上的Follower所没有见过的所有PROPOSAL进行<strong>排队，</strong>并之后对该Proposals的COMMIT消息进行<strong>排队</strong>，直到最后一个COMMIT消息。在所有这样的消息已经排好队之后，Leader将会把Follower加入到广播列表，以便今后的提议和确认。<strong>这一条是为了保证一致性</strong>，因为如果一条<strong>消息P</strong>已经在<strong>旧Leader</strong>-Server1中deliver了，即使它刚刚将<strong>消息P</strong> deliver之后就挂了，但是当旧<strong>Leader</strong>-<strong>Server1</strong>重启恢复之后，我们的Client就可以从该Server中看到该<strong>消息P</strong> deliver的事务，所以为了保证每一个client都能看到一个一致性的视图，我们需要将该消息在每个Server上deliver。</p>
+<p><strong>② 第二条</strong></p>
+<p>skip已经Propose，但不能deliver的消息，处理起来也比较简单。在我们的实现中，<strong>Zxid</strong>是由<strong>64位</strong>数字组成的，<strong>低32</strong>位用作简单<strong>计数器</strong>。<strong>高32位</strong>是一个<strong>epoch</strong>。每当<strong>新Leader接管它时</strong>，将获取日志中Zxid最大的epoch，新Leader <strong>Zxid</strong>的<strong>epoch位</strong>设置为epoch+1，<strong>counter位</strong>设置0。用epoch来标记领导关系的改变,并要求<strong>Quorum Servers</strong> 通过epoch来识别该leader，避免了多个Leader用同一个<strong>Zxid</strong>发布不同的提议。</p>
+<p>这个方案的一个优点就是，我们可以skip一个失败的领导者的实例，从而加速并简化了恢复过程。如果一台宕机的Server重启，并带有未发布的 Proposal，那么先前的未发布的所有提议将永不会被deliver。并且它不能够成为一个新leader，因为任何一种可能的 Quorum Servers ，都会有一个Server其Proposal 来自与一个新epoch因此它具有一个较高的zxid。当Server以Follower的身份连接，领导者检查自身最后提交的提议，该提议的epoch 为Follower的最新提议的epoch（也就是图7中新Leader-Server2中deliver的C2提议），并告诉Follower截断事务日志<strong>直到</strong>该epoch在新Leader中deliver的最后的Proposal即C2。在图7中，当<strong>旧Leader</strong>-Server1连接到了<strong>新leader</strong>-Server2，leader将告诉他从事务日志中清除3号提议P3，具体点就是清除P2之后的所有提议，因为P2之后的所有提议只有<strong>旧Leader</strong>-Server1知道，其他Server不知道。</p>
+<h3 id="Paxos与Zab"><a href="#Paxos与Zab" class="headerlink" title="Paxos与Zab"></a>Paxos与Zab</h3><p><strong>① Paxos一致性</strong></p>
+<p>Paxos的一致性不能达到ZooKeeper的要求，我们可以下面一个例子。我们假设ZK集群由三台机器组成，Server1、Server2、Server3。Server1为Leader，他生成了三条Proposal，P1、P2、P3。但是在发送完P1之后，Server1就挂了。如下图8所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301228731477.png" alt="图8 Server1为Leader"></p>
+<p>Server1挂掉之后，Server3被选举成为Leader，因为在Server3里只有一条Proposal—P1。所以，Server3在P1的基础之上又发出了一条新Proposal—P2＇，P2＇的Zxid为02。如下图9所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301231707217.png" alt="图9 Server2成为Leader"></p>
+<p>Server2发送完P2＇之后，它也挂了。此时Server1已经重启恢复，并再次成为了Leader。那么，Server1将发送还没有被deliver的Proposal—P2和P3。由于Follower-Server2中<strong>P2＇</strong>的Zxid为02和Leader-Server1中<strong>P2</strong>的Zxid相等，所以P2会被拒绝。而<strong>P3</strong>，将会被Server2接受。如图10所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301235307875.png" alt="图10 Server1再次成为Leader"></p>
+<p>我们分析一下Follower-Server2中的Proposal，由于P2’将P2的内容覆盖了。所以导致，Server2中的Proposal-P3无法生效，因为他的父节点并不存在。</p>
+<p><strong>② Zab一致性</strong></p>
+<p>首先来分析一下，上面的示例中为什么不满足ZooKeeper需求。ZooKeeper是一个树形结构，很多操作都要先检查才能确定能不能执行，比如，在图10中Server2有三条Proposal。<strong>P1</strong>的事务是创建节点”/zk”，<strong>P2’</strong>是创建节点”/c”，而<strong>P3</strong>是创建节点 “/a/b”,由于”/a”还没建，创建”a/b”就搞不定了。那么，我们就能从此看出Paxos的一致性达不到ZooKeeper一致性的要求。</p>
+<p>为了达到ZooKeeper所需要的一致性，ZooKeeper采用了Zab协议。Zab做了如下几条保证，来达到ZooKeeper要求的一致性。</p>
+<p>(a) Zab要保证同一个leader的发起的事务要按顺序被apply，同时还要保证只有先前的leader的所有事务都被apply之后，新选的leader才能在发起事务。</p>
+<p>(b) 一些已经Skip的消息，需要仍然被Skip。</p>
+<p>我想对于第一条保证大家都能理解，它主要是为了保证每 个Server的数据视图的一致性。我重点解释一下第二条，它是如何实现。为了能够实现，Skip已经被skip的消息。我们在Zxid中引入了 epoch，如下图所示。每当Leader发生变换时，epoch位就加1，counter位置0。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301238269318.png" alt="图 11 Zxid"></p>
+<p>我们继续使用上面的例子，看一下他是如何实现Zab的第二条保证的。我们假设ZK集群由三台机器组成，Server1、Server2、Server3。Server1为Leader，他生成了三条 Proposal，P1、P2、P3。但是在发送完P1之后，Server1就挂了。如下图12所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301242331261.png" alt="图 12 Server1为Leader"></p>
+<p>Server1挂掉之后，Server3被选举成为 Leader，因为在Server3里只有一条Proposal—P1。所以，Server3在P1的基础之上又发出了一条新Proposal—P2＇， 由于Leader发生了变换，epoch要加1，所以epoch由原来的0变成了1，而counter要置0。那么，P2＇的Zxid为<strong>1</strong>0。如下图13所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301245926217.png" alt="图 13 Server3为Leader"></p>
+<p>Server3发送完P2＇之后，它也挂了。此时Server1已经重启恢复，并再次成为了Leader。那么，Server1将发送还没有被deliver的Proposal—P2和P3。由于Server2中<strong>P2＇</strong>的Zxid为<strong>10，</strong>而Leader-Server1中<strong>P2</strong>和<strong>P3</strong>的Zxid分别为<strong>02</strong>和<strong>03</strong>，<strong>P2＇</strong>的epoch位高于P2和P3。所以此时Leader-Server1的P2和P3都会被拒绝,那么我们Zab的第二条保证也就实现了。如图14所示。</p>
+<p><img src="/2019/08/23/zookeeper-consistency/031301251394117.png" alt="图 14 Server1再次成为Leader"></p>
 <h2 id="消息广播-事务操作"><a href="#消息广播-事务操作" class="headerlink" title="消息广播(事务操作)"></a>消息广播(事务操作)</h2><p>一旦Leader已经和多数的Follower进行了状态同步后，他就可以开始广播消息了，即进入广播状态。ZooKeeper服务一直维持在Broadcast状态，直到Leader崩溃了或者Leader失去了大部分的Followers支持。</p>
 <p>ZAB协议对于事务操作的处理是一个类似于二阶段提交过程。针对客户端的事务请求，leader服务器会为其生成对应的事务proposal，并将其发送给集群中所有follower机器，然后收集各自的选票，最后进行事务提交。流程如下图。</p>
 <p><img src="/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png" alt="Zookeeper事务操作"></p>
@@ -595,7 +648,7 @@
 <p>Leader会广播已经被deliver的Proposal消息。在发出一个Proposal消息前，Leader会分配给Proposal一个单调递增的唯一id，称之为zxid。因为Zab保证了因果有序， 所以递交的消息也会按照zxid进行排序。广播是把Proposal封装到消息当中，并添加到指向Follower的输出队列中，通过FIFO信道发送到 Follower。当Follower收到一个Proposal时，会将该proposal写入到事务日志，然后立马反馈ACK给leader，也就是说如果不是网络、内存或磁盘等问题，follower肯定会写入成功，并正常反馈ACK。leader收到过半follower的ACK后，会广播commit消息给所有learner，并将事务应用到内存；learner收到commit消息后会将事务应用到内存。这个用来达成共识的协议被设计成具有原子性，因此每个修改要么成功要么失败。</p>
 <p><strong>ZAB协议中多次用到“过半”设计策略 ，该策略是zk在A（可用性）与C（一致性）间做的取舍，也是zk具有高容错特性的本质。相较分布式事务中的2PC（二阶段提交协议）的“全量通过”，ZAB协议可用性更高（牺牲了部分一致性），能在集群半数以下服务宕机时正常对外提供服务。</strong></p>
 <h1 id="ZooKeeper的数据一致性保障"><a href="#ZooKeeper的数据一致性保障" class="headerlink" title="ZooKeeper的数据一致性保障"></a>ZooKeeper的数据一致性保障</h1><p><strong>顺序一致性</strong>: <strong>来自任意特定客户端的更新都会按其发送顺序被提交保持一致</strong>。也就是说，针对同一个Follower A提交的写请求request1、request2，某些Follower虽然可能不能在请求提交成功后立即看到（也就是强一致性），但经过自身与Leader之间的同步后，这些Follower在看到这两个请求时，一定是先看到request1，然后再看到request2，两个请求之间不会乱序，即顺序一致性。如下图: </p>
-<p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="zookeeper写请求流程.png"></p>
+<p><img src="/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png" alt="zookeeper写请求流程"></p>
 <blockquote>
 <p>Leader在处理第4步Follower的ack回复时，采用过半数响应即成功原则，也就是这时候有的Follower是还没有处理或者处理成功这个请求的</p>
 </blockquote>
@@ -630,6 +683,7 @@
 <p><strong>进行leader选举时集群都是不可用</strong>。在使用ZooKeeper获取服务列表时，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。所以说，ZooKeeper不能保证服务可用性。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
 <li>浅析Zookeeper的一致性原理: <a href="https://zhuanlan.zhihu.com/p/25594630" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/25594630</a></li>
+<li>深入解读zookeeper一致性原理: <a href="https://www.cnblogs.com/wuxl360/p/5817646.html" target="_blank" rel="noopener">https://www.cnblogs.com/wuxl360/p/5817646.html</a></li>
 <li>分布式系统CAP定理: <a href="https://sainpo.top/2019/08/23/distributed-systems-cap" target="_blank" rel="noopener">https://sainpo.top/2019/08/23/distributed-systems-cap</a></li>
 </ul>
 
@@ -3048,12 +3102,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">147k</span>
+    <span title="站点总字数">152k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:14</span>
+    <span title="站点阅读时长">2:18</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
