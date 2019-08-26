@@ -82,7 +82,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/031301251394117.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png">
-<meta property="og:updated_time" content="2019-08-25T13:21:00.399Z">
+<meta property="og:updated_time" content="2019-08-26T13:02:16.368Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper一致性保证">
 <meta name="twitter:description" content="zookeeper（简称zk），顾名思义，为动物园管理员的意思，动物对应服务节点，zk是这些节点的管理者。在分布式场景中，zk的应用非常广泛，如：数据发布/订阅、命名服务、配置中心、分布式锁、集群管理、选主与服务发现等等。这不仅得益于zk类文件系统的数据模型和基于Watcher机制的分布式事件通知，也得益于zk特殊的高容错数据一致性协议。  这里的一致性，是指数据在多个副本之间保持一致的特性。分布">
@@ -332,7 +332,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-25 21:21:00" itemprop="dateModified" datetime="2019-08-25T21:21:00+08:00">2019-08-25</time>
+                <time title="修改时间：2019-08-26 21:02:16" itemprop="dateModified" datetime="2019-08-26T21:02:16+08:00">2019-08-26</time>
               </span>
             
           
@@ -386,7 +386,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">13 分钟</span>
+              <span title="阅读时长">14 分钟</span>
             </span>
           
 
@@ -543,9 +543,14 @@
 <p><strong>不能保证每次服务请求的可用性</strong>。任何时刻对ZooKeeper的访问请求能得到一致的数据结果，同时系统对网络分割具备容错性；但是它不能保证每次服务请求的可用性（注：也就是在极端环境下，ZooKeeper可能会丢弃一些请求，消费者程序需要重新请求才能获得结果）。所以说，ZooKeeper不能保证服务可用性。</p>
 <p><strong>进行leader选举时集群都是不可用</strong>。在使用ZooKeeper获取服务列表时，当master节点因为网络故障与其他节点失去联系时，剩余节点会重新进行leader选举。问题在于，选举leader的时间太长，30 ~ 120s, 且选举期间整个zk集群都是不可用的，这就导致在选举期间注册服务瘫痪，虽然服务能够最终恢复，但是漫长的选举时间导致的注册长期不可用是不能容忍的。所以说，ZooKeeper不能保证服务可用性。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li>浅析Zookeeper的一致性原理: <a href="https://zhuanlan.zhihu.com/p/25594630" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/25594630</a></li>
-<li>深入解读zookeeper一致性原理: <a href="https://www.cnblogs.com/wuxl360/p/5817646.html" target="_blank" rel="noopener">https://www.cnblogs.com/wuxl360/p/5817646.html</a></li>
-<li>分布式系统CAP定理: <a href="https://sainpo.top/2019/08/23/distributed-systems-cap" target="_blank" rel="noopener">https://sainpo.top/2019/08/23/distributed-systems-cap</a></li>
+<li><p>详细投票的过程参见<a href="https://dbaplus.cn/news-141-1875-1.html?spm=ata.13261165.0.0.3e572d4cQLT4Cu，建议阅读这篇论文" target="_blank" rel="noopener">https://dbaplus.cn/news-141-1875-1.html?spm=ata.13261165.0.0.3e572d4cQLT4Cu，建议阅读这篇论文</a>: <a href="http://www.tcs.hut.fi/Studies/T-79.5001/reports/2012-deSouzaMedeiros.pdf?spm=ata.13261165.0.0.3e572d4cQLT4Cu&file=2012-deSouzaMedeiros.pdf" target="_blank" rel="noopener">ZooKeeper’s atomic broadcast protocol:Theory and practice</a></p>
+</li>
+<li><p>浅析Zookeeper的一致性原理: <a href="https://zhuanlan.zhihu.com/p/25594630" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/25594630</a></p>
+</li>
+<li><p>深入解读zookeeper一致性原理: <a href="https://www.cnblogs.com/wuxl360/p/5817646.html" target="_blank" rel="noopener">https://www.cnblogs.com/wuxl360/p/5817646.html</a></p>
+</li>
+<li><p>分布式系统CAP定理: <a href="https://sainpo.top/2019/08/23/distributed-systems-cap" target="_blank" rel="noopener">https://sainpo.top/2019/08/23/distributed-systems-cap</a></p>
+</li>
 </ul>
 
     </div>
