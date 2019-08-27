@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：16:10:39" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
+              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：16:18:00" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
             </span>
           
             
@@ -363,7 +363,7 @@
       
           
             <h1 id="一致性非锁定读"><a href="#一致性非锁定读" class="headerlink" title="一致性非锁定读"></a>一致性非锁定读</h1><p>一致性非锁定读(consistent nonlocking read)是指InnoDB存储引擎通过多版本控制(MVVC)读取当前数据库中行数据的方式。如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB会去读取行的一个快照。</p>
-<p><img src="https://segmentfault.com/img/bVbjIX6?w=569&h=304" alt="一致性非锁定读示意图"></p>
+<p><img src="/2019/08/27/innodb-consistent-nonlocking-read/853859881-5bf1705c03809.jpeg" alt="一致性非锁定读示意图"></p>
 <p>上图直观地展现了InnoDB一致性非锁定读的机制。之所以称其为非锁定读，是因为不需要等待行上排他锁的释放。快照数据是指该行的之前版本的数据，每行记录可能有多个版本，一般称这种技术为行多版本技术。由此带来的并发控制，称之为多版本并发控制(Multi Version Concurrency Control, MVVC)。InnoDB是通过undo log来实现MVVC。undo log本身用来在事务中回滚数据，因此快照数据本身是没有额外开销。此外，读取快照数据是不需要上锁的，因为没有事务需要对历史的数据进行修改操作。</p>
 <h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>一致性非锁定读是InnoDB默认的读取方式，即读取不会占用和等待行上的锁。但是并不是在每个事务隔离级别下都是采用此种方式。此外，即使都是使用一致性非锁定读，但是对于快照数据的定义也各不相同。</p>
 <p>在事务隔离级别READ COMMITTED和REPEATABLE READ下，InnoDB使用一致性非锁定读。然而，对于快照数据的定义却不同。在READ COMMITTED事务隔离级别下，一致性非锁定读总是读取被锁定行的最新一份快照数据。而在REPEATABLE READ事务隔离级别下，则读取事务开始时的行数据版本。</p>
