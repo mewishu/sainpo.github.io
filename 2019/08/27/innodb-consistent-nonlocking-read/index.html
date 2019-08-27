@@ -74,7 +74,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/1062683863-5bf170de9dea7_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/685302939-5bf170f286454_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/225442626-5bf1710438a7b_articlex.jpeg">
-<meta property="og:updated_time" content="2019-08-27T08:27:54.415Z">
+<meta property="og:updated_time" content="2019-08-27T08:36:09.050Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL探秘:InnoDB一致性非锁定读">
 <meta name="twitter:description" content="一致性非锁定读一致性非锁定读(consistent nonlocking read)是指InnoDB存储引擎通过多版本控制(MVVC)读取当前数据库中行数据的方式。如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB会去读取行的一个快照。  上图直观地展现了InnoDB一致性非锁定读的机制。之所以称其为非锁定读，是因为不需要等待行上排他锁">
@@ -311,7 +311,7 @@
                 
               
 
-              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：16:27:54" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
+              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：16:36:09" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
             </span>
           
             
@@ -395,7 +395,7 @@
 <p>在会话B的事务中，将test表中id为1的记录修改为id=3，但是事务同样也没有提交，这样id=1的行其实加了一个排他锁。由于InnoDB在READ COMMITTED和REPEATABLE READ事务隔离级别下使用一致性非锁定读，这时如果会话A再次读取id为1的记录，仍然能够读取到相同的数据。此时，READ COMMITTED和REPEATABLE READ事务隔离级别没有任何区别。</p>
 <p><img src="/2019/08/27/innodb-consistent-nonlocking-read/415780367-5bf17074cec9d_articlex.jpeg" alt="会话A和会话B示意图"></p>
 <p>如上图所示，当会话B提交事务后，会话A再次运行<code>SELECT * FROM test WHERE id = 1</code>的SQL语句时，两个事务隔离级别下得到的结果就不一样了。<br>对于READ COMMITTED的事务隔离级别，它总是读取行的最新版本，如果行被锁定了，则读取该行版本的最新一个快照。因为会话B的事务已经提交，所以在该隔离级别下上述SQL语句的结果集是空的。<br>对于REPEATABLE READ的事务隔离级别，总是读取事务开始时的行数据，因此，在该隔离级别下，上述SQL语句仍然会获得相同的数据。</p>
-<h1 id="MVVC"><a href="#MVVC" class="headerlink" title="MVVC"></a>MVVC</h1><p> 我们首先来看一下wiki上对MVVC的定义：</p>
+<h1 id="MVVC"><a href="#MVVC" class="headerlink" title="MVVC"></a>MVVC</h1><p>我们首先来看一下wiki上对MVVC的定义：</p>
 <blockquote>
 <p>Multiversion concurrency control (MCC or MVCC), is a concurrency control<br>method commonly used by database management systems to provide<br>concurrent access to the database and in programming languages to<br>implement transactional memory.</p>
 </blockquote>
