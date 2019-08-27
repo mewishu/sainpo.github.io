@@ -75,7 +75,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/1062683863-5bf170de9dea7_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/685302939-5bf170f286454_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/225442626-5bf1710438a7b_articlex.jpeg">
-<meta property="og:updated_time" content="2019-08-27T09:50:25.679Z">
+<meta property="og:updated_time" content="2019-08-27T09:52:55.153Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL探秘:InnoDB一致性非锁定读">
 <meta name="twitter:description" content="一致性非锁定读一致性非锁定读(consistent nonlocking read)是指InnoDB存储引擎通过多版本控制(MVVC)读取当前数据库中行数据的方式。如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB会去读取行的一个快照。  上图直观地展现了InnoDB一致性非锁定读的机制。之所以称其为非锁定读，是因为不需要等待行上排他锁">
@@ -312,7 +312,7 @@
                 
               
 
-              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：17:50:25" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
+              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：17:52:55" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
             </span>
           
             
@@ -452,7 +452,7 @@
 <p>如果db_trx_id大于或者等于low_limit_id，则该记录对于该Read View一定是不可见的。如果db_trx_id位于[up_limit_id, low_limit_id)范围内，需要在活跃读写事务数组(rw_trx_ids)中查找db_trx_id是否存在，如果存在，记录对于当前Read View是不可见的。<br>如果记录对于Read View不可见，需要通过记录的DB_ROLL_PTR指针遍历undo log，构造对当前Read View可见版本数据。<br>简单来说，Read View记录读开始时及其之后，所有的活动事务，这些事务所做的修改对于Read View是不可见的。除此之外，所有其他的小于创建Read View的事务号的所有记录均可见。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
 <li>MySQL探秘(六):InnoDB一致性非锁定读: <a href="https://segmentfault.com/a/1190000017055118" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017055118</a></li>
-<li><a href="https://www.cnblogs.com/zhoujinyi/p/3435982.html" target="_blank" rel="noopener">Innodb锁机制：Next-Key Lock 浅谈</a></li>
+<li>Innodb锁机制：Next-Key Lock 浅谈: <a href="https://www.cnblogs.com/zhoujinyi/p/3435982.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhoujinyi/p/3435982.html</a></li>
 </ul>
 
     </div>
