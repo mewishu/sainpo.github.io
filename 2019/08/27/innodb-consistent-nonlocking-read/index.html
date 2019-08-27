@@ -75,7 +75,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/1062683863-5bf170de9dea7_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/685302939-5bf170f286454_articlex.jpeg">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/225442626-5bf1710438a7b_articlex.jpeg">
-<meta property="og:updated_time" content="2019-08-27T09:37:55.462Z">
+<meta property="og:updated_time" content="2019-08-27T09:50:25.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL探秘:InnoDB一致性非锁定读">
 <meta name="twitter:description" content="一致性非锁定读一致性非锁定读(consistent nonlocking read)是指InnoDB存储引擎通过多版本控制(MVVC)读取当前数据库中行数据的方式。如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB会去读取行的一个快照。  上图直观地展现了InnoDB一致性非锁定读的机制。之所以称其为非锁定读，是因为不需要等待行上排他锁">
@@ -312,7 +312,7 @@
                 
               
 
-              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：17:37:55" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
+              <time title="创建时间：2019-08-27 15:44:15 / 修改时间：17:50:25" itemprop="dateCreated datePublished" datetime="2019-08-27T15:44:15+08:00">2019-08-27</time>
             </span>
           
             
@@ -359,7 +359,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">5.4k</span>
+              <span title="本文字数">5.5k</span>
             </span>
           
             <span class="post-meta-item">
@@ -399,7 +399,7 @@
 <p>如上图所示，当会话B提交事务后，会话A再次运行<code>SELECT * FROM test WHERE id = 1</code>的SQL语句时，两个事务隔离级别下得到的结果就不一样了。<br>对于READ COMMITTED的事务隔离级别，它总是读取行的最新版本，如果行被锁定了，则读取该行版本的最新一个快照。因为会话B的事务已经提交，所以在该隔离级别下上述SQL语句的结果是最新的。<br>对于REPEATABLE READ的事务隔离级别，总是读取事务开始时的行数据，因此，在该隔离级别下，上述SQL语句仍然会获得相同的数据。</p>
 <h3 id="不可重复读和幻读的区别"><a href="#不可重复读和幻读的区别" class="headerlink" title="不可重复读和幻读的区别"></a>不可重复读和幻读的区别</h3><p>很多人容易搞混不可重复读和幻读，确实这两者有些相似。但不可重复读重点在于update和delete，而幻读的重点在于insert。</p>
 <p>如果使用锁机制来实现这两种隔离级别，在可重复读中，该sql第一次读取到数据后，就将这些数据加锁，其它事务无法修改这些数据，就可以实现可重复读了。但这种方法却无法锁住insert的数据，所以当事务A先前读取了数据，或者修改了全部数据，事务B还是可以insert数据提交，这时事务A就会发现莫名其妙多了一条之前没有的数据，这就是幻读，不能通过行锁来避免。需要Serializable隔离级别 ，读用读锁，写用写锁，读锁和写锁互斥，这么做可以有效的避免幻读、不可重复读、脏读等问题，但会极大的降低数据库的并发能力。</p>
-<p>MySQL采用了gap lock，所以实际上MySQL的REPEATABLE READ隔离级别也解决了幻读的问题，也就是Mysql InnoDB在Read repeatable级别上使用next-key locking 策略来避免幻读现象的产生。</p>
+<p>MySQL采用了gap lock，所以实际上MySQL的REPEATABLE READ隔离级别也解决了幻读的问题，也就是Mysql InnoDB在Read repeatable级别上使用next-key locking 策略来避免幻读现象的产生。详见: <a href="https://www.cnblogs.com/zhoujinyi/p/3435982.html" target="_blank" rel="noopener">Innodb锁机制：Next-Key Lock 浅谈</a></p>
 <p>上文说的，是使用悲观锁机制来处理这两种问题，但是MySQL、ORACLE、PostgreSQL等成熟的数据库，出于性能考虑，都是使用了以乐观锁为理论基础的MVCC（多版本并发控制）来避免这两种问题。</p>
 <h1 id="MVVC"><a href="#MVVC" class="headerlink" title="MVVC"></a>MVVC</h1><p>我们首先来看一下wiki上对MVVC的定义：</p>
 <blockquote>
@@ -452,6 +452,7 @@
 <p>如果db_trx_id大于或者等于low_limit_id，则该记录对于该Read View一定是不可见的。如果db_trx_id位于[up_limit_id, low_limit_id)范围内，需要在活跃读写事务数组(rw_trx_ids)中查找db_trx_id是否存在，如果存在，记录对于当前Read View是不可见的。<br>如果记录对于Read View不可见，需要通过记录的DB_ROLL_PTR指针遍历undo log，构造对当前Read View可见版本数据。<br>简单来说，Read View记录读开始时及其之后，所有的活动事务，这些事务所做的修改对于Read View是不可见的。除此之外，所有其他的小于创建Read View的事务号的所有记录均可见。</p>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
 <li>MySQL探秘(六):InnoDB一致性非锁定读: <a href="https://segmentfault.com/a/1190000017055118" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017055118</a></li>
+<li><a href="https://www.cnblogs.com/zhoujinyi/p/3435982.html" target="_blank" rel="noopener">Innodb锁机制：Next-Key Lock 浅谈</a></li>
 </ul>
 
     </div>
