@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-28 17:05:17 / 修改时间：17:33:57" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
+              <time title="创建时间：2019-08-28 17:05:17 / 修改时间：17:55:46" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
             </span>
           
             
@@ -446,10 +446,10 @@
 <p>这里有个问题，加锁了之后如果机器宕机那么这个锁就不会得到释放所以会加入过期时间，加入过期时间需要和setNx同一个原子操作，在Redis2.8之前我们需要使用Lua脚本达到我们的目的，但是redis2.8之后redis支持nx和ex操作是同一原子操作。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set resourceName value ex <span class="number">5</span> nx</span><br></pre></td></tr></table></figure>
 
-<h2 id="5-2-Redission"><a href="#5-2-Redission" class="headerlink" title="5.2 Redission"></a>5.2 Redission</h2><p>Javaer都知道Jedis，Jedis是Redis的Java实现的客户端，其API提供了比较全面的Redis命令的支持。Redission也是Redis的客户端，相比于Jedis功能简单。Jedis简单使用阻塞的I/O和redis交互，Redission通过Netty支持非阻塞I/O。Jedis最新版本2.9.0是2016年的快3年了没有更新，而Redission最新版本是2018.10月更新。</p>
-<p>Redission封装了锁的实现，其继承了java.util.concurrent.locks.Lock的接口，让我们像操作我们的本地Lock一样去操作Redission的Lock，下面介绍一下其如何实现分布式锁。</p>
+<h2 id="5-2-Redisson"><a href="#5-2-Redisson" class="headerlink" title="5.2 Redisson"></a>5.2 Redisson</h2><p>Javaer都知道Jedis，Jedis是Redis的Java实现的客户端，其API提供了比较全面的Redis命令的支持。Redisson也是Redis的客户端，相比于Jedis功能简单。Jedis简单使用阻塞的I/O和redis交互，Redisson通过Netty支持非阻塞I/O。Jedis最新版本2.9.0是2016年的快3年了没有更新，而Redisson最新版本是2018.10月更新。</p>
+<p>Redisson封装了锁的实现，其继承了java.util.concurrent.locks.Lock的接口，让我们像操作我们的本地Lock一样去操作Redisson的Lock，下面介绍一下其如何实现分布式锁。</p>
 <p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353239383938363263653561663f773d3131363026683d34363626663d706e6726733d313131363436.png" alt="img"></p>
-<p>Redission不仅提供了Java自带的一些方法(lock,tryLock)，还提供了异步加锁，对于异步编程更加方便。 由于内部源码较多，就不贴源码了，这里用文字叙述来分析他是如何加锁的，这里分析一下tryLock方法:</p>
+<p>Redisson不仅提供了Java自带的一些方法(lock,tryLock)，还提供了异步加锁，对于异步编程更加方便。 由于内部源码较多，就不贴源码了，这里用文字叙述来分析他是如何加锁的，这里分析一下tryLock方法:</p>
 <ol>
 <li><p>尝试加锁:首先会尝试进行加锁，由于保证操作是原子性，那么就只能使用lua脚本，相关的lua脚本如下： </p>
 <p><img src="/2019/08/28/distributed-lock/20190828172849.jpg" alt="img"></p>
@@ -464,8 +464,8 @@
 </ol>
 <p>对于我们的unlock方法比较简单也是通过lua脚本进行解锁，如果是可重入锁，只是减1。如果是非加锁线程解锁，那么解锁失败。 </p>
 <p><img src="/2019/08/28/distributed-lock/20190828173014.jpg" alt="img"></p>
-<p>Redission还有公平锁的实现，对于公平锁其利用了list结构和hashset结构分别用来保存我们排队的节点，和我们节点的过期时间，用这两个数据结构帮助我们实现公平锁，这里就不展开介绍了，有兴趣可以参考源码。</p>
-<h2 id="5-3-RedLock"><a href="#5-3-RedLock" class="headerlink" title="5.3 RedLock"></a>5.3 RedLock</h2><p>我们想象一个这样的场景当机器A申请到一把锁之后，如果Redis主宕机了，这个时候从机并没有同步到这一把锁，那么机器B再次申请的时候就会再次申请到这把锁，为了解决这个问题Redis作者提出了RedLock红锁的算法,在Redission中也对RedLock进行了实现。</p>
+<p>Redisson还有公平锁的实现，对于公平锁其利用了list结构和hashset结构分别用来保存我们排队的节点，和我们节点的过期时间，用这两个数据结构帮助我们实现公平锁，这里就不展开介绍了，有兴趣可以参考源码。</p>
+<h2 id="5-3-RedLock"><a href="#5-3-RedLock" class="headerlink" title="5.3 RedLock"></a>5.3 RedLock</h2><p>我们想象一个这样的场景当机器A申请到一把锁之后，如果Redis主宕机了，这个时候从机并没有同步到这一把锁，那么机器B再次申请的时候就会再次申请到这把锁，为了解决这个问题Redis作者提出了RedLock红锁的算法,在Redisson中也对RedLock进行了实现。</p>
 <p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353262643935653131613862333f773d3130363926683d33383026663d706e6726733d3732323731.png" alt="img"></p>
 <p>通过上面的代码，我们需要实现多个Redis集群，然后进行红锁的加锁，解锁。具体的步骤如下:</p>
 <ol>
@@ -477,7 +477,7 @@
 </ol>
 <p>可以看见RedLock基本原理是利用多个Redis集群，用多数的集群加锁成功，减少Redis某个集群出故障，造成分布式锁出现问题的概率。</p>
 <h2 id="5-4-Redis小结"><a href="#5-4-Redis小结" class="headerlink" title="5.4 Redis小结"></a>5.4 Redis小结</h2><ul>
-<li>优点:对于Redis实现简单，性能对比ZK和Mysql较好。如果不需要特别复杂的要求，那么自己就可以利用setNx进行实现，如果自己需要复杂的需求的话那么可以利用或者借鉴Redission。对于一些要求比较严格的场景来说的话可以使用RedLock。</li>
+<li>优点:对于Redis实现简单，性能对比ZK和Mysql较好。如果不需要特别复杂的要求，那么自己就可以利用setNx进行实现，如果自己需要复杂的需求的话那么可以利用或者借鉴Redisson。对于一些要求比较严格的场景来说的话可以使用RedLock。</li>
 <li>缺点:需要维护Redis集群，如果要实现RedLock那么需要维护更多的集群。</li>
 </ul>
 <h1 id="6-分布式锁的安全问题"><a href="#6-分布式锁的安全问题" class="headerlink" title="6.分布式锁的安全问题"></a>6.分布式锁的安全问题</h1><p>上面我们介绍过红锁，但是Martin Kleppmann认为其依然不安全。有关于Martin反驳的几点，我认为其实不仅仅局限于RedLock,前面说的算法基本都有这个问题，下面我们来讨论一下这些问题:</p>
