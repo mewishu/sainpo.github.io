@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-08-28 14:25:23 / 修改时间：15:37:10" itemprop="dateCreated datePublished" datetime="2019-08-28T14:25:23+08:00">2019-08-28</time>
+              <time title="创建时间：2019-08-28 14:25:23 / 修改时间：16:27:38" itemprop="dateCreated datePublished" datetime="2019-08-28T14:25:23+08:00">2019-08-28</time>
             </span>
           
             
@@ -338,7 +338,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">1.9k</span>
+              <span title="本文字数">4.4k</span>
             </span>
           
             <span class="post-meta-item">
@@ -348,7 +348,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">2 分钟</span>
+              <span title="阅读时长">4 分钟</span>
             </span>
           
 
@@ -368,7 +368,7 @@
 <li>使用时间戳（timestamp）。乐观锁定的第二种实现方式和第一种差不多，同样是在需要乐观锁控制的table中增加一个字段，名称无所谓，字段类型使用时间戳（timestamp）, 和上面的version类似，也是在更新提交的时候检查当前数据库中数据的时间戳和自己更新前取到的时间戳进行对比，如果一致则OK，否则就是版本冲突。</li>
 </ol>
 <p>Java JUC中的atomic包就是乐观锁的一种实现，AtomicInteger 通过CAS（Compare And Set）操作实现线程安全的自增。</p>
-<h1 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h1><p>牙膏库存为 100 件，用户 A （线程 A ）和用户 B （线程 B ）同时购买一件牙膏。</p>
+<h1 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h1><h2 id="牙膏库存"><a href="#牙膏库存" class="headerlink" title="牙膏库存"></a>牙膏库存</h2><p>牙膏库存为 100 件，用户 A （线程 A ）和用户 B （线程 B ）同时购买一件牙膏。</p>
 <ol>
 <li>线程 A 读取牙膏库存（ 100 件，版本号为 1 ，不加锁），线程 B 读取牙膏库存（ 100 件，版本号为 1 ，不加锁）；</li>
 <li>线程 A 将库存减 1 ， 100-1=99 件；线程 B 将库存减 1 ， 100-1=99 件（注意还没更新到牙膏库存）；</li>
@@ -377,12 +377,26 @@
 <li>线程 B 将库存减 1 后（库存为 99-1=98 件），通过本地版本号（为 2 ）与数据库版本号（为 2 ）对比，因为版本号一致，所以更新牙膏库存（牙膏库存变为 98 件，版本号变为 3 ），线程 B 执行完毕。</li>
 </ol>
 <p><img src="/2019/08/28/optimistic-lock/leguansuo.png" alt="乐观锁(执行顺序为绿色 → 蓝色 → 红色)"></p>
+<h2 id="电商下单"><a href="#电商下单" class="headerlink" title="电商下单"></a>电商下单</h2><p>考虑电商系统中的下单流程，商品的库存量是固定的，如何保证商品数量不超卖？ 其实需要保证数据一致性：某个人点击秒杀后系统中查出来的库存量和实际扣减库存时库存量的一致性就可以。</p>
+<p>假设，MySQL数据库中商品库存表tb_product_stock 结构定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `tb_product_stock` (</span><br><span class="line">  `id` bigint(<span class="number">20</span>) NOT NULL AUTO_INCREMENT COMMENT <span class="string">'自增ID'</span>,</span><br><span class="line">  `product_id` bigint(<span class="number">32</span>) NOT NULL COMMENT <span class="string">'商品ID'</span>,</span><br><span class="line">  `number` INT(<span class="number">8</span>) NOT NULL DEFAULT <span class="number">0</span> COMMENT <span class="string">'库存数量'</span>,</span><br><span class="line">  `create_time` DATETIME NOT NULL COMMENT <span class="string">'创建时间'</span>,</span><br><span class="line">  `modify_time` DATETIME NOT NULL COMMENT <span class="string">'更新时间'</span>,</span><br><span class="line">  <span class="function">PRIMARY <span class="title">KEY</span> <span class="params">(`id`)</span>,</span></span><br><span class="line"><span class="function">  UNIQUE KEY `index_pid` <span class="params">(`product_id`)</span></span></span><br><span class="line"><span class="function">) ENGINE</span>=InnoDB DEFAULT CHARSET=utf8 COMMENT=<span class="string">'商品库存表'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>对应的POJO类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProductStock</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Long productId; <span class="comment">//商品id</span></span><br><span class="line">    <span class="keyword">private</span> Integer number; <span class="comment">//库存量</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">getProductId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> productId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setProductId</span><span class="params">(Long productId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.productId = productId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNumber</span><span class="params">(Integer number)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.number = number;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 更新库存(使用悲观锁)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> productId</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">updateStock</span><span class="params">(Long productId)</span></span>&#123;</span><br><span class="line">        <span class="comment">//先锁定商品库存记录</span></span><br><span class="line">        ProductStock product = query(<span class="string">"SELECT * FROM tb_product_stock WHERE product_id=#&#123;productId&#125; FOR UPDATE"</span>, productId);</span><br><span class="line">        <span class="keyword">if</span> (product.getNumber() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> updateCnt = update(<span class="string">"UPDATE tb_product_stock SET number=number-1 WHERE product_id=#&#123;productId&#125;"</span>, productId);</span><br><span class="line">            <span class="keyword">if</span>(updateCnt &gt; <span class="number">0</span>)&#123;    <span class="comment">//更新库存成功</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 下单减库存</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> productId</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">updateStock</span><span class="params">(Long productId)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> updateCnt = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (updateCnt == <span class="number">0</span>) &#123;</span><br><span class="line">        ProductStock product = query(<span class="string">"SELECT * FROM tb_product_stock WHERE product_id=#&#123;productId&#125;"</span>, productId);</span><br><span class="line">        <span class="keyword">if</span> (product.getNumber() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            updateCnt = update(<span class="string">"UPDATE tb_product_stock SET number=number-1 WHERE product_id=#&#123;productId&#125; AND number=#&#123;number&#125;"</span>, productId, product.getNumber());</span><br><span class="line">            <span class="keyword">if</span>(updateCnt &gt; <span class="number">0</span>)&#123;    <span class="comment">//更新库存成功</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;    <span class="comment">//卖完啦</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用乐观锁更新库存的时候不加锁，当提交更新时需要判断数据是否已经被修改（AND number=#{number}），只有在 number等于上一次查询到的number时 才提交更新。</p>
+<p><strong>注意</strong>：UPDATE 语句的WHERE 条件字句上需要建索引</p>
+<h3 id="乐观锁与悲观锁的区别"><a href="#乐观锁与悲观锁的区别" class="headerlink" title="乐观锁与悲观锁的区别"></a>乐观锁与悲观锁的区别</h3><p>乐观锁的思路一般是表中增加版本字段，更新时where语句中增加版本的判断，算是一种CAS（Compare And Swep）操作，商品库存场景中number起到了版本控制（相当于version）的作用（ AND number=#{number}）。</p>
+<p>悲观锁之所以是悲观，在于他认为本次操作会发生并发冲突，所以一开始就对商品加上锁（SELECT … FOR UPDATE），然后就可以安心的做判断和更新，因为这时候不会有别人更新这条商品库存。</p>
 <h1 id="CAS：compare-and-swap"><a href="#CAS：compare-and-swap" class="headerlink" title="CAS：compare and swap"></a>CAS：compare and swap</h1><p> CAS的含义是，我认为V的值应该为A，如果是，那么将V的值更新为B，否则不修改并告诉V的值实际为多少。<br> 附上java.util.concurrent.atomic.AtomicLong中的源码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getAndAccumulate</span><span class="params">(<span class="keyword">long</span> x,</span></span></span><br><span class="line"><span class="function"><span class="params">                                   LongBinaryOperator accumulatorFunction)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> prev, next;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        prev = get();</span><br><span class="line">        next = accumulatorFunction.applyAsLong(prev, x);</span><br><span class="line">    &#125; <span class="keyword">while</span> (!compareAndSet(prev, next));</span><br><span class="line">    <span class="keyword">return</span> prev;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">long</span> expect, <span class="keyword">long</span> update)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapLong(<span class="keyword">this</span>, valueOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
-<li>MySQL探秘(六):InnoDB一致性非锁定读: <a href="https://segmentfault.com/a/1190000017055118" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017055118</a></li>
-<li>Innodb锁机制：Next-Key Lock 浅谈: <a href="https://www.cnblogs.com/zhoujinyi/p/3435982.html" target="_blank" rel="noopener">https://www.cnblogs.com/zhoujinyi/p/3435982.html</a></li>
+<li>MySQL 乐观锁与悲观锁: <a href="https://www.jianshu.com/p/f5ff017db62a" target="_blank" rel="noopener">https://www.jianshu.com/p/f5ff017db62a</a></li>
 </ul>
 
           
@@ -2802,12 +2816,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">162k</span>
+    <span title="站点总字数">164k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:27</span>
+    <span title="站点阅读时长">2:29</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
