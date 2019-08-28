@@ -8,8 +8,8 @@
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/2019/08/28/optimistic-lock/</loc>
-        <lastmod>2019-08-28T08:27:38.658Z</lastmod>
+        <loc>http://www.sainpo.top/2019/08/28/distributed-lock/</loc>
+        <lastmod>2019-08-28T09:33:57.045Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -17,7 +17,15 @@
 
     <url>
         <loc>http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/</loc>
-        <lastmod>2019-08-28T06:22:38.207Z</lastmod>
+        <lastmod>2019-08-28T09:05:03.993Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/2019/08/28/optimistic-lock/</loc>
+        <lastmod>2019-08-28T09:04:19.113Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

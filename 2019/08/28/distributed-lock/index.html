@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="generator" content="Hexo 3.9.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.3.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.3.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.3.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.3.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/fancybox/source/jquery.fancybox.css">
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    fancybox: true,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    search: {
+      root: '/',
+      path: 'search.xml'
+    },
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    }
+  };
+</script>
+
+  <meta name="description" content="1.背景对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。">
+<meta name="keywords" content="分布式锁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式锁">
+<meta property="og:url" content="http://www.sainpo.top/2019/08/28/distributed-lock/index.html">
+<meta property="og:site_name" content="窦小固的小木屋">
+<meta property="og:description" content="1.背景对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/E8469D6D-26BE-4543-A0F4-648FA184DAA4.jpg">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564316231326430303132663f773d35393426683d33333126663d706e6726733d3431333833.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564386631366432323737623f773d3132303226683d35343126663d706e6726733d3934353534.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564663061383338353962633f773d34343226683d31363826663d706e6726733d3136373934.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346565326630626630613761653f773d39343526683d34393726663d706e6726733d3734303136.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/20190828172401.jpg">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353133646466396632626438373f773d3135373426683d37333126663d706e6726733d3733383137.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353134613764623031636134613f773d3131303926683d33353326663d706e6726733d3537353833.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353239383938363263653561663f773d3131363026683d34363626663d706e6726733d313131363436.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/20190828172849.jpg">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/20190828173014.jpg">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353262643935653131613862333f773d3130363926683d33383026663d706e6726733d3732323731.png">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353334353064343561326139363f773d3131333526683d34323926663d706e6726733d3439303436.png">
+<meta property="og:updated_time" content="2019-08-28T09:33:57.045Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式锁">
+<meta name="twitter:description" content="1.背景对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。">
+<meta name="twitter:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/E8469D6D-26BE-4543-A0F4-648FA184DAA4.jpg">
+  <link rel="canonical" href="http://www.sainpo.top/2019/08/28/distributed-lock/">
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>分布式锁 | 窦小固的小木屋</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">窦小固的小木屋</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">西河书生</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+    <ul id="menu" class="menu">
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-sitemap">
+      
+    
+
+    <a href="/sitemap.xml" rel="section"><i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-search">
+          <a href="javascript:;" class="popup-trigger">
+          
+            <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+    </div>
+</nav>
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    <div class="reading-progress-bar"></div>
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/28/distributed-lock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">分布式锁
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-28 17:05:17 / 修改时间：17:33:57" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/并发控制/" itemprop="url" rel="index"><span itemprop="name">并发控制</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/并发控制/分布式锁/" itemprop="url" rel="index"><span itemprop="name">分布式锁</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon"
+              >
+                <i class="fa fa-eye"></i>
+                 阅读次数： 
+                <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+              </span>
+            </span>
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">7.8k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">7 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-背景"><a href="#1-背景" class="headerlink" title="1.背景"></a>1.背景</h1><p>对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。</p>
+<h1 id="2-分布式锁"><a href="#2-分布式锁" class="headerlink" title="2.分布式锁"></a>2.分布式锁</h1><h2 id="2-1为何需要分布式锁"><a href="#2-1为何需要分布式锁" class="headerlink" title="2.1为何需要分布式锁"></a>2.1为何需要分布式锁</h2><p>Martin Kleppmann是英国剑桥大学的分布式系统的研究员，之前和Redis之父Antirez进行过关于RedLock(红锁，后续有讲到)是否安全的激烈讨论。Martin认为一般我们使用分布式锁有两个场景:</p>
+<ul>
+<li>效率:使用分布式锁可以避免不同节点重复相同的工作，这些工作会浪费资源。比如用户付了钱之后有可能不同节点会发出多封短信。</li>
+<li>正确性:加分布式锁同样可以避免破坏正确性的发生，如果两个节点在同一条数据上面操作，比如多个节点机器对同一个订单操作不同的流程有可能会导致该笔订单最后状态出现错误，造成损失。</li>
+</ul>
+<h2 id="2-2分布式锁的一些特点"><a href="#2-2分布式锁的一些特点" class="headerlink" title="2.2分布式锁的一些特点"></a>2.2分布式锁的一些特点</h2><p>当我们确定了在不同节点上需要分布式锁，那么我们需要了解分布式锁到底应该有哪些特点:</p>
+<ul>
+<li>互斥性:和我们本地锁一样互斥性是最基本，但是分布式锁需要保证在不同节点的不同线程的互斥。</li>
+<li>可重入性:同一个节点上的同一个线程如果获取了锁之后那么也可以再次获取这个锁。</li>
+<li>锁超时:和本地锁一样支持锁超时，防止死锁。</li>
+<li>高效，高可用:加锁和解锁需要高效，同时也需要保证高可用防止分布式锁失效，可以增加降级。</li>
+<li>支持阻塞和非阻塞:和ReentrantLock一样支持lock和trylock以及tryLock(long timeOut)。</li>
+<li>支持公平锁和非公平锁(可选):公平锁的意思是按照请求加锁的顺序获得锁，非公平锁就相反是无序的。这个一般来说实现的比较少。</li>
+</ul>
+<h2 id="2-3常见的分布式锁"><a href="#2-3常见的分布式锁" class="headerlink" title="2.3常见的分布式锁"></a>2.3常见的分布式锁</h2><p>我们了解了一些特点之后，我们一般实现分布式锁有以下几个方式:</p>
+<ul>
+<li>MySql</li>
+<li>Zk</li>
+<li>Redis</li>
+<li>自研分布式锁:如谷歌的Chubby。</li>
+</ul>
+<p>下面分开介绍一下这些分布式锁的实现原理。</p>
+<h1 id="3-Mysql分布式锁"><a href="#3-Mysql分布式锁" class="headerlink" title="3.Mysql分布式锁"></a>3.Mysql分布式锁</h1><p>首先来说一下Mysql分布式锁的实现原理，相对来说这个比较容易理解，毕竟数据库和我们开发人员在平时的开发中息息相关。对于分布式锁我们可以创建一个锁表:</p>
+<p><img src="/2019/08/28/distributed-lock/E8469D6D-26BE-4543-A0F4-648FA184DAA4.jpg" alt="img"></p>
+<p> 前面我们所说的lock(),trylock(long timeout)，trylock()这几个方法可以用下面的伪代码实现。</p>
+<h2 id="3-1-lock"><a href="#3-1-lock" class="headerlink" title="3.1 lock()"></a>3.1 lock()</h2><p>lock一般是阻塞式的获取锁，意思就是不获取到锁誓不罢休，那么我们可以写一个死循环来执行其操作: </p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564316231326430303132663f773d35393426683d33333126663d706e6726733d3431333833.png" alt="img"></p>
+<p>mysqlLock.lcok内部是一个sql,为了达到可重入锁的效果那么我们应该先进行查询，如果有值，那么需要比较node_info是否一致，这里的node_info可以用机器IP和线程名字来表示，如果一致那么就加可重入锁count的值，如果不一致那么就返回false。如果没有值那么直接插入一条数据。伪代码如下: </p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564386631366432323737623f773d3132303226683d35343126663d706e6726733d3934353534.png" alt="img"></p>
+<p>需要注意的是这一段代码需要加事务，必须要保证这一系列操作的原子性。</p>
+<h2 id="3-2-tryLock-和tryLock-long-timeout"><a href="#3-2-tryLock-和tryLock-long-timeout" class="headerlink" title="3.2 tryLock()和tryLock(long timeout)"></a>3.2 tryLock()和tryLock(long timeout)</h2><p>tryLock()是非阻塞获取锁，如果获取不到那么就会马上返回，代码可以如下: </p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346564663061383338353962633f773d34343226683d31363826663d706e6726733d3136373934.png" alt="img"></p>
+<p> tryLock(long timeout)实现如下: </p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f372f313636346565326630626630613761653f773d39343526683d34393726663d706e6726733d3734303136.png" alt="img"></p>
+<p> mysqlLock.lock和上面一样，但是要注意的是select … for update这个是阻塞的获取行锁，如果同一个资源并发量较大还是有可能会退化成阻塞的获取锁。</p>
+<h2 id="3-3-unlock"><a href="#3-3-unlock" class="headerlink" title="3.3 unlock()"></a>3.3 unlock()</h2><p>unlock的话如果这里的count为1那么可以删除，如果大于1那么需要减去1。</p>
+<p><img src="/2019/08/28/distributed-lock/20190828172401.jpg" alt="img"></p>
+<h2 id="3-4-锁超时"><a href="#3-4-锁超时" class="headerlink" title="3.4 锁超时"></a>3.4 锁超时</h2><p>我们有可能会遇到我们的机器节点挂了，那么这个锁就不会得到释放，我们可以启动一个定时任务，通过计算一般我们处理任务的一般的时间，比如是5ms，那么我们可以稍微扩大一点，当这个锁超过20ms没有被释放我们就可以认定是节点挂了然后将其直接释放。</p>
+<h2 id="3-5-Mysql小结"><a href="#3-5-Mysql小结" class="headerlink" title="3.5 Mysql小结"></a>3.5 Mysql小结</h2><ul>
+<li>适用场景: Mysql分布式锁一般适用于资源不存在数据库，如果数据库存在比如订单，那么可以直接对这条数据加行锁，不需要我们上面多的繁琐的步骤，比如一个订单，那么我们可以用select * from order_table where id = ‘xxx’ for update进行加行锁，那么其他的事务就不能对其进行修改。</li>
+<li>优点:理解起来简单，不需要维护额外的第三方中间件(比如Redis,Zk)。</li>
+<li>缺点:虽然容易理解但是实现起来较为繁琐，需要自己考虑锁超时，加事务等等。性能局限于数据库，一般对比缓存来说性能较低。对于高并发的场景并不是很适合。</li>
+</ul>
+<h2 id="3-6-乐观锁"><a href="#3-6-乐观锁" class="headerlink" title="3.6 乐观锁"></a>3.6 乐观锁</h2><p>前面我们介绍的都是悲观锁，这里想额外提一下乐观锁，在我们实际项目中也是经常实现乐观锁，因为我们加行锁的性能消耗比较大，通常我们会对于一些竞争不是那么激烈，但是其又需要保证我们并发的顺序执行使用乐观锁进行处理，我们可以对我们的表加一个版本号字段，那么我们查询出来一个版本号之后，update或者delete的时候需要依赖我们查询出来的版本号，判断当前数据库和查询出来的版本号是否相等，如果相等那么就可以执行，如果不等那么就不能执行。这样的一个策略很像我们的CAS(Compare And Swap),比较并交换是一个原子操作。这样我们就能避免加select * for update行锁的开销。</p>
+<h1 id="4-ZooKeeper"><a href="#4-ZooKeeper" class="headerlink" title="4. ZooKeeper"></a>4. ZooKeeper</h1><p>ZooKeeper也是我们常见的实现分布式锁方法，相比于数据库如果没了解过ZooKeeper可能上手比较难一些。ZooKeeper是以Paxos算法为基础分布式应用程序协调服务。Zk的数据节点和文件目录类似，所以我们可以用此特性实现分布式锁。我们以某个资源为目录，然后这个目录下面的节点就是我们需要获取锁的客户端，未获取到锁的客户端注册需要注册Watcher到上一个客户端，可以用下图表示。</p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353133646466396632626438373f773d3135373426683d37333126663d706e6726733d3733383137.png" alt="img"></p>
+<p> /lock是我们用于加锁的目录,/resource_name是我们锁定的资源，其下面的节点按照我们加锁的顺序排列。</p>
+<h2 id="4-1-Curator"><a href="#4-1-Curator" class="headerlink" title="4.1 Curator"></a>4.1 Curator</h2><p>Curator封装了Zookeeper底层的Api，使我们更加容易方便的对Zookeeper进行操作，并且它封装了分布式锁的功能，这样我们就不需要再自己实现了。</p>
+<p>Curator实现了可重入锁(InterProcessMutex),也实现了不可重入锁(InterProcessSemaphoreMutex)。在可重入锁中还实现了读写锁。</p>
+<h2 id="4-2-InterProcessMutex"><a href="#4-2-InterProcessMutex" class="headerlink" title="4.2 InterProcessMutex"></a>4.2 InterProcessMutex</h2><p>InterProcessMutex是Curator实现的可重入锁，我们可以通过下面的一段代码实现我们的可重入锁:</p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353134613764623031636134613f773d3131303926683d33353326663d706e6726733d3537353833.png" alt="img"></p>
+<p>我们利用acuire进行加锁，release进行解锁。</p>
+<p>加锁的流程具体如下:</p>
+<ol>
+<li>首先进行可重入的判定:这里的可重入锁记录在ConcurrentMap&lt;Thread, LockData&gt; threadData这个Map里面，如果threadData.get(currentThread)是有值的那么就证明是可重入锁，然后记录就会加1。我们之前的Mysql其实也可以通过这种方法去优化，可以不需要count字段的值，将这个维护在本地可以提高性能。</li>
+<li>然后在我们的资源目录下创建一个节点:比如这里创建一个/0000000002这个节点，这个节点需要设置为EPHEMERAL_SEQUENTIAL也就是临时节点并且有序。</li>
+<li>获取当前目录下所有子节点，判断自己的节点是否位于子节点第一个。</li>
+<li>如果是第一个，则获取到锁，那么可以返回。</li>
+<li>如果不是第一个，则证明前面已经有人获取到锁了，那么需要获取自己节点的前一个节点。/0000000002的前一个节点是/0000000001，我们获取到这个节点之后，再上面注册Watcher(这里的watcher其实调用的是object.notifyAll(),用来解除阻塞)。</li>
+<li>object.wait(timeout)或object.wait():进行阻塞等待这里和我们第5步的watcher相对应。</li>
+</ol>
+<p>解锁的具体流程:</p>
+<ol>
+<li>首先进行可重入锁的判定:如果有可重入锁只需要次数减1即可，减1之后加锁次数为0的话继续下面步骤，不为0直接返回。</li>
+<li>删除当前节点。</li>
+<li>删除threadDataMap里面的可重入锁的数据。</li>
+</ol>
+<h2 id="4-3-读写锁"><a href="#4-3-读写锁" class="headerlink" title="4.3 读写锁"></a>4.3 读写锁</h2><p>Curator提供了读写锁，其实现类是InterProcessReadWriteLock，这里的每个节点都会加上前缀：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String READ_LOCK_NAME  = <span class="string">"__READ__"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String WRITE_LOCK_NAME = <span class="string">"__WRIT__"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>根据不同的前缀区分是读锁还是写锁，对于读锁，如果发现前面有写锁，那么需要将watcher注册到和自己最近的写锁。写锁的逻辑和我们之前4.2分析的依然保持不变。</p>
+<h2 id="4-4-锁超时"><a href="#4-4-锁超时" class="headerlink" title="4.4 锁超时"></a>4.4 锁超时</h2><p>Zookeeper不需要配置锁超时，由于我们设置节点是临时节点，我们的每个机器维护着一个ZK的session，通过这个session，ZK可以判断机器是否宕机。如果我们的机器挂掉的话，那么这个临时节点对应的就会被删除，所以我们不需要关心锁超时。</p>
+<h2 id="4-5-ZK小结"><a href="#4-5-ZK小结" class="headerlink" title="4.5 ZK小结"></a>4.5 ZK小结</h2><ul>
+<li>优点:ZK可以不需要关心锁超时时间，实现起来有现成的第三方包，比较方便，并且支持读写锁，ZK获取锁会按照加锁的顺序，所以其是公平锁。对于高可用利用ZK集群进行保证。</li>
+<li>缺点:ZK需要额外维护，增加维护成本，性能和Mysql相差不大，依然比较差。并且需要开发人员了解ZK是什么。</li>
+</ul>
+<h1 id="5-Redis"><a href="#5-Redis" class="headerlink" title="5.Redis"></a>5.Redis</h1><p>大家在网上搜索分布式锁，恐怕最多的实现就是Redis了，Redis因为其性能好，实现起来简单所以让很多人都对其十分青睐。</p>
+<h2 id="5-1-Redis分布式锁简单实现"><a href="#5-1-Redis分布式锁简单实现" class="headerlink" title="5.1 Redis分布式锁简单实现"></a>5.1 Redis分布式锁简单实现</h2><p>熟悉Redis的同学那么肯定对setNx(set if not exist)方法不陌生，如果不存在则更新，其可以很好的用来实现我们的分布式锁。对于某个资源加锁我们只需要</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setNx resourceName value</span><br></pre></td></tr></table></figure>
+
+<p>这里有个问题，加锁了之后如果机器宕机那么这个锁就不会得到释放所以会加入过期时间，加入过期时间需要和setNx同一个原子操作，在Redis2.8之前我们需要使用Lua脚本达到我们的目的，但是redis2.8之后redis支持nx和ex操作是同一原子操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set resourceName value ex <span class="number">5</span> nx</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-Redission"><a href="#5-2-Redission" class="headerlink" title="5.2 Redission"></a>5.2 Redission</h2><p>Javaer都知道Jedis，Jedis是Redis的Java实现的客户端，其API提供了比较全面的Redis命令的支持。Redission也是Redis的客户端，相比于Jedis功能简单。Jedis简单使用阻塞的I/O和redis交互，Redission通过Netty支持非阻塞I/O。Jedis最新版本2.9.0是2016年的快3年了没有更新，而Redission最新版本是2018.10月更新。</p>
+<p>Redission封装了锁的实现，其继承了java.util.concurrent.locks.Lock的接口，让我们像操作我们的本地Lock一样去操作Redission的Lock，下面介绍一下其如何实现分布式锁。</p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353239383938363263653561663f773d3131363026683d34363626663d706e6726733d313131363436.png" alt="img"></p>
+<p>Redission不仅提供了Java自带的一些方法(lock,tryLock)，还提供了异步加锁，对于异步编程更加方便。 由于内部源码较多，就不贴源码了，这里用文字叙述来分析他是如何加锁的，这里分析一下tryLock方法:</p>
+<ol>
+<li><p>尝试加锁:首先会尝试进行加锁，由于保证操作是原子性，那么就只能使用lua脚本，相关的lua脚本如下： </p>
+<p><img src="/2019/08/28/distributed-lock/20190828172849.jpg" alt="img"></p>
+<p> 可以看见他并没有使用我们的sexNx来进行操作，而是使用的hash结构，我们的每一个需要锁定的资源都可以看做是一个HashMap，锁定资源的节点信息是Key,锁定次数是value。通过这种方式可以很好的实现可重入的效果，只需要对value进行加1操作，就能进行可重入锁。当然这里也可以用之前我们说的本地计数进行优化。</p>
+</li>
+<li><p>如果尝试加锁失败，判断是否超时，如果超时则返回false。</p>
+</li>
+<li><p>如果加锁失败之后，没有超时，那么需要在名字为redisson_lock__channel+lockName的channel上进行订阅，用于订阅解锁消息，然后一直阻塞直到超时，或者有解锁消息。</p>
+</li>
+<li><p>重试步骤1，2，3，直到最后获取到锁，或者某一步获取锁超时。</p>
+</li>
+</ol>
+<p>对于我们的unlock方法比较简单也是通过lua脚本进行解锁，如果是可重入锁，只是减1。如果是非加锁线程解锁，那么解锁失败。 </p>
+<p><img src="/2019/08/28/distributed-lock/20190828173014.jpg" alt="img"></p>
+<p>Redission还有公平锁的实现，对于公平锁其利用了list结构和hashset结构分别用来保存我们排队的节点，和我们节点的过期时间，用这两个数据结构帮助我们实现公平锁，这里就不展开介绍了，有兴趣可以参考源码。</p>
+<h2 id="5-3-RedLock"><a href="#5-3-RedLock" class="headerlink" title="5.3 RedLock"></a>5.3 RedLock</h2><p>我们想象一个这样的场景当机器A申请到一把锁之后，如果Redis主宕机了，这个时候从机并没有同步到这一把锁，那么机器B再次申请的时候就会再次申请到这把锁，为了解决这个问题Redis作者提出了RedLock红锁的算法,在Redission中也对RedLock进行了实现。</p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353262643935653131613862333f773d3130363926683d33383026663d706e6726733d3732323731.png" alt="img"></p>
+<p>通过上面的代码，我们需要实现多个Redis集群，然后进行红锁的加锁，解锁。具体的步骤如下:</p>
+<ol>
+<li>首先生成多个Redis集群的Rlock，并将其构造成RedLock。</li>
+<li>依次循环对三个集群进行加锁，加锁的过程和5.2里面一致。</li>
+<li>如果循环加锁的过程中加锁失败，那么需要判断加锁失败的次数是否超出了最大值，这里的最大值是根据集群的个数，比如三个那么只允许失败一个，五个的话只允许失败两个，要保证多数成功。</li>
+<li>加锁的过程中需要判断是否加锁超时，有可能我们设置加锁只能用3ms，第一个集群加锁已经消耗了3ms了。那么也算加锁失败。</li>
+<li>3，4步里面加锁失败的话，那么就会进行解锁操作，解锁会对所有的集群在请求一次解锁。</li>
+</ol>
+<p>可以看见RedLock基本原理是利用多个Redis集群，用多数的集群加锁成功，减少Redis某个集群出故障，造成分布式锁出现问题的概率。</p>
+<h2 id="5-4-Redis小结"><a href="#5-4-Redis小结" class="headerlink" title="5.4 Redis小结"></a>5.4 Redis小结</h2><ul>
+<li>优点:对于Redis实现简单，性能对比ZK和Mysql较好。如果不需要特别复杂的要求，那么自己就可以利用setNx进行实现，如果自己需要复杂的需求的话那么可以利用或者借鉴Redission。对于一些要求比较严格的场景来说的话可以使用RedLock。</li>
+<li>缺点:需要维护Redis集群，如果要实现RedLock那么需要维护更多的集群。</li>
+</ul>
+<h1 id="6-分布式锁的安全问题"><a href="#6-分布式锁的安全问题" class="headerlink" title="6.分布式锁的安全问题"></a>6.分布式锁的安全问题</h1><p>上面我们介绍过红锁，但是Martin Kleppmann认为其依然不安全。有关于Martin反驳的几点，我认为其实不仅仅局限于RedLock,前面说的算法基本都有这个问题，下面我们来讨论一下这些问题:</p>
+<ul>
+<li><p>长时间的GC pause:熟悉Java的同学肯定对GC不陌生，在GC的时候会发生STW(stop-the-world),例如CMS垃圾回收器，他会有两个阶段进行STW防止引用继续进行变化。那么有可能会出现下面图(引用至Martin反驳Redlock的文章)中这个情况： </p>
+<p><img src="/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353334353064343561326139363f773d3131333526683d34323926663d706e6726733d3439303436.png" alt="img"></p>
+<p> client1获取了锁并且设置了锁的超时时间，但是client1之后出现了STW，这个STW时间比较长，导致分布式锁进行了释放，client2获取到了锁，这个时候client1恢复了锁，那么就会出现client1，2同时获取到锁，这个时候分布式锁不安全问题就出现了。这个其实不仅仅局限于RedLock,对于我们的ZK,Mysql一样的有同样的问题。</p>
+</li>
+<li><p>时钟发生跳跃:对于Redis服务器如果其时间发生了向跳跃，那么肯定会影响我们锁的过期时间，那么我们的锁过期时间就不是我们预期的了，也会出现client1和client2获取到同一把锁，那么也会出现不安全，这个对于Mysql也会出现。但是ZK由于没有设置过期时间，那么发生跳跃也不会受影响。</p>
+</li>
+<li><p>长时间的网络I/O:这个问题和我们的GC的STW很像，也就是我们这个获取了锁之后我们进行网络调用，其调用时间由可能比我们锁的过期时间都还长，那么也会出现不安全的问题，这个Mysql也会有，ZK也不会出现这个问题。</p>
+</li>
+</ul>
+<p>对于这三个问题，在网上包括Redis作者在内发起了很多讨论。</p>
+<h2 id="6-1-GC的STW"><a href="#6-1-GC的STW" class="headerlink" title="6.1 GC的STW"></a>6.1 GC的STW</h2><p>对于这个问题可以看见基本所有的都会出现问题，Martin给出了一个解法，对于ZK这种他会生成一个自增的序列，那么我们真正进行对资源操作的时候，需要判断当前序列是否是最新，有点类似于我们乐观锁。当然这个解法Redis作者进行了反驳，你既然都能生成一个自增的序列了那么你完全不需要加锁了，也就是可以按照类似于Mysql乐观锁的解法去做。</p>
+<p>我自己认为这种解法增加了复杂性，当我们对资源操作的时候需要增加判断序列号是否是最新，无论用什么判断方法都会增加复杂度，后面会介绍谷歌的Chubby提出了一个更好的方案。</p>
+<h2 id="6-2-时钟发生跳跃"><a href="#6-2-时钟发生跳跃" class="headerlink" title="6.2 时钟发生跳跃"></a>6.2 时钟发生跳跃</h2><p>Martin觉得RedLock不安全很大的原因也是因为时钟的跳跃，因为锁过期强依赖于时间，但是ZK不需要依赖时间，依赖每个节点的Session。Redis作者也给出了解答:对于时间跳跃分为人为调整和NTP自动调整。</p>
+<ul>
+<li>人为调整:人为调整影响的那么完全可以人为不调整，这个是处于可控的。</li>
+<li>NTP自动调整:这个可以通过一定的优化，把跳跃时间控制的可控范围内，虽然会跳跃，但是是完全可以接受的。</li>
+</ul>
+<h2 id="6-3-长时间的网络I-O"><a href="#6-3-长时间的网络I-O" class="headerlink" title="6.3 长时间的网络I/O"></a>6.3 长时间的网络I/O</h2><p>这一块不是他们讨论的重点，我自己觉得，对于这个问题的优化可以控制网络调用的超时时间，把所有网络调用的超时时间相加，那么我们锁过期时间其实应该大于这个时间，当然也可以通过优化网络调用比如串行改成并行，异步化等。可以参考我的两个文章: <a href="https://juejin.im/post/5b9861d15188255c581a92a0" target="_blank" rel="noopener">并行化-你的高并发大杀器</a>，<a href="https://juejin.im/post/5b4cd263e51d4519846971e0" target="_blank" rel="noopener">异步化-你的高并发大杀器</a></p>
+<h1 id="7-Chubby的一些优化"><a href="#7-Chubby的一些优化" class="headerlink" title="7. Chubby的一些优化"></a>7. Chubby的一些优化</h1><p>大家搜索ZK的时候，会发现他们都写了ZK是Chubby的开源实现，Chubby内部工作原理和ZK类似。但是Chubby的定位是分布式锁和ZK有点不同。Chubby也是使用上面自增序列的方案用来解决分布式不安全的问题，但是他提供了多种校验方法:</p>
+<ul>
+<li>CheckSequencer()：调用Chubby的API检查此时这个序列号是否有效。</li>
+<li>访问资源服务器检查，判断当前资源服务器最新的序列号和我们的序列号的大小。</li>
+<li>lock-delay:为了防止我们校验的逻辑入侵我们的资源服务器，其提供了一种方法当客户端失联的时候，并不会立即释放锁，而是在一定的时间内(默认1min)阻止其他客户端拿去这个锁，那么也就是给予了一定的buffer等待STW恢复，而我们的GC的STW时间如果比1min还长那么你应该检查你的程序，而不是怀疑你的分布式锁了。</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li>再有人问你分布式锁，这篇文章扔给他: <a href="https://juejin.im/post/5bbb0d8df265da0abd3533a5#heading-5" target="_blank" rel="noopener">https://juejin.im/post/5bbb0d8df265da0abd3533a5#heading-5</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+        
+        <div class="post-tags">
+            <a href="/tags/分布式锁/" rel="tag"># 分布式锁</a>
+          
+        </div>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+              <a href="/2019/08/28/optimistic-lock/" rel="next" title="乐观锁">
+                <i class="fa fa-chevron-left"></i> 乐观锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+          </div>
+        </div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="gitalk-container"></div>
+  
+
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">sainpo.yxb</p>
+  <div class="site-description motion-element" itemprop="description">码农|理工男|文青</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/mewishu" title="GitHub &rarr; https://github.com/mewishu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="mailto:xbyan88@163.com" title="E-Mail &rarr; mailto:xbyan88@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+    
+  </div>
+
+
+
+        </div>
+      </div>
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-背景"><span class="nav-text">1.背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-分布式锁"><span class="nav-text">2.分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1为何需要分布式锁"><span class="nav-text">2.1为何需要分布式锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2分布式锁的一些特点"><span class="nav-text">2.2分布式锁的一些特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3常见的分布式锁"><span class="nav-text">2.3常见的分布式锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Mysql分布式锁"><span class="nav-text">3.Mysql分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-lock"><span class="nav-text">3.1 lock()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-tryLock-和tryLock-long-timeout"><span class="nav-text">3.2 tryLock()和tryLock(long timeout)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-unlock"><span class="nav-text">3.3 unlock()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-锁超时"><span class="nav-text">3.4 锁超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-Mysql小结"><span class="nav-text">3.5 Mysql小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-乐观锁"><span class="nav-text">3.6 乐观锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-ZooKeeper"><span class="nav-text">4. ZooKeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-Curator"><span class="nav-text">4.1 Curator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-InterProcessMutex"><span class="nav-text">4.2 InterProcessMutex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-读写锁"><span class="nav-text">4.3 读写锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-锁超时"><span class="nav-text">4.4 锁超时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-ZK小结"><span class="nav-text">4.5 ZK小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-Redis"><span class="nav-text">5.Redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Redis分布式锁简单实现"><span class="nav-text">5.1 Redis分布式锁简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Redission"><span class="nav-text">5.2 Redission</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-RedLock"><span class="nav-text">5.3 RedLock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Redis小结"><span class="nav-text">5.4 Redis小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-分布式锁的安全问题"><span class="nav-text">6.分布式锁的安全问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-GC的STW"><span class="nav-text">6.1 GC的STW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-时钟发生跳跃"><span class="nav-text">6.2 时钟发生跳跃</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-长时间的网络I-O"><span class="nav-text">6.3 长时间的网络I/O</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-Chubby的一些优化"><span class="nav-text">7. Chubby的一些优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sainpo.yxb</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">172k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:36</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.3.0</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+    
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+  <script src="/lib/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script src="/js/utils.js?v=7.3.0"></script>
+  <script src="/js/motion.js?v=7.3.0"></script>
+
+  
+  <script src="/js/affix.js?v=7.3.0"></script>
+  <script src="/js/schemes/pisces.js?v=7.3.0"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.3.0"></script>
+<script src="/js/post-details.js?v=7.3.0"></script>
+
+
+
+  <script src="/js/next-boot.js?v=7.3.0"></script>
+
+  
+
+  
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.3.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if ($('body').find('div.pdf').length) {
+  $.ajax({
+    type: 'GET',
+    url: '//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js',
+    dataType: 'script',
+    cache: true,
+    success: function() {
+      $('body').find('div.pdf').each(function(i, o) {
+        PDFObject.embed($(o).attr('target'), $(o), {
+          pdfOpenParams: {
+            navpanes: 0,
+            toolbar: 0,
+            statusbar: 0,
+            pagemode: 'thumbs',
+            view: 'FitH'
+          },
+          PDFJS_URL: '/lib/pdf/web/viewer.html',
+          height: $(o).attr('height') || '500px'
+        });
+      });
+    },
+  });
+}
+</script>
+
+
+
+
+
+    
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '96bfad82ea05d6d64ea7',
+    clientSecret: '74d6d9a9834e4e6c3db88d702866ae41f675f888',
+    repo: 'usercomment',
+    owner: 'mewishu',
+    admin: ['mewishu'],
+    id: md5(location.pathname),
+      language: window.navigator.language || window.navigator.userLanguage,
+    
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+
+</body>
+</html>
