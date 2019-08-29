@@ -76,7 +76,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1625.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1627.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1626.png">
-<meta property="og:updated_time" content="2019-08-29T03:31:40.027Z">
+<meta property="og:updated_time" content="2019-08-29T04:11:54.921Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式事务">
 <meta name="twitter:description" content="事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。 事务的四大特性 ACID说到事务，就不得不提一下事务著名的四大特性。  原子性   原子性要求，事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。 一致性   一致性要求，事务在">
@@ -326,7 +326,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-29 11:31:40" itemprop="dateModified" datetime="2019-08-29T11:31:40+08:00">2019-08-29</time>
+                <time title="修改时间：2019-08-29 12:11:54" itemprop="dateModified" datetime="2019-08-29T12:11:54+08:00">2019-08-29</time>
               </span>
             
           
@@ -380,7 +380,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">11 分钟</span>
+              <span title="阅读时长">12 分钟</span>
             </span>
           
 
@@ -652,6 +652,10 @@
 </li>
 </ul>
 <p>在传统事务机制中，业务逻辑的执行和事务的处理，是在不同的阶段由不同的部件来完成的：业务逻辑部分访问资源实现数据存储，其处理是由业务系统负责；事务处理部分通过协调资源管理器以实现事务管理，其处理由事务管理器来负责。二者没有太多交互的地方，所以，传统事务管理器的事务处理逻辑，仅需要着眼于事务完成（commit/rollback）阶段，而不必关注业务执行阶段。</p>
+<p>等一等，你有没有想到一个问题？如果有一些意外的情况发生了，比如说订单服务突然挂了，然后再次重启，TCC 分布式事务框架是如何保证之前没执行完的分布式事务继续执行的呢？</p>
+<p>所以，TCC 事务框架都是要记录一些分布式事务的活动日志的，可以在磁盘上的日志文件里记录，也可以在数据库里记录。保存下来分布式事务运行的各个阶段和状态。</p>
+<p>问题还没完，万一某个服务的 Cancel 或者 Confirm 逻辑执行一直失败怎么办呢？</p>
+<p>那也很简单，TCC 事务框架会通过活动日志记录各个服务的状态。举个例子，比如发现某个服务的 Cancel 或者 Confirm 一直没成功，会不停的重试调用它的 Cancel 或者 Confirm 逻辑，务必要它成功！</p>
 <h4 id="TCC全局事务必须基于RM本地事务来实现全局事务"><a href="#TCC全局事务必须基于RM本地事务来实现全局事务" class="headerlink" title="TCC全局事务必须基于RM本地事务来实现全局事务"></a>TCC全局事务必须基于RM本地事务来实现全局事务</h4><p>TCC服务是由Try/Confirm/Cancel业务构成的，   其Try/Confirm/Cancel业务在执行时，会访问资源管理器（Resource Manager，下文简称RM）来存取数据。这些存取操作，必须要参与RM本地事务，以使其更改的数据要么都commit，要么都rollback。</p>
 <p>这一点不难理解，考虑一下如下场景：</p>
 <p><img src="/2019/08/28/distributed-transaction/1626.png" alt="img"></p>
@@ -929,12 +933,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">188k</span>
+    <span title="站点总字数">189k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:51</span>
+    <span title="站点阅读时长">2:52</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
