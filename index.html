@@ -264,6 +264,216 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/09/03/java8-lambda/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/09/03/java8-lambda/" class="post-title-link" itemprop="url">深入浅出 Java 8 Lambda 表达式</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-03 21:10:40 / 修改时间：21:15:13" itemprop="dateCreated datePublished" datetime="2019-09-03T21:10:40+08:00">2019-09-03</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/java/lambda表达式/" itemprop="url" rel="index"><span itemprop="name">lambda表达式</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">8.2k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">7 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+            <p><a href="http://www.oneapm.com/ai/java.html?utm_source=Community&utm_medium=Article&utm_term=lambda&utm_campaign=NovArti&from=matefinola" target="_blank" rel="noopener">Java</a> 是一流的面向对象语言，除了部分简单数据类型，Java 中的一切都是对象，即使数组也是一种对象，每个类创建的实例也是对象。在 Java 中定义的函数或方法不可能完全独立，也不能将方法作为参数或返回一个方法给实例。</p>
+<p>从 Swing 开始，我们总是通过匿名类给方法传递函数功能，以下是旧版的事件监听代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">someObject.addMouseListener(<span class="keyword">new</span> MouseAdapter() &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mouseClicked</span><span class="params">(MouseEvent e)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">//Event listener implementation goes here...</span></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在上面的例子里，为了给 Mouse 监听器添加自定义代码，我们定义了一个匿名内部类 MouseAdapter 并创建了它的对象，通过这种方式，我们将一些函数功能传给 addMouseListener 方法。</p>
+<p>简而言之，在 Java 里将普通的方法或函数像参数一样传值并不简单，为此，Java 8 增加了一个语言级的新特性，名为 <strong>Lambda 表达式</strong>。</p>
+<h2 id="为什么-Java-需要-Lambda-表达式？"><a href="#为什么-Java-需要-Lambda-表达式？" class="headerlink" title="为什么 Java 需要 Lambda 表达式？"></a>为什么 Java 需要 Lambda 表达式？</h2><p>如果忽视注解(Annotations)、泛型(Generics)等特性，自 Java 语言诞生时起，它的变化并不大。Java 一直都致力维护其对象至上的特征，在使用过 JavaScript 之类的函数式语言之后，Java 如何强调其面向对象的本质，以及源码层的数据类型如何严格变得更加清晰可感。其实，函数对 Java 而言并不重要，在 Java 的世界里，函数无法独立存在。</p>
+<p><img src="http://blog.oneapm.com/content/images/2015/11/xkcd-functional-1.png" alt="深入浅出 Java 8 Lambda 表达式 技术分享 第1张"></p>
+<p>在函数式编程语言中，函数是一等公民，它们可以独立存在，你可以将其赋值给一个变量，或将他们当做参数传给其他函数。JavaScript 是最典型的函数式编程语言。点击<a href="http://eloquentjavascript.net/chapter6.html" target="_blank" rel="noopener">此处</a>以及<a href="http://www.ibm.com/developerworks/library/wa-javascript/index.html" target="_blank" rel="noopener">此处</a>可以清楚了解 JavaScript 这种函数式语言的好处。函数式语言提供了一种强大的功能——闭包，相比于传统的编程方法有很多优势，闭包是一个可调用的对象，它记录了一些信息，这些信息来自于创建它的作用域。Java 现在提供的最接近闭包的概念便是 Lambda 表达式，虽然闭包与 Lambda 表达式之间存在显著差别，但至少 Lambda 表达式是闭包很好的替代者。</p>
+<p>在 Steve Yegge 辛辣又幽默的<a href="http://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html" target="_blank" rel="noopener">博客文章</a>里，描绘了 Java 世界是如何严格地以名词为中心的，如果你还没看过，赶紧去读吧，写得非常风趣幽默，而且恰如其分地解释了为什么 Java 要引进 Lambda 表达式。</p>
+<p>Lambda 表达式为 Java 添加了缺失的函数式编程特点，使我们能将函数当做一等公民看待。尽管不完全正确，我们很快就会见识到 Lambda 与闭包的不同之处，但是又无限地接近闭包。在支持一类函数的语言中，Lambda 表达式的类型将是函数。但是，在 Java 中，Lambda 表达式是对象，他们必须依附于一类特别的对象类型——函数式接口(functional interface)。我们会在后文详细介绍函数式接口。</p>
+<p>Mario Fusco 的这篇思路清晰的<a href="http://java.dzone.com/articles/why-we-need-Lambda-expressions" target="_blank" rel="noopener">文章</a>介绍了为什么 Java 需要 Lambda 表达式。他解释了为什么现代编程语言必须包含闭包这类特性。</p>
+<h2 id="Lambda-表达式简介"><a href="#Lambda-表达式简介" class="headerlink" title="Lambda 表达式简介"></a>Lambda 表达式简介</h2><p>Lambda 表达式是一种匿名函数(对 Java 而言这并不完全正确，但现在姑且这么认为)，简单地说，它是没有声明的方法，也即没有访问修饰符、返回值声明和名字。</p>
+<p>你可以将其想做一种速记，在你需要使用某个方法的地方写上它。当某个方法只使用一次，而且定义很简短，使用这种速记替代之尤其有效，这样，你就不必在类中费力写声明与方法了。</p>
+<p><img src="http://blog.oneapm.com/content/images/2015/11/java-lambda-expression-1.png" alt="深入浅出 Java 8 Lambda 表达式 技术分享 第2张"></p>
+<p>Java 中的 Lambda 表达式通常使用 <code>(argument) -&gt; (body)</code> 语法书写，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(arg1, arg2...) -&gt; &#123; body &#125;</span><br><span class="line"></span><br><span class="line">(type1 arg1, type2 arg2...) -&gt; &#123; body &#125;</span><br></pre></td></tr></table></figure>
+
+<p>以下是一些 Lambda 表达式的例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> a, <span class="keyword">int</span> b) -&gt; &#123;  <span class="keyword">return</span> a + b; &#125;</span><br><span class="line"></span><br><span class="line">() -&gt; System.out.println(<span class="string">"Hello World"</span>);</span><br><span class="line"></span><br><span class="line">(String s) -&gt; &#123; System.out.println(s); &#125;</span><br><span class="line"></span><br><span class="line">() -&gt; <span class="number">42</span></span><br><span class="line"></span><br><span class="line">() -&gt; &#123; <span class="keyword">return</span> <span class="number">3.1415</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Lambda-表达式的结构"><a href="#Lambda-表达式的结构" class="headerlink" title="Lambda 表达式的结构"></a>Lambda 表达式的结构</h2><p>让我们了解一下 Lambda 表达式的结构。</p>
+<ul>
+<li>一个 Lambda 表达式可以有零个或多个参数</li>
+<li>参数的类型既可以明确声明，也可以根据上下文来推断。例如：<code>(int a)</code>与<code>(a)</code>效果相同</li>
+<li>所有参数需包含在圆括号内，参数之间用逗号相隔。例如：<code>(a, b)</code> 或 <code>(int a, int b)</code> 或 <code>(String a, int b, float c)</code></li>
+<li>空圆括号代表参数集为空。例如：<code>() -&gt; 42</code></li>
+<li>当只有一个参数，且其类型可推导时，圆括号（）可省略。例如：<code>a -&gt; return a*a</code></li>
+<li>Lambda 表达式的主体可包含零条或多条语句</li>
+<li>如果 Lambda 表达式的主体只有一条语句，花括号{}可省略。匿名函数的返回类型与该主体表达式一致</li>
+<li>如果 Lambda 表达式的主体包含一条以上语句，则表达式必须包含在花括号{}中（形成代码块）。匿名函数的返回类型与代码块的返回类型一致，若没有返回则为空</li>
+</ul>
+<h2 id="什么是函数式接口"><a href="#什么是函数式接口" class="headerlink" title="什么是函数式接口"></a>什么是函数式接口</h2><p>在 Java 中，Marker（标记）类型的接口是一种没有方法或属性声明的接口，简单地说，marker 接口是空接口。相似地，函数式接口是只包含一个抽象方法声明的接口。</p>
+<p><code>java.lang.Runnable</code> 就是一种函数式接口，在 Runnable 接口中只声明了一个方法 <code>void run()</code>，相似地，ActionListener 接口也是一种函数式接口，我们使用匿名内部类来实例化函数式接口的对象，有了 Lambda 表达式，这一方式可以得到简化。</p>
+<p>每个 Lambda 表达式都能隐式地赋值给函数式接口，例如，我们可以通过 Lambda 表达式创建 Runnable 接口的引用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runnable r = () -&gt; System.out.println(<span class="string">"hello world"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>当不指明函数式接口时，编译器会自动解释这种转化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(</span><br><span class="line">   () -&gt; System.out.println(<span class="string">"hello world"</span>)</span><br><span class="line">).start();</span><br></pre></td></tr></table></figure>
+
+<p>因此，在上面的代码中，编译器会自动推断：根据线程类的构造函数签名 <code>public Thread(Runnable r) { }</code>，将该 Lambda 表达式赋给 Runnable 接口。</p>
+<p>以下是一些 Lambda 表达式及其函数式接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Consumer&lt;Integer&gt;  c = (<span class="keyword">int</span> x) -&gt; &#123; System.out.println(x) &#125;;</span><br><span class="line"></span><br><span class="line">BiConsumer&lt;Integer, String&gt; b = (Integer x, String y) -&gt; System.out.println(x + <span class="string">" : "</span> + y);</span><br><span class="line"></span><br><span class="line">Predicate&lt;String&gt; p = (String s) -&gt; &#123; s == <span class="keyword">null</span> &#125;;</span><br></pre></td></tr></table></figure>
+
+<p><a href="http://download.java.net/jdk8/docs/api/java/lang/FunctionalInterface.html" target="_blank" rel="noopener">@FunctionalInterface</a> 是 Java 8 新加入的一种接口，用于指明该接口类型声明是根据 Java 语言规范定义的函数式接口。Java 8 还声明了一些 Lambda 表达式可以使用的函数式接口，当你注释的接口不是有效的函数式接口时，可以使用 @FunctionalInterface 解决编译层面的错误。</p>
+<p>以下是一种自定义的函数式接口： @FunctionalInterface public interface WorkerInterface {</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据定义，函数式接口只能有一个抽象方法，如果你尝试添加第二个抽象方法，将抛出编译时错误。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeMoreWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>错误：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Unexpected <span class="meta">@FunctionalInterface</span> annotation </span><br><span class="line">    <span class="meta">@FunctionalInterface</span> ^ WorkerInterface is not a functional <span class="class"><span class="keyword">interface</span> <span class="title">multiple</span> </span></span><br><span class="line"><span class="class">    <span class="title">non</span>-<span class="title">overriding</span> <span class="title">abstract</span> <span class="title">methods</span> <span class="title">found</span> <span class="title">in</span> <span class="title">interface</span> <span class="title">WorkerInterface</span> 1 <span class="title">error</span></span></span><br></pre></td></tr></table></figure>
+
+<p>函数式接口定义好后，我们可以在 API 中使用它，同时利用 Lambda 表达式。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//定义一个函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WorkerInterfaceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(WorkerInterface worker)</span> </span>&#123;</span><br><span class="line">    worker.doSomeWork();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Annonymous class</span></span><br><span class="line">    execute(<span class="keyword">new</span> WorkerInterface() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"Worker invoked using Anonymous class"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Lambda expression </span></span><br><span class="line">    execute( () -&gt; System.out.println(<span class="string">"Worker invoked using Lambda expression"</span>) );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Worker invoked using Anonymous <span class="class"><span class="keyword">class</span> </span></span><br><span class="line"><span class="class"><span class="title">Worker</span> <span class="title">invoked</span> <span class="title">using</span> <span class="title">Lambda</span> <span class="title">expression</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这上面的例子里，我们创建了自定义的函数式接口并与 Lambda 表达式一起使用。execute() 方法现在可以将 Lambda 表达式作为参数。</p>
+<h2 id="Lambda-表达式举例"><a href="#Lambda-表达式举例" class="headerlink" title="Lambda 表达式举例"></a>Lambda 表达式举例</h2><p>学习 Lambda 表达式的最好方式是学习例子。</p>
+<p>线程可以通过以下方法初始化：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//旧方法:</span></span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"Hello from thread"</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line"><span class="comment">//新方法:</span></span><br><span class="line"><span class="keyword">new</span> Thread(</span><br><span class="line">() -&gt; System.out.println(<span class="string">"Hello from thread"</span>)</span><br><span class="line">).start();</span><br></pre></td></tr></table></figure>
+
+<p>事件处理可以使用 Java 8 的 Lambda 表达式解决。下面的代码中，我们将使用新旧两种方式向一个 UI 组件添加 ActionListener：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">//Old way:</span></span><br><span class="line">button.addActionListener(<span class="keyword">new</span> ActionListener() &#123;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent e)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"The button was clicked using old fashion code!"</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//New way:</span></span><br><span class="line">button.addActionListener( (e) -&gt; &#123;</span><br><span class="line">    System.out.println(<span class="string">"The button was clicked. From Lambda expressions !"</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>以下代码的作用是打印出给定数组中的所有元素。注意，使用 Lambda 表达式的方法不止一种。在下面的例子中，我们先是用常用的箭头语法创建 Lambda 表达式，之后，使用 Java 8 全新的双冒号(::)操作符将一个常规方法转化为 Lambda 表达式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Old way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>);</span><br><span class="line"><span class="keyword">for</span>(Integer n: list) &#123;</span><br><span class="line">   System.out.println(n);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//New way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>);</span><br><span class="line">list.forEach(n -&gt; System.out.println(n));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//or we can use :: double colon operator in Java 8</span></span><br><span class="line">list.forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>在下面的例子中，我们使用断言(Predicate)函数式接口创建一个测试，并打印所有通过测试的元素，这样，你就可以使用 Lambda 表达式规定一些逻辑，并以此为基础有所作为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.function.Predicate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] a)</span>  </span>&#123;</span><br><span class="line"></span><br><span class="line">    List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Print all numbers:"</span>);</span><br><span class="line">    evaluate(list, (n)-&gt;<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Print no numbers:"</span>);</span><br><span class="line">    evaluate(list, (n)-&gt;<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Print even numbers:"</span>);</span><br><span class="line">    evaluate(list, (n)-&gt; n%<span class="number">2</span> == <span class="number">0</span> );</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Print odd numbers:"</span>);</span><br><span class="line">    evaluate(list, (n)-&gt; n%<span class="number">2</span> == <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">"Print numbers greater than 5:"</span>);</span><br><span class="line">    evaluate(list, (n)-&gt; n &gt; <span class="number">5</span> );</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">evaluate</span><span class="params">(List&lt;Integer&gt; list, Predicate&lt;Integer&gt; predicate)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(Integer n: list)  &#123;</span><br><span class="line">        <span class="keyword">if</span>(predicate.test(n)) &#123;</span><br><span class="line">            System.out.println(n + <span class="string">" "</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Print all numbers: <span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span> <span class="number">6</span> <span class="number">7</span> </span><br><span class="line">Print no numbers: </span><br><span class="line">Print even numbers: <span class="number">2</span> <span class="number">4</span> <span class="number">6</span> </span><br><span class="line">Print odd numbers: <span class="number">1</span> <span class="number">3</span> <span class="number">5</span> <span class="number">7</span> </span><br><span class="line">Print numbers greater than <span class="number">5</span>: <span class="number">6</span> <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>下面的例子使用 Lambda 表达式打印数值中每个元素的平方，注意我们使用了 .stream() 方法将常规数组转化为流。Java 8 增加了一些超棒的流 APIs。<a href="http://download.java.net/jdk8/docs/api/java/util/stream/Stream.html" target="_blank" rel="noopener">java.util.stream.Stream</a> 接口包含许多有用的方法，能结合 Lambda 表达式产生神奇的效果。我们将 Lambda 表达式 <code>x -&gt; x*x</code> 传给 map() 方法，该方法会作用于流中的所有元素。之后，我们使用 forEach 方法打印数据中的所有元素：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Old way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>);</span><br><span class="line"><span class="keyword">for</span>(Integer n : list) &#123;</span><br><span class="line">    <span class="keyword">int</span> x = n * n;</span><br><span class="line">    System.out.println(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//New way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>);</span><br><span class="line">list.stream().map((x) -&gt; x*x).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
+
+<p>下面的例子会计算给定数值中每个元素平方后的总和。请注意，Lambda 表达式只用一条语句就能达到此功能，这也是 MapReduce 的一个初级例子。我们使用 map() 给每个元素求平方，再使用 reduce() 将所有元素计入一个数值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Old way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>);</span><br><span class="line"><span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(Integer n : list) &#123;</span><br><span class="line">    <span class="keyword">int</span> x = n * n;</span><br><span class="line">    sum = sum + x;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(sum);</span><br><span class="line"></span><br><span class="line"><span class="comment">//New way:</span></span><br><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>);</span><br><span class="line"><span class="keyword">int</span> sum = list.stream().map(x -&gt; x*x).reduce((x,y) -&gt; x + y).get();</span><br><span class="line">System.out.println(sum);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Lambda-表达式与匿名类的区别"><a href="#Lambda-表达式与匿名类的区别" class="headerlink" title="Lambda 表达式与匿名类的区别"></a>Lambda 表达式与匿名类的区别</h2><p>使用匿名类与 Lambda 表达式的一大区别在于关键词的使用。对于匿名类，关键词 <code>this</code> 解读为匿名类，而对于 Lambda 表达式，关键词 <code>this</code> 解读为写就 Lambda 的外部类。</p>
+<p>Lambda 表达式与匿名类的另一不同在于两者的编译方法。Java 编译器编译 Lambda 表达式并将他们转化为类里面的私有函数，它使用 Java 7 中新加的 <code>invokedynamic</code> 指令动态绑定该方法，关于 Java 如何将 Lambda 表达式编译为字节码，Tal Weiss 写了一篇<a href="http://www.takipiblog.com/2014/01/16/compiling-Lambda-expressions-scala-vs-java-8/" target="_blank" rel="noopener">很好的文章</a>。</p>
+
+          
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/28/distributed-transaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -313,7 +523,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-03 19:34:11" itemprop="dateModified" datetime="2019-09-03T19:34:11+08:00">2019-09-03</time>
+                <time title="修改时间：2019-09-03 21:10:44" itemprop="dateModified" datetime="2019-09-03T21:10:44+08:00">2019-09-03</time>
               </span>
             
           
@@ -2466,277 +2676,6 @@
   </article>
 
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/16/zookeeper-data-and-storage/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sainpo.yxb">
-      <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="窦小固的小木屋">
-    </span>
-      <header class="post-header">
-
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/16/zookeeper-data-and-storage/" class="post-title-link" itemprop="url">zookeeper数据与存储</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-16 21:33:22" itemprop="dateCreated datePublished" datetime="2019-08-16T21:33:22+08:00">2019-08-16</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-19 19:37:56" itemprop="dateModified" datetime="2019-08-19T19:37:56+08:00">2019-08-19</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          <br>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">7.5k</span>
-            </span>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">7 分钟</span>
-            </span>
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-            <h2 id="数据分类"><a href="#数据分类" class="headerlink" title="数据分类"></a>数据分类</h2><p>整体分为 3 类：</p>
-<ul>
-<li>内存数据</li>
-<li>磁盘数据<ul>
-<li>快照</li>
-<li>事务日志</li>
-</ul>
-</li>
-</ul>
-<h2 id="内存数据"><a href="#内存数据" class="headerlink" title="内存数据"></a>内存数据</h2><p>Zookeeper的数据模型是树结构，在内存数据库中，存储了整棵树的内容，包括所有的节点路径、节点数据、ACL信息，Zookeeper会定时将这个数据存储到磁盘上。</p>
-<ol>
-<li>DataTree</li>
-</ol>
-<p>DataTree是内存数据存储的核心，是一个树结构，<strong>代表了内存中一份完整的数据</strong>。DataTree不包含任何与网络、客户端连接及请求处理相关的业务逻辑，是一个独立的组件。</p>
-<ol start="2">
-<li>DataNode</li>
-</ol>
-<p><strong>DataNode是数据存储的最小单元</strong>，其内部保存了: </p>
-<ul>
-<li>节点数据</li>
-<li>节点 ACL 信息</li>
-<li>节点的路径</li>
-</ul>
-<p>除此之外还记录了父节点的引用和子节点列表两个属性，其也提供了对子节点列表进行操作的接口。</p>
-<ol start="3">
-<li>ZKDatabase</li>
-</ol>
-<p>Zookeeper的内存数据库，管理Zookeeper的所有会话、DataTree存储和事务日志。ZKDatabase会定时向磁盘dump快照数据，同时在Zookeeper启动时，会通过磁盘的事务日志和快照文件恢复成一个完整的内存数据库。</p>
-<ul>
-<li><p>具体实现：DataTree 和 DataNode，见下图</p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-impl-details.png" alt="DataTree 和 DataNode及其关系"></p>
-</li>
-</ul>
-<h2 id="事务日志"><a href="#事务日志" class="headerlink" title="事务日志"></a>事务日志</h2><h3 id="文件存储"><a href="#文件存储" class="headerlink" title="文件存储"></a>文件存储</h3><p>在配置Zookeeper集群时需要配置dataDir目录，其用来存储事务日志文件。也可以为事务日志单独分配一个文件存储目录:dataLogDir。若配置dataLogDir为/home/admin/zkData/zk_log，那么Zookeeper在运行过程中会在该目录下建立一个名字为version-2的子目录，该目录确定了当前Zookeeper使用的事务日志格式版本号，当下次某个Zookeeper版本对事务日志格式进行变更时，此目录也会变更，即在version-2子目录下会生成一系列文件大小一致(64MB)的文件。</p>
-<h3 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h3><p>在配置好日志文件目录，启动Zookeeper后，完成如下操作</p>
-<p>(1) 创建/test_log节点，初始值为v1。</p>
-<p>(2) 更新/test_log节点的数据为v2。</p>
-<p>(3) 创建/test_log/c节点，初始值为v1。</p>
-<p>(4) 删除/test_log/c节点。</p>
-<p>经过四步操作后，会在/log/version-2/目录下生成一个日志文件，笔者下是log.cec。</p>
-<p>将Zookeeper下的zookeeper-3.4.6.jar和slf4j-api-1.6.1.jar复制到/log/version-2目录下，使用如下命令打开log.cec文件。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -classpath ./zookeeper-3.4.6.jar:./slf4j-api-1.6.1.jar org.apache.zookeeper.server.LogFormatter log.cec</span><br></pre></td></tr></table></figure>
-
-<p>　　<img src="/2019/08/16/zookeeper-data-and-storage/616953-20161215144917026-604508704.png" alt="Zookeeper事务日志格式"></p>
-<p>ZooKeeper Transactional Log File with dbid 0 txnlog format version 2 。是文件头信息，主要是事务日志的DBID和日志格式版本号。　　</p>
-<blockquote>
-<p>…session 0x159…0xcec createSession 30000。表示客户端会话创建操作。</p>
-<p>…session 0x159…0xced create ‘/test_log,… 。表示创建/test_log节点，数据内容为#7631(v1)。</p>
-<p>…session 0x159…0xcee setData ‘/test_log,…。表示设置了/test_log节点数据，内容为#7632(v2)。</p>
-<p>…session 0x159…0xcef create ’/test_log/c,…。表示创建节点/test_log/c。</p>
-<p>…session 0x159…0xcf0 delete ‘/test_log/c。表示删除节点/test_log/c。</p>
-</blockquote>
-<p>其他几行事务日志类似，具体可以对照Zookeeper源码类org.apache.zookeeper.server.LogFormatter自行分析。通过可视化这个文件，我们还注意到一点，由于这是一个记录事务操作的日志文件，因此里面没有任何读操作的日志记录。</p>
-<p>事务日志格式如下所示: (参见$FileTxnLog$类): </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">* The format of a Transactional log is as follows:</span><br><span class="line">* &lt;blockquote&gt;&lt;pre&gt;</span><br><span class="line">* LogFile:</span><br><span class="line">*     FileHeader TxnList ZeroPad</span><br><span class="line">*</span><br><span class="line">* FileHeader: &#123;</span><br><span class="line">*     magic <span class="number">4</span>bytes (ZKLG)</span><br><span class="line">*     version <span class="number">4</span>bytes</span><br><span class="line">*     dbid <span class="number">8</span>bytes</span><br><span class="line">*   &#125;</span><br><span class="line">*</span><br><span class="line">* TxnList:</span><br><span class="line">*     Txn || Txn TxnList</span><br><span class="line">*</span><br><span class="line">* Txn:</span><br><span class="line">*     checksum Txnlen TxnHeader Record <span class="number">0x42</span></span><br><span class="line">*</span><br><span class="line">* checksum: <span class="number">8</span>bytes Adler32 is currently used</span><br><span class="line">*   calculated across payload -- Txnlen, TxnHeader, Record and <span class="number">0x42</span></span><br><span class="line">*</span><br><span class="line">* Txnlen:</span><br><span class="line">*     len <span class="number">4</span>bytes</span><br><span class="line">*</span><br><span class="line">* TxnHeader: &#123;</span><br><span class="line">*     sessionid <span class="number">8</span>bytes</span><br><span class="line">*     cxid <span class="number">4</span>bytes</span><br><span class="line">*     zxid <span class="number">8</span>bytes</span><br><span class="line">*     time <span class="number">8</span>bytes</span><br><span class="line">*     type <span class="number">4</span>bytes</span><br><span class="line">*   &#125;</span><br><span class="line">*</span><br><span class="line">* Record:</span><br><span class="line">*     See Jute definition file <span class="keyword">for</span> details on the various record types</span><br><span class="line">*</span><br><span class="line">* ZeroPad:</span><br><span class="line">*     <span class="number">0</span> <span class="function">padded to <span class="title">EOF</span> <span class="params">(filled during preallocation stage)</span></span></span><br><span class="line"><span class="function">* &lt;/pre&gt;&lt;/blockquote&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="日志写入"><a href="#日志写入" class="headerlink" title="日志写入"></a>日志写入</h3><p><code>FileTxnLog</code>负责维护事务日志对外的接口，包括事务日志的写入和读取等。事务操作写入事务日志的工作主要由append方法来负责: </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">append</span><span class="params">(TxnHeader hdr, Record txn)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException</span></span><br></pre></td></tr></table></figure>
-
-<p>Zookeeper的事务日志写入过程大体可以分为如下6个步骤。</p>
-<ol>
-<li><strong>确定是否有事务日志可写</strong>。当Zookeeper服务器启动完成需要进行第一次事务日志的写入，或是上一次事务日志写满时，都会处于与事务日志文件断开的状态，即Zookeeper服务器没有和任意一个日志文件相关联。因此在进行事务日志写入前，Zookeeper首先会判断FileTxnLog组件是否已经关联上一个可写的事务日志文件。若没有，则会使用该事务操作关联的ZXID作为后缀创建一个事务日志文件，同时构建事务日志的文件头信息，并立即写入这个事务日志文件中去，同时将该文件的文件流放入streamToFlush集合，该集合用来记录当前需要强制进行数据落盘的文件流。</li>
-<li><strong>确定事务日志文件是否需要扩容(预分配)</strong>。Zookeeper会采用磁盘空间预分配策略。当检测到当前事务日志文件剩余空间不足4096字节时，就会开始进行文件空间扩容，即在现有文件大小上，将文件增加65536KB(64MB)，然后使用”0”填充被扩容的文件空间。</li>
-<li><strong>事务序列化</strong>。对事务头和事务体的序列化，其中事务体又可分为会话创建事务、节点创建事务、节点删除事务、节点数据更新事务等。</li>
-<li><strong>生成Checksum</strong>。为保证日志文件的完整性和数据的准确性，Zookeeper在将事务日志写入文件前，会计算生成Checksum。</li>
-<li><strong>写入事务日志文件流</strong>。将序列化后的事务头、事务体和Checksum写入文件流中，此时并为写入到磁盘上。</li>
-<li><strong>事务日志刷入磁盘</strong>。由于步骤5中的缓存原因，无法实时地写入磁盘文件中，因此需要将缓存数据强制刷入磁盘。</li>
-</ol>
-<h3 id="日志截断"><a href="#日志截断" class="headerlink" title="日志截断"></a>日志截断</h3><p>在Zookeeper运行过程中，可能出现非Leader记录的事务ID比Leader上大，这是非法运行状态。此时，需要保证所有机器必须与该Leader的数据保持同步，即Leader会发送TRUNC命令给该机器，要求进行日志截断，Learner收到该命令后，就会删除所有包含或大于该事务ID的事务日志文件。</p>
-<h2 id="snapshot-数据快照"><a href="#snapshot-数据快照" class="headerlink" title="snapshot-数据快照"></a>snapshot-数据快照</h2><p>数据快照是Zookeeper数据存储中非常核心的运行机制，数据快照用来记录Zookeeper服务器上某一时刻的全量内存数据内容，并将其写入指定的磁盘文件中。</p>
-<h3 id="文件存储-1"><a href="#文件存储-1" class="headerlink" title="文件存储"></a>文件存储</h3><p>与事务文件类似，Zookeeper快照文件也可以指定特定磁盘目录，通过dataDir属性来配置。若指定dataDir为/home/admin/zkData/zk_data，则在运行过程中会在该目录下创建version-2的目录，该目录确定了当前Zookeeper使用的快照数据格式版本号。在Zookeeper运行时，会生成一系列文件。</p>
-<h3 id="数据快照"><a href="#数据快照" class="headerlink" title="数据快照"></a>数据快照</h3><p><code>FileSnap</code>负责维护快照数据对外的接口，包括快照数据的写入和读取等，将内存数据库写入快照数据文件其实是一个序列化过程。针对客户端的每一次事务操作，Zookeeper都会将他们记录到事务日志中，同时也会将数据变更应用到内存数据库中，Zookeeper在进行若干次事务日志记录后，将内存数据库的全量数据Dump到本地文件中，这就是数据快照。其步骤如下:</p>
-<ol>
-<li><strong>确定是否需要进行数据快照</strong>。每进行一次事务日志记录之后，Zookeeper都会检测当前是否需要进行数据快照，考虑到数据快照对于Zookeeper机器的影响，需要尽量避免Zookeeper集群中的所有机器在同一时刻进行数据快照。采用过半随机策略进行数据快照操作。</li>
-<li><strong>切换事务日志文件</strong>。表示当前的事务日志已经写满，需要重新创建一个新的事务日志。</li>
-<li><strong>创建数据快照异步线程</strong>。创建单独的异步线程来进行数据快照以避免影响Zookeeper主流程。</li>
-<li><strong>获取全量数据和会话信息</strong>。从ZKDatabase中获取到DataTree和会话信息。</li>
-<li><strong>生成快照数据文件名</strong>。Zookeeper根据当前已经提交的最大ZXID来生成数据快照文件名。</li>
-<li><strong>数据序列化</strong>。首先序列化文件头信息，然后再对会话信息和DataTree分别进行序列化，同时生成一个Checksum，一并写入快照数据文件中去。</li>
-</ol>
-<p><strong>关键点：</strong></p>
-<ol>
-<li>异步：异步线程生成快照文件</li>
-<li>Fuzzy 快照：<ul>
-<li>快照文件生成过程中，仍然有新的事务提交，</li>
-<li>因此，快照文件不是精确到某一时刻的快照文件，而是<code>模糊的</code>，</li>
-<li>这就要求<code>事务操作</code>是<code>幂等的</code>，否则产生不一致。</li>
-</ul>
-</li>
-</ol>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>在Zookeeper服务器启动期间，首先会进行数据初始化工作，用于将存储在磁盘上的数据文件加载到Zookeeper服务器内存中。</p>
-<h3 id="初始化流程"><a href="#初始化流程" class="headerlink" title="初始化流程"></a>初始化流程</h3><p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161216214526120-1735909566.png" alt="Zookeeper初始化流程"></p>
-<p>数据的初始化工作是从磁盘上加载数据的过程，主要包括了从快照文件中<strong>加载快照数据</strong>和<strong>根据事务日志进行数据修正</strong>两个过程。</p>
-<ol>
-<li><strong>初始化<code>FileTxnSnapLog</code></strong>。FileTxnSnapLog是Zookeeper事务日志和快照数据访问层，用于衔接上层业务和底层数据存储，底层数据包含了事务日志和快照数据两部分。FileTxnSnapLog中对应FileTxnLog和FileSnap。</li>
-<li><strong>初始化ZKDatabase</strong>。首先构建DataTree，同时将FileTxnSnapLog交付ZKDatabase，以便内存数据库能够对事务日志和快照数据进行访问。在ZKDatabase初始化时，DataTree也会进行相应的初始化工作，如创建一些默认结点，如/、/zookeeper、/zookeeper/quota三个节点。</li>
-<li><strong>创建PlayBackListener</strong>。其主要用来接收事务应用过程中的回调，在Zookeeper数据恢复后期，会有事务修正过程，此过程会回调PlayBackListener来进行对应的数据修正。</li>
-<li><strong>处理快照文件</strong>。此时可以从磁盘中恢复数据了，首先从快照文件开始加载。</li>
-<li><strong>获取最新的100个快照文件</strong>。更新时间最晚的快照文件包含了最新的全量数据。</li>
-<li><strong>解析快照文件</strong>。逐个解析快照文件，此时需要进行反序列化，生成DataTree和sessionsWithTimeouts，同时还会校验Checksum及快照文件的正确性。对于100个快找文件，如果正确性校验通过时，通常只会解析最新的那个快照文件。只有最新快照文件不可用时，才会逐个进行解析，直至100个快照文件全部解析完。若将100个快照文件解析完后还是无法成功恢复一个完整的DataTree和sessionWithTimeouts，此时服务器启动失败。</li>
-<li><strong>获取最新的ZXID</strong>。此时根据快照文件的文件名即可解析出最新的ZXID：zxid_for_snap。该ZXID代表了Zookeeper开始进行数据快照的时刻。</li>
-<li><strong>处理事务日志</strong>。此时服务器内存中已经有了一份近似全量的数据，现在开始通过事务日志来更新增量数据。</li>
-<li><strong>获取所有zxid_for_snap之后提交的事务</strong>。此时，已经可以获取快照数据的最新ZXID。只需要从事务日志中获取所有ZXID比步骤7得到的ZXID大的事务操作。</li>
-<li><strong>事务应用</strong>。获取大于zxid_for_snap的事务后，将其逐个应用到之前基于快照数据文件恢复出来的DataTree和sessionsWithTimeouts。每当有一个事务被应用到内存数据库中后，Zookeeper同时会回调PlayBackListener，将这事务操作记录转换成Proposal，并保存到ZKDatabase的committedLog中，以便Follower进行快速同步。</li>
-<li><strong>获取最新的ZXID</strong>。待所有的事务都被完整地应用到内存数据库中后，也就基本上完成了数据的初始化过程，此时再次获取ZXID，用来标识上次服务器正常运行时提交的最大事务ID。</li>
-<li><strong>校验epoch</strong>。epoch标识了当前Leader周期，集群机器相互通信时，会带上这个epoch以确保彼此在同一个Leader周期中。完成数据加载后，Zookeeper会从步骤11中确定ZXID中解析出事务处理的Leader周期：epochOfZxid。同时也会从磁盘的currentEpoch和acceptedEpoch文件中读取上次记录的最新的epoch值，进行校验。</li>
-</ol>
-<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>ZK 集群服务器启动之后，会进行 2 个动作：</p>
-<ol>
-<li>选举 Leader：分配角色</li>
-<li>Learner 向 Leader 服务器注册，然后进行数据同步</li>
-</ol>
-<p>数据同步的<strong>本质</strong>：Leader将那些没有在Learner服务器上提交过的事务请求同步给Learner。大体过程如下: </p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/616953-20161217172721136-1675752544.png" alt="Zookeeper数据同步过程"></p>
-<ol>
-<li><strong>获取Learner状态</strong>。在注册Learner的最后阶段，Learner服务器会发送给Leader服务器一个ACKEPOCH数据包，Leader会从这个数据包中解析出该Learner的currentEpoch和lastZxid。</li>
-<li><strong>数据同步初始化</strong>。首先从Zookeeper内存数据库中提取出事务请求对应的提议缓存队列proposals，同时完成peerLastZxid(该Learner最后处理的ZXID)、minCommittedLog(Leader提议缓存队列commitedLog中最小的ZXID)、maxCommittedLog(Leader提议缓存队列commitedLog中的最大ZXID)三个ZXID值的初始化。</li>
-</ol>
-<p>对于集群数据同步而言，通常分为四类，<strong>直接差异化同步(DIFF同步)、先回滚再差异化同步(TRUNC+DIFF同步)、仅回滚同步(TRUNC同步)、全量同步(SNAP同步)</strong>，在初始化阶段，Leader会优先以全量同步方式来同步数据。同时，会根据Leader和Learner之间的数据差异情况来决定最终的数据同步方式。</p>
-<p>下面一张图，能够清晰描述发生上述同步的时机：</p>
-<p><img src="/2019/08/16/zookeeper-data-and-storage/zk-data-leader-follower-sync-time.png" alt="集群数据同步分类"></p>
-<p>关键点：Learner 上的 zxid 与 Leader Proposals 中 min 和 max 的关系</p>
-<h3 id="直接差异化同步-DIFF同步"><a href="#直接差异化同步-DIFF同步" class="headerlink" title="直接差异化同步(DIFF同步)"></a>直接差异化同步(DIFF同步)</h3><p><strong>场景: peerLastZxid介于minCommittedLog和maxCommittedLog之间</strong></p>
-<p>Leader首先向这个Learner发送一个DIFF指令，用于通知Learner进入差异化数据同步阶段，Leader即将把一些Proposal同步给自己，针对每个Proposal，Leader都会通过发送PROPOSAL内容数据包和COMMIT指令数据包来完成，</p>
-<h3 id="先回滚再差异化同步-TRUNC-DIFF同步"><a href="#先回滚再差异化同步-TRUNC-DIFF同步" class="headerlink" title="先回滚再差异化同步(TRUNC+DIFF同步)"></a>先回滚再差异化同步(TRUNC+DIFF同步)</h3><p><strong>场景: Leader已经将事务记录到本地事务日志中，但是没有成功发起Proposal流程</strong></p>
-<p>当Leader发现某个Learner包含了一条自己没有的事务记录，那么就需要该Learner进行事务回滚，回滚到Leader服务器上存在的，同时也是最接近于peerLastZxid的ZXID。</p>
-<h3 id="仅回滚同步-TRUNC同步"><a href="#仅回滚同步-TRUNC同步" class="headerlink" title="仅回滚同步(TRUNC同步)"></a>仅回滚同步(TRUNC同步)</h3><p><strong>场景: peerLastZxid大于maxCommittedLog</strong></p>
-<p>Leader要求Learner回滚到ZXID值为maxCommittedLog对应的事务操作。</p>
-<h3 id="全量同步-SNAP同步"><a href="#全量同步-SNAP同步" class="headerlink" title="全量同步(SNAP同步)"></a>全量同步(SNAP同步)</h3><p><strong>场景: peerLastZxid小于minCommittedLog或peerLastZxid不等于lastProcessedZxid</strong></p>
-<p>Leader无法直接使用提议缓存队列和Learner进行同步，因此只能进行全量同步。Leader将本机的全量内存数据同步给Learner。Leader首先向Learner发送一个SNAP指令，通知Learner即将进行全量同步，随后，Leader会从内存数据库中获取到全量的数据节点和会话超时时间记录器，将他们序列化后传输给Learner。Learner接收到该全量数据后，会对其反序列化后载入到内存数据库中。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a href="https://campodesktop.com/miniProxy.php?https://ningg.top/zookeeper-lesson-9-zookeeper-data-and-storage/" target="_blank" rel="noopener">ZooKeeper 技术内幕：数据的存储</a></li>
-<li><a href="https://www.cnblogs.com/leesf456/p/6279956.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（一）之FileTxnLog</a></li>
-<li><a href="https://www.cnblogs.com/leesf456/p/6285014.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（二）之FileSnap</a></li>
-<li><a href="https://www.cnblogs.com/leesf456/p/6285703.html" target="_blank" rel="noopener">【Zookeeper】源码分析之持久化（三）之FileTxnSnapLog</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </section>
 
   
@@ -2774,7 +2713,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2827,7 +2766,11 @@
         
           
         
-        <span class="site-state-item-count">19</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -2876,7 +2819,9 @@
         
           
         
-        <span class="site-state-item-count">17</span>
+          
+        
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -2938,12 +2883,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">189k</span>
+    <span title="站点总字数">197k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:52</span>
+    <span title="站点阅读时长">2:59</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
