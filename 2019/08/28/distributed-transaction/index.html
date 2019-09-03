@@ -76,7 +76,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1625.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1627.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-transaction/1626.png">
-<meta property="og:updated_time" content="2019-08-29T04:11:54.921Z">
+<meta property="og:updated_time" content="2019-09-03T11:28:21.394Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式事务">
 <meta name="twitter:description" content="事务由一组操作构成，我们希望这组操作能够全部正确执行，如果这一组操作中的任意一个步骤发生错误，那么就需要回滚之前已经完成的操作。也就是同一个事务中的所有操作，要么全都正确执行，要么全都不要执行。 事务的四大特性 ACID说到事务，就不得不提一下事务著名的四大特性。  原子性   原子性要求，事务是一个不可分割的执行单元，事务中的所有操作要么全都执行，要么全都不执行。 一致性   一致性要求，事务在">
@@ -326,7 +326,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-29 12:11:54" itemprop="dateModified" datetime="2019-08-29T12:11:54+08:00">2019-08-29</time>
+                <time title="修改时间：2019-09-03 19:28:21" itemprop="dateModified" datetime="2019-09-03T19:28:21+08:00">2019-09-03</time>
               </span>
             
           
@@ -609,7 +609,11 @@
 <p>对于第二种情况，需要在上游系统中建立消息重发机制。可以在上游系统建立一张本地消息表，并将 <strong>任务处理过程</strong> 和 <strong>向本地消息表中插入消息</strong> 这两个步骤放在一个本地事务中完成。如果向本地消息表插入消息失败，那么就会触发回滚，之前的任务处理结果就会被取消。如果这量步都执行成功，那么该本地事务就完成了。接下来会有一个专门的消息发送者不断地发送本地消息表中的消息，如果发送失败它会返回重试。当然，也要给消息发送者设置重试的上限，一般而言，达到重试上限仍然发送失败，那就意味着消息中间件出现严重的问题，此时也只有人工干预才能解决问题。</p>
 <p>对于不支持事务型消息的消息中间件，如果要实现分布式事务的话，就可以采用这种方式。它能够通过<strong>重试机制</strong>+<strong>定期校对</strong>实现分布式事务，但相比于第二种方案，它达到数据一致性的周期较长，而且还需要在上游系统中实现消息重试发布机制，以确保消息成功发布给消息中间件，这无疑增加了业务系统的开发成本，使得业务系统不够纯粹，并且这些额外的业务逻辑无疑会占用业务系统的硬件资源，从而影响性能。</p>
 <p>因此，尽量选择支持事务型消息的消息中间件来实现分布式事务，如RocketMQ。</p>
-<h3 id="方案5：TCC（两阶段型、补偿型）"><a href="#方案5：TCC（两阶段型、补偿型）" class="headerlink" title="方案5：TCC（两阶段型、补偿型）"></a>方案5：TCC（两阶段型、补偿型）</h3><p>关于TCC（Try-Confirm-Cancel）的概念，最早是由Pat Helland于2007年发表的一篇名为《Life beyond Distributed Transactions:an Apostate’s Opinion》的论文提出。 TCC事务机制相比于上面介绍的XA，解决了其几个缺点: 1.解决了协调者单点，由主业务方发起并完成这个业务活动。业务活动管理器也变成多点，引入集群。 2.同步阻塞:引入超时，超时后进行补偿，并且不会锁定整个资源，将资源转换为业务逻辑形式，粒度变小。 3.数据一致性，有了补偿机制之后，由业务活动管理器控制一致性 </p>
+<h3 id="方案5：TCC（两阶段型、补偿型）"><a href="#方案5：TCC（两阶段型、补偿型）" class="headerlink" title="方案5：TCC（两阶段型、补偿型）"></a>方案5：TCC（两阶段型、补偿型）</h3><p>关于TCC（Try-Confirm-Cancel）的概念，最早是由Pat Helland于2007年发表的一篇名为《Life beyond Distributed Transactions:an Apostate’s Opinion》的论文提出。 TCC事务机制相比于上面介绍的XA，解决了其几个缺点: 1.解决了协调者单点，由主业务方发起并完成这个业务活动。业务活动管理器也变成多点，引入集群。 2.同步阻塞:引入超时，超时后进行补偿，并且不会锁定整个资源，将资源转换为业务逻辑形式，粒度变小。 3.数据一致性，有了补偿机制之后，由业务活动管理器控制一致性。在实际生产应用中，</p>
+<ul>
+<li>网易严选自研的分布式事务中间件 DTS就是一种典型的 TCC类型事务(<a href="https://mp.weixin.qq.com/s/syM4ReAWpZ5d4KI87ogpiQ" target="_blank" rel="noopener">从单一架构到分布式交易架构，网易严选的成功实践</a>)。</li>
+<li>蚂蚁金服自研的SOFA DTX分布式事务分别基于两种理论实现了两种模式：<strong>基于BASE理论的TCC模式和基于ACID理论的FMT模式</strong>(<a href="https://zhuanlan.zhihu.com/p/37199427" target="_blank" rel="noopener">蚂蚁金服黑科技：SOFA DTX分布式事务，保障亿级资金操作一致性</a>)。</li>
+</ul>
 <p><img src="/2019/08/28/distributed-transaction/1627.png" alt="img"></p>
 <p>TCC即为Try Confirm Cancel，它属于补偿型分布式事务。顾名思义，TCC实现分布式事务一共有三个步骤：</p>
 <ul>
@@ -671,7 +675,8 @@
 <li><a href="http://www.bytesoft.org/tcc-intro/" target="_blank" rel="noopener">关于如何实现一个TCC分布式事务框架的一点思考</a></li>
 <li><a href="http://www.enterpriseintegrationpatterns.com/patterns/conversation/TryConfirmCancel.html" target="_blank" rel="noopener">How can a requestor ensure a consistent outcome across multiple, independent providers</a></li>
 <li><a href="http://www.hollischuang.com/archives/681#rd?sukey=3997c0719f1515205acb269da14295ad50b0186483fbd0a402a566f45b33525978b375ccc44dba3e85c4d645a320ba47" target="_blank" rel="noopener">关于分布式事务、两阶段提交协议、三阶提交协议</a></li>
-<li><a href="https://en.wikipedia.org/wiki/Three-phase_commit_protocol_ei.cs.vt.edu/~cs5204/fall99/distributedDBMS/sreenu/3pc.html" target="_blank" rel="noopener">Three-phase commit protocol</a>      </li>
+<li><a href="https://en.wikipedia.org/wiki/Three-phase_commit_protocol_ei.cs.vt.edu/~cs5204/fall99/distributedDBMS/sreenu/3pc.html" target="_blank" rel="noopener">Three-phase commit protocol</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/37199427" target="_blank" rel="noopener">蚂蚁金服黑科技：SOFA DTX分布式事务，保障亿级资金操作一致性</a></li>
 </ul>
 
     </div>
