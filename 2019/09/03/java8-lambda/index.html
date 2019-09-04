@@ -66,13 +66,12 @@
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="Java 是一流的面向对象语言，除了部分简单数据类型，Java 中的一切都是对象，即使数组也是一种对象，每个类创建的实例也是对象。在 Java 中定义的函数或方法不可能完全独立，也不能将方法作为参数或返回一个方法给实例。 从 Swing 开始，我们总是通过匿名类给方法传递函数功能，以下是旧版的事件监听代码： 1234567someObject.addMouseListener(new MouseA">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://blog.oneapm.com/content/images/2015/11/xkcd-functional-1.png">
-<meta property="og:image" content="http://blog.oneapm.com/content/images/2015/11/java-lambda-expression-1.png">
-<meta property="og:updated_time" content="2019-09-03T13:15:13.147Z">
+<meta property="og:image" content="http://www.sainpo.top/2019/09/03/java8-lambda/xkcd-functional-1.png">
+<meta property="og:updated_time" content="2019-09-04T04:50:07.336Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入浅出 Java 8 Lambda 表达式">
 <meta name="twitter:description" content="Java 是一流的面向对象语言，除了部分简单数据类型，Java 中的一切都是对象，即使数组也是一种对象，每个类创建的实例也是对象。在 Java 中定义的函数或方法不可能完全独立，也不能将方法作为参数或返回一个方法给实例。 从 Swing 开始，我们总是通过匿名类给方法传递函数功能，以下是旧版的事件监听代码： 1234567someObject.addMouseListener(new MouseA">
-<meta name="twitter:image" content="http://blog.oneapm.com/content/images/2015/11/xkcd-functional-1.png">
+<meta name="twitter:image" content="http://www.sainpo.top/2019/09/03/java8-lambda/xkcd-functional-1.png">
   <link rel="canonical" href="http://www.sainpo.top/2019/09/03/java8-lambda/">
 
 
@@ -305,11 +304,21 @@
                 
               
 
-              <time title="创建时间：2019-09-03 21:10:40 / 修改时间：21:15:13" itemprop="dateCreated datePublished" datetime="2019-09-03T21:10:40+08:00">2019-09-03</time>
+              <time title="创建时间：2019-09-03 21:10:40" itemprop="dateCreated datePublished" datetime="2019-09-03T21:10:40+08:00">2019-09-03</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-04 12:50:07" itemprop="dateModified" datetime="2019-09-04T12:50:07+08:00">2019-09-04</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -382,14 +391,13 @@
 <p>在上面的例子里，为了给 Mouse 监听器添加自定义代码，我们定义了一个匿名内部类 MouseAdapter 并创建了它的对象，通过这种方式，我们将一些函数功能传给 addMouseListener 方法。</p>
 <p>简而言之，在 Java 里将普通的方法或函数像参数一样传值并不简单，为此，Java 8 增加了一个语言级的新特性，名为 <strong>Lambda 表达式</strong>。</p>
 <h2 id="为什么-Java-需要-Lambda-表达式？"><a href="#为什么-Java-需要-Lambda-表达式？" class="headerlink" title="为什么 Java 需要 Lambda 表达式？"></a>为什么 Java 需要 Lambda 表达式？</h2><p>如果忽视注解(Annotations)、泛型(Generics)等特性，自 Java 语言诞生时起，它的变化并不大。Java 一直都致力维护其对象至上的特征，在使用过 JavaScript 之类的函数式语言之后，Java 如何强调其面向对象的本质，以及源码层的数据类型如何严格变得更加清晰可感。其实，函数对 Java 而言并不重要，在 Java 的世界里，函数无法独立存在。</p>
-<p><img src="http://blog.oneapm.com/content/images/2015/11/xkcd-functional-1.png" alt="深入浅出 Java 8 Lambda 表达式 技术分享 第1张"></p>
+<p><img src="/2019/09/03/java8-lambda/xkcd-functional-1.png" alt="深入浅出 Java 8 Lambda 表达式 技术分享 第1张"></p>
 <p>在函数式编程语言中，函数是一等公民，它们可以独立存在，你可以将其赋值给一个变量，或将他们当做参数传给其他函数。JavaScript 是最典型的函数式编程语言。点击<a href="http://eloquentjavascript.net/chapter6.html" target="_blank" rel="noopener">此处</a>以及<a href="http://www.ibm.com/developerworks/library/wa-javascript/index.html" target="_blank" rel="noopener">此处</a>可以清楚了解 JavaScript 这种函数式语言的好处。函数式语言提供了一种强大的功能——闭包，相比于传统的编程方法有很多优势，闭包是一个可调用的对象，它记录了一些信息，这些信息来自于创建它的作用域。Java 现在提供的最接近闭包的概念便是 Lambda 表达式，虽然闭包与 Lambda 表达式之间存在显著差别，但至少 Lambda 表达式是闭包很好的替代者。</p>
 <p>在 Steve Yegge 辛辣又幽默的<a href="http://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html" target="_blank" rel="noopener">博客文章</a>里，描绘了 Java 世界是如何严格地以名词为中心的，如果你还没看过，赶紧去读吧，写得非常风趣幽默，而且恰如其分地解释了为什么 Java 要引进 Lambda 表达式。</p>
 <p>Lambda 表达式为 Java 添加了缺失的函数式编程特点，使我们能将函数当做一等公民看待。尽管不完全正确，我们很快就会见识到 Lambda 与闭包的不同之处，但是又无限地接近闭包。在支持一类函数的语言中，Lambda 表达式的类型将是函数。但是，在 Java 中，Lambda 表达式是对象，他们必须依附于一类特别的对象类型——函数式接口(functional interface)。我们会在后文详细介绍函数式接口。</p>
 <p>Mario Fusco 的这篇思路清晰的<a href="http://java.dzone.com/articles/why-we-need-Lambda-expressions" target="_blank" rel="noopener">文章</a>介绍了为什么 Java 需要 Lambda 表达式。他解释了为什么现代编程语言必须包含闭包这类特性。</p>
 <h2 id="Lambda-表达式简介"><a href="#Lambda-表达式简介" class="headerlink" title="Lambda 表达式简介"></a>Lambda 表达式简介</h2><p>Lambda 表达式是一种匿名函数(对 Java 而言这并不完全正确，但现在姑且这么认为)，简单地说，它是没有声明的方法，也即没有访问修饰符、返回值声明和名字。</p>
 <p>你可以将其想做一种速记，在你需要使用某个方法的地方写上它。当某个方法只使用一次，而且定义很简短，使用这种速记替代之尤其有效，这样，你就不必在类中费力写声明与方法了。</p>
-<p><img src="http://blog.oneapm.com/content/images/2015/11/java-lambda-expression-1.png" alt="深入浅出 Java 8 Lambda 表达式 技术分享 第2张"></p>
 <p>Java 中的 Lambda 表达式通常使用 <code>(argument) -&gt; (body)</code> 语法书写，例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(arg1, arg2...) -&gt; &#123; body &#125;</span><br><span class="line"></span><br><span class="line">(type1 arg1, type2 arg2...) -&gt; &#123; body &#125;</span><br></pre></td></tr></table></figure>
 
