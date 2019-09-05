@@ -67,7 +67,7 @@
 <meta property="og:description" content="Java 是一流的面向对象语言，除了部分简单数据类型，Java 中的一切都是对象，即使数组也是一种对象，每个类创建的实例也是对象。在 Java 中定义的函数或方法不可能完全独立，也不能将方法作为参数或返回一个方法给实例。 从 Swing 开始，我们总是通过匿名类给方法传递函数功能，以下是旧版的事件监听代码： 1234567someObject.addMouseListener(new MouseA">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/09/03/java8-lambda/xkcd-functional-1.png">
-<meta property="og:updated_time" content="2019-09-05T01:41:17.557Z">
+<meta property="og:updated_time" content="2019-09-05T03:08:56.234Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入浅出 Java 8 Lambda 表达式">
 <meta name="twitter:description" content="Java 是一流的面向对象语言，除了部分简单数据类型，Java 中的一切都是对象，即使数组也是一种对象，每个类创建的实例也是对象。在 Java 中定义的函数或方法不可能完全独立，也不能将方法作为参数或返回一个方法给实例。 从 Swing 开始，我们总是通过匿名类给方法传递函数功能，以下是旧版的事件监听代码： 1234567someObject.addMouseListener(new MouseA">
@@ -317,7 +317,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-05 09:41:17" itemprop="dateModified" datetime="2019-09-05T09:41:17+08:00">2019-09-05</time>
+                <time title="修改时间：2019-09-05 11:08:56" itemprop="dateModified" datetime="2019-09-05T11:08:56+08:00">2019-09-05</time>
               </span>
             
           
@@ -361,7 +361,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">9.6k</span>
+              <span title="本文字数">9.9k</span>
             </span>
           
             <span class="post-meta-item">
@@ -435,7 +435,7 @@
 
 <p>我们引用 <code>getAge</code>，然后将其应用于正确的参数。</p>
 <p>目标引用的参数类型是 <code>Function&lt;T,R&gt;</code>，<code>T</code> 表示传入类型，<code>R</code> 表示返回类型。比如，表达式 <code>person -&gt; person.getAge();</code>，传入参数是 <code>person</code>，返回值是 <code>person.getAge()</code>，那么方法引用 <code>Person::getAge</code> 就对应着 <code>Function&lt;Person,Integer&gt;</code> 类型。</p>
-<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><p>在 Java 中，Marker（标记）类型的接口是一种没有方法或属性声明的接口，简单地说，marker 接口是空接口。相似地，<strong>函数式接口是只包含一个抽象方法声明的接口</strong>。</p>
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><p>在 Java 中，Marker（标记）类型的接口是一种没有方法或属性声明的接口，简单地说，marker 接口是空接口。相似地，<strong>函数式接口是只包含一个抽象方法声明的接口</strong>。因此经常使用的Runnable，Callable接口就是典型的函数式接口。</p>
 <p><code>java.lang.Runnable</code> 就是一种函数式接口，在 Runnable 接口中只声明了一个方法 <code>void run()</code>，相似地，ActionListener 接口也是一种函数式接口，我们使用匿名内部类来实例化函数式接口的对象，有了 Lambda 表达式，这一方式可以得到简化。</p>
 <p>每个 Lambda 表达式都能隐式地赋值给函数式接口，例如，我们可以通过 Lambda 表达式创建 Runnable 接口的引用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runnable r = () -&gt; System.out.println(<span class="string">"hello world"</span>);</span><br></pre></td></tr></table></figure>
@@ -455,7 +455,7 @@
 
 <p><a href="http://download.java.net/jdk8/docs/api/java/lang/FunctionalInterface.html" target="_blank" rel="noopener">@FunctionalInterface</a> 是 Java 8 新加入的一种接口，用于指明该接口类型声明是根据 Java 语言规范定义的函数式接口。Java 8 还声明了一些 Lambda 表达式可以使用的函数式接口，当你注释的接口不是有效的函数式接口时，可以使用 @FunctionalInterface 解决编译层面的错误。</p>
 <p>以下是一种自定义的函数式接口： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span> <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;   </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;   </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>根据定义，函数式接口只能有一个抽象方法，如果你尝试添加第二个抽象方法，将抛出编译时错误。例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeMoreWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -463,6 +463,10 @@
 <p>错误：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Unexpected <span class="meta">@FunctionalInterface</span> annotation </span><br><span class="line">    <span class="meta">@FunctionalInterface</span> ^ WorkerInterface is not a functional <span class="class"><span class="keyword">interface</span> <span class="title">multiple</span> </span></span><br><span class="line"><span class="class">    <span class="title">non</span>-<span class="title">overriding</span> <span class="title">abstract</span> <span class="title">methods</span> <span class="title">found</span> <span class="title">in</span> <span class="title">interface</span> <span class="title">WorkerInterface</span> 1 <span class="title">error</span></span></span><br></pre></td></tr></table></figure>
 
+<p>但是，函数式接口要求只有一个抽象方法却可以拥有若干个默认方法的（实例方法），比如下例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@java</span>.lang.FunctionalInterface</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FunctionalInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">handle</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"run"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该接口中，除了有抽象方法handle外，还有默认方法（实例方法）run。</p>
 <p>函数式接口定义好后，我们可以在 API 中使用它，同时利用 Lambda 表达式。例如：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//定义一个函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WorkerInterfaceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(WorkerInterface worker)</span> </span>&#123;</span><br><span class="line">    worker.doSomeWork();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Annonymous class</span></span><br><span class="line">    execute(<span class="keyword">new</span> WorkerInterface() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"Worker invoked using Anonymous class"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Lambda expression </span></span><br><span class="line">    execute( () -&gt; System.out.println(<span class="string">"Worker invoked using Lambda expression"</span>) );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -520,6 +524,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+              <a href="/2019/09/05/java8-new-feature/" rel="prev" title="Java8新特性">
+                Java8新特性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
     </footer>
@@ -574,7 +582,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -631,7 +639,9 @@
         
           
         
-        <span class="site-state-item-count">21</span>
+          
+        
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -682,7 +692,9 @@
         
           
         
-        <span class="site-state-item-count">18</span>
+          
+        
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -761,12 +773,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">199k</span>
+    <span title="站点总字数">211k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:01</span>
+    <span title="站点阅读时长">3:12</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
