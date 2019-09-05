@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：11:16:15" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
+              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：15:40:10" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
             </span>
           
             
@@ -338,7 +338,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">12k</span>
+              <span title="本文字数">13k</span>
             </span>
           
             <span class="post-meta-item">
@@ -348,7 +348,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">11 分钟</span>
+              <span title="阅读时长">12 分钟</span>
             </span>
           
 
@@ -441,59 +441,32 @@
 <li>Intermediate（中间操作）:中间操作是指对流中数据元素做出相应转换或操作后依然返回为一个流Stream，仍然可以供下一次流操作使用。常用的有：map (mapToInt, flatMap 等)、 filter、 distinct、 sorted、 peek、 limit、 skip。</li>
 <li>Termial（结束操作）：是指最终对Stream做出聚合操作，输出结果。</li>
 </ol>
-<p><strong>中间操作</strong></p>
-<blockquote>
-<p>filter：对Stream中元素进行过滤</p>
-</blockquote>
-<p>过滤元素为空的字符串：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
+<h3 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a><strong>中间操作</strong></h3><h4 id="Filter-过滤"><a href="#Filter-过滤" class="headerlink" title="Filter(过滤)"></a>Filter(过滤)</h4><p>Filter接收一个判断用来过滤流中的所有元素. 这个操作是中间操作，它能够使我们对结果进行另一个流操作(<code>forEach</code>) . ForEach接受一个consumer操作对每一个过滤的流元素中. ForEach是一个终端操作. 它返回值void,所以我们不能调用另一个函数操作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stringCollection</span><br><span class="line">    .stream()</span><br><span class="line">    .filter((s) -&gt; s.startsWith(<span class="string">"a"</span>))</span><br><span class="line">    .forEach(System.out::println);</span><br><span class="line"></span><br><span class="line"><span class="comment">// "aaa2", "aaa1"</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>map：对Stream中元素按照指定规则映射成另一个元素</p>
-</blockquote>
-<p>将每一个元素都添加字符串“_map”</p>
+<h4 id="Map-映射"><a href="#Map-映射" class="headerlink" title="Map(映射)"></a>Map(映射)</h4><p>对Stream中元素按照指定规则映射成另一个元素，将每一个元素都添加字符串“_map”</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stream.map(str -&gt; str + <span class="string">"_map"</span>).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
 
 <p>map方法是一对一的关系，将stream中的每一个元素按照映射规则成另外一个元素，而如果是一对多的关系的话就需要使用flatmap方法。</p>
-<blockquote>
-<p>concat：对流进行合并操作</p>
-</blockquote>
-<p>concat方法将两个Stream连接在一起，合成一个Stream。若两个输入的Stream都时排序的，则新Stream也是排序的；若输入的Stream中任何一个是并行的，则新的Stream也是并行的；若关闭新的Stream时，原两个输入的Stream都将执行关闭处理。</p>
+<h4 id="concat-对流进行合并操作"><a href="#concat-对流进行合并操作" class="headerlink" title="concat(对流进行合并操作)"></a>concat(对流进行合并操作)</h4><p>concat方法将两个Stream连接在一起，合成一个Stream。若两个输入的Stream都时排序的，则新Stream也是排序的；若输入的Stream中任何一个是并行的，则新的Stream也是并行的；若关闭新的Stream时，原两个输入的Stream都将执行关闭处理。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream.concat(Stream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), Stream.of(<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)).</span><br><span class="line">	forEach(System.out::println);</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>distinct：对流进行去重操作</p>
-</blockquote>
-<p>去除流中重复的元素</p>
+<h4 id="distinct-对流进行去重操作"><a href="#distinct-对流进行去重操作" class="headerlink" title="distinct(对流进行去重操作)"></a>distinct(对流进行去重操作)</h4><p>去除流中重复的元素</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.distinct().forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>limit：限制流中元素的个数</p>
-</blockquote>
-<p>截取流中前两个元素：</p>
+<h4 id="limit：限制流中元素的个数"><a href="#limit：限制流中元素的个数" class="headerlink" title="limit：限制流中元素的个数"></a>limit：限制流中元素的个数</h4><p>截取流中前两个元素：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.limit(<span class="number">2</span>).forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">a</span><br><span class="line">a</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>skip：跳过流中前几个元素</p>
-</blockquote>
-<p>丢掉流中前两个元素：</p>
+<h4 id="skip：跳过流中前几个元素"><a href="#skip：跳过流中前几个元素" class="headerlink" title="skip：跳过流中前几个元素"></a>skip：跳过流中前几个元素</h4><p>丢掉流中前两个元素：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.skip(<span class="number">2</span>).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line">b</span><br><span class="line">c</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>peek：对流中每一个元素依次进行操作，类似于forEach操作</p>
-</blockquote>
-<p>JDK中给出的例子：</p>
+<h4 id="peek：对流中每一个元素依次进行操作，类似于forEach操作"><a href="#peek：对流中每一个元素依次进行操作，类似于forEach操作" class="headerlink" title="peek：对流中每一个元素依次进行操作，类似于forEach操作"></a>peek：对流中每一个元素依次进行操作，类似于forEach操作</h4><p>JDK中给出的例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Stream.of(<span class="string">"one"</span>, <span class="string">"two"</span>, <span class="string">"three"</span>, <span class="string">"four"</span>)</span><br><span class="line">            .filter(e -&gt; e.length() &gt; <span class="number">3</span>)</span><br><span class="line">            .peek(e -&gt; System.out.println(<span class="string">"Filtered value: "</span> + e))</span><br><span class="line">            .map(String::toUpperCase)</span><br><span class="line">            .peek(e -&gt; System.out.println(<span class="string">"Mapped value: "</span> + e))</span><br><span class="line">            .collect(Collectors.toList());</span><br><span class="line">输出结果：</span><br><span class="line">Filtered value: three</span><br><span class="line">Mapped value: THREE</span><br><span class="line">Filtered value: four</span><br><span class="line">Mapped value: FOUR</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>sorted：对流中元素进行排序，可以通过sorted(Comparator&lt;? super T&gt; comparator)自定义比较规则</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">        stream.sorted(Integer::compareTo).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="Sorted-排序"><a href="#Sorted-排序" class="headerlink" title="Sorted(排序)"></a>Sorted(排序)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">        stream.sorted(Integer::compareTo).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>match：检查流中元素是否匹配指定的匹配规则</p>
-</blockquote>
-<p>Stream 有三个 match 方法，从语义上说：</p>
+<p>注意 <code>sorted</code> 仅仅是创建一个排序后的视图操作，并没有操作排序返回的集合. 排序的 <code>stringCollection</code>并没有受到影响。</p>
+<h4 id="Match-匹配"><a href="#Match-匹配" class="headerlink" title="Match(匹配)"></a>Match(匹配)</h4><p>Stream 有三个 match 方法，从语义上说：</p>
 <ul>
 <li>allMatch：Stream 中全部元素符合传入的 predicate，返回 true；</li>
 <li>anyMatch：Stream 中只要有一个元素符合传入的 predicate，返回 true；</li>
@@ -502,30 +475,18 @@
 <p>如检查Stream中每个元素是否都大于5：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">boolean</span> match = stream.allMatch(integer -&gt; integer &gt; <span class="number">5</span>);</span><br><span class="line">System.out.println(match);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="keyword">false</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>结束操作</strong></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu013291394%2Farticle%2Fdetails%2F52662761" target="_blank" rel="noopener">Collectors中常见归约方法总结</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fio_field%2Farticle%2Fdetails%2F54971555" target="_blank" rel="noopener">重构和定制收集器Collectors</a></p>
-<blockquote>
-<p>count：统计Stream中元素的个数</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
+<h3 id="结束操作"><a href="#结束操作" class="headerlink" title="结束操作"></a><strong>结束操作</strong></h3><h4 id="collector"><a href="#collector" class="headerlink" title="collector"></a>collector</h4><p>参见: <a href="https://www.jianshu.com/p/c0d5c3094324" target="_blank" rel="noopener">【译】java8之collector</a></p>
+<h4 id="Count-统计"><a href="#Count-统计" class="headerlink" title="Count(统计)"></a>Count(统计)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>max/min：找出流中最大或者最小的元素</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">    System.out.println(stream.max(Integer::compareTo).get());</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="max-min-找出流中最大或者最小的元素"><a href="#max-min-找出流中最大或者最小的元素" class="headerlink" title="max/min(找出流中最大或者最小的元素)"></a>max/min(找出流中最大或者最小的元素)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">    System.out.println(stream.max(Integer::compareTo).get());</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>forEach</p>
-</blockquote>
-<p>forEach方法前面已经用了好多次，其用于遍历Stream中的所元素，避免了使用for循环，让代码更简洁，逻辑更清晰。</p>
+<h4 id="forEach-遍历"><a href="#forEach-遍历" class="headerlink" title="forEach(遍历)"></a>forEach(遍历)</h4><p>forEach方法前面已经用了好多次，其用于遍历Stream中的所元素，避免了使用for循环，让代码更简洁，逻辑更清晰。</p>
 <p>示例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream.of(<span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">    .sorted()</span><br><span class="line">    .forEach(System.out::println);</span><br><span class="line">    <span class="comment">// 打印结果</span></span><br><span class="line">    <span class="comment">// 1，2，3,4,5</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>reduce</p>
-</blockquote>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2FIO_Field%2Farticle%2Fdetails%2F54971679" target="_blank" rel="noopener">Stream中的Reduce讲解</a></p>
+<h4 id="Reduce-合并"><a href="#Reduce-合并" class="headerlink" title="Reduce(合并)"></a>Reduce(合并)</h4><p>这个终端操作完成一个流中元素合并操作通过给定的函数.返回的结果通过 <code>Optional来保存值</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; reduced =</span><br><span class="line">    stringCollection</span><br><span class="line">        .stream()</span><br><span class="line">        .sorted()</span><br><span class="line">        .reduce((s1, s2) -&gt; s1 + <span class="string">"#"</span> + s2);</span><br><span class="line"></span><br><span class="line">reduced.ifPresent(System.out::println);</span><br><span class="line"><span class="comment">// "aaa1#aaa2#bbb1#bbb2#bbb3#ccc#ddd1#ddd2"</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="Optional"><a href="#Optional" class="headerlink" title="Optional"></a>Optional</h1><p>为了解决空指针异常，在Java8之前需要使用if-else这样的语句去防止空指针异常，而在Java8就可以使用Optional来解决。Optional可以理解成一个数据容器，甚至可以封装null，并且如果值存在调用isPresent()方法会返回true。为了能够理解Optional。先来看一个例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OptionalTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getUserName</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> user.getUserName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String userName;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String userName)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.userName = userName;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getUserName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> userName;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -582,17 +543,9 @@
 <li>编译器新增一些特性以及提供一些新的Java工具</li>
 </ol>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>Stream的参考资料：</p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu010425776%2Farticle%2Fdetails%2F52344425" target="_blank" rel="noopener">Stream API讲解</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fio_field%2Farticle%2Fdetails%2F54971761" target="_blank" rel="noopener">Stream讲解系列文章</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-java8streamapi%2F" target="_blank" rel="noopener">对Stream的讲解很细致</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu013291394%2Farticle%2Fdetails%2F52624966" target="_blank" rel="noopener">Java8新特性之Stream API</a></p>
+<p><a href="https://www.jianshu.com/p/c0d5c3094324" target="_blank" rel="noopener">【译】java8之collector</a></p>
 <p>Optional的参考资料：</p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F6675.html" target="_blank" rel="noopener">Optional的API讲解很详细</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F26144.html" target="_blank" rel="noopener">对Optional部分的讲解还不错，值得参考</a></p>
-<p>Java8新特性的介绍：</p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F11908.html" target="_blank" rel="noopener">Java8新特性指南，很好的资料</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F26144.html" target="_blank" rel="noopener">跟上 Java 8 – 你忽略了的新特性</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.runoob.com%2Fjava%2Fjava8-new-features.html" target="_blank" rel="noopener">Java8新特性学习系列教程</a></p>
+<p><a href="https://blog.csdn.net/aitangyong/article/details/54564100" target="_blank" rel="noopener">JDK8新特性：使用Optional避免null导致的NullPointerException</a></p>
 
           
         
@@ -669,7 +622,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-05 11:08:56" itemprop="dateModified" datetime="2019-09-05T11:08:56+08:00">2019-09-05</time>
+                <time title="修改时间：2019-09-05 15:13:46" itemprop="dateModified" datetime="2019-09-05T15:13:46+08:00">2019-09-05</time>
               </span>
             
           
@@ -704,7 +657,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">9.9k</span>
+              <span title="本文字数">11k</span>
             </span>
           
             <span class="post-meta-item">
@@ -714,7 +667,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">9 分钟</span>
+              <span title="阅读时长">10 分钟</span>
             </span>
           
 
@@ -779,7 +732,7 @@
 
 <p>我们引用 <code>getAge</code>，然后将其应用于正确的参数。</p>
 <p>目标引用的参数类型是 <code>Function&lt;T,R&gt;</code>，<code>T</code> 表示传入类型，<code>R</code> 表示返回类型。比如，表达式 <code>person -&gt; person.getAge();</code>，传入参数是 <code>person</code>，返回值是 <code>person.getAge()</code>，那么方法引用 <code>Person::getAge</code> 就对应着 <code>Function&lt;Person,Integer&gt;</code> 类型。</p>
-<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><p>在 Java 中，Marker（标记）类型的接口是一种没有方法或属性声明的接口，简单地说，marker 接口是空接口。相似地，<strong>函数式接口是只包含一个抽象方法声明的接口</strong>。因此经常使用的Runnable，Callable接口就是典型的函数式接口。</p>
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在 Java 中，Marker（标记）类型的接口是一种没有方法或属性声明的接口，简单地说，marker 接口是空接口。相似地，<strong>函数式接口是只包含一个抽象方法声明的接口</strong>。因此经常使用的Runnable，Callable接口就是典型的函数式接口。</p>
 <p><code>java.lang.Runnable</code> 就是一种函数式接口，在 Runnable 接口中只声明了一个方法 <code>void run()</code>，相似地，ActionListener 接口也是一种函数式接口，我们使用匿名内部类来实例化函数式接口的对象，有了 Lambda 表达式，这一方式可以得到简化。</p>
 <p>每个 Lambda 表达式都能隐式地赋值给函数式接口，例如，我们可以通过 Lambda 表达式创建 Runnable 接口的引用。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runnable r = () -&gt; System.out.println(<span class="string">"hello world"</span>);</span><br></pre></td></tr></table></figure>
@@ -788,12 +741,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(</span><br><span class="line">   () -&gt; System.out.println(<span class="string">"hello world"</span>)</span><br><span class="line">).start();</span><br></pre></td></tr></table></figure>
 
 <p>因此，在上面的代码中，编译器会自动推断：根据线程类的构造函数签名 <code>public Thread(Runnable r) { }</code>，将该 Lambda 表达式赋给 Runnable 接口。</p>
-<p>在 Java8 前，JDK 已经提供哪些函数式接口了，</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">java.lang.Runnable,</span><br><span class="line">java.lang.Comparable,</span><br><span class="line">java.util.concurrent.Callable;</span><br></pre></td></tr></table></figure>
-
-<p>JDK8 又新增了哪些通用的？你知道他们各自的使用场景吗？</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.util.function.Consumer&lt;T&gt;,</span><br><span class="line">java.util.function.Supplier&lt;T&gt;,</span><br><span class="line">java.util.function.Predicate&lt;T&gt;,</span><br><span class="line">java.util.function.Function&lt;T,R&gt;,</span><br></pre></td></tr></table></figure>
-
 <p>以下是一些 Lambda 表达式及其函数式接口：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Consumer&lt;Integer&gt;  c = (<span class="keyword">int</span> x) -&gt; &#123; System.out.println(x) &#125;;</span><br><span class="line"></span><br><span class="line">BiConsumer&lt;Integer, String&gt; b = (Integer x, String y) -&gt; System.out.println(x + <span class="string">" : "</span> + y);</span><br><span class="line"></span><br><span class="line">Predicate&lt;String&gt; p = (String s) -&gt; &#123; s == <span class="keyword">null</span> &#125;;</span><br></pre></td></tr></table></figure>
 
@@ -801,23 +748,37 @@
 <p>以下是一种自定义的函数式接口： </p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;   </span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>根据定义，函数式接口只能有一个抽象方法，如果你尝试添加第二个抽象方法，将抛出编译时错误。例如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeMoreWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>错误：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Unexpected <span class="meta">@FunctionalInterface</span> annotation </span><br><span class="line">    <span class="meta">@FunctionalInterface</span> ^ WorkerInterface is not a functional <span class="class"><span class="keyword">interface</span> <span class="title">multiple</span> </span></span><br><span class="line"><span class="class">    <span class="title">non</span>-<span class="title">overriding</span> <span class="title">abstract</span> <span class="title">methods</span> <span class="title">found</span> <span class="title">in</span> <span class="title">interface</span> <span class="title">WorkerInterface</span> 1 <span class="title">error</span></span></span><br></pre></td></tr></table></figure>
-
-<p>但是，函数式接口要求只有一个抽象方法却可以拥有若干个默认方法的（实例方法），比如下例：</p>
+<p>根据定义，函数式接口只能有一个抽象方法，如果你尝试添加第二个抽象方法，将抛出编译时错误。但是，函数式接口要求只有一个抽象方法却可以拥有若干个默认方法的（实例方法），比如下例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@java</span>.lang.FunctionalInterface</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FunctionalInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">handle</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"run"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>该接口中，除了有抽象方法handle外，还有默认方法（实例方法）run。</p>
 <p>函数式接口定义好后，我们可以在 API 中使用它，同时利用 Lambda 表达式。例如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//定义一个函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">WorkerInterface</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WorkerInterfaceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(WorkerInterface worker)</span> </span>&#123;</span><br><span class="line">    worker.doSomeWork();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Annonymous class</span></span><br><span class="line">    execute(<span class="keyword">new</span> WorkerInterface() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomeWork</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"Worker invoked using Anonymous class"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//invoke doSomeWork using Lambda expression </span></span><br><span class="line">    execute( () -&gt; System.out.println(<span class="string">"Worker invoked using Lambda expression"</span>) );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Converter</span>&lt;<span class="title">F</span>, <span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">T <span class="title">convert</span><span class="params">(F from)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line">Converter&lt;String, Integer&gt; converter = (from) -&gt; Integer.valueOf(from);</span><br><span class="line">Integer converted = converter.convert(<span class="string">"123"</span>);</span><br><span class="line">System.out.println(converted);    <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
 
-<p>输出：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Worker invoked using Anonymous <span class="class"><span class="keyword">class</span> </span></span><br><span class="line"><span class="class"><span class="title">Worker</span> <span class="title">invoked</span> <span class="title">using</span> <span class="title">Lambda</span> <span class="title">expression</span></span></span><br></pre></td></tr></table></figure>
+<p>上面的代码可以通过静态方法应用可以更加简洁:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Converter&lt;String, Integer&gt; converter = Integer::valueOf;</span><br><span class="line">Integer converted = converter.convert(<span class="string">"123"</span>);</span><br><span class="line">System.out.println(converted);   <span class="comment">// 123</span></span><br></pre></td></tr></table></figure>
 
-<p>这上面的例子里，我们创建了自定义的函数式接口并与 Lambda 表达式一起使用。execute() 方法现在可以将 Lambda 表达式作为参数。</p>
+<h3 id="Built-in-Functional-Interfaces-内置函数"><a href="#Built-in-Functional-Interfaces-内置函数" class="headerlink" title="Built-in Functional Interfaces(内置函数)"></a>Built-in Functional Interfaces(内置函数)</h3><p>JDK 1.8 API包含了许多内置函数. 它们中很多在老版本中是大家很熟悉的,像 <code>Comparator</code> 和<code>Runnable</code>. 这些接口通过 添加<code>@FunctionalInterface注解来支持</code>Lambda表达式.</p>
+<p>但是Java 8 API 也添加了很多新接口使编程变的更加容易 . 这些新的函数很多是借鉴被大家所熟知的 <a href="https://code.google.com/p/guava-libraries/" target="_blank" rel="noopener">Google Guava</a> 函数库.即使你很熟悉这些函数库,你也需要关注这些方法是怎么在接口中扩展的以及它们怎么使用.</p>
+<h4 id="Predicates-判断"><a href="#Predicates-判断" class="headerlink" title="Predicates( 判断)"></a>Predicates( 判断)</h4><p>判断是传递一个参数返回一个布尔值. 这个接口包含各种默认的方法组成复杂的逻辑判断单元 (and, or, negate)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Predicate&lt;String&gt; predicate = (s) -&gt; s.length() &gt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">predicate.test(<span class="string">"foo"</span>);              <span class="comment">// true</span></span><br><span class="line">predicate.negate().test(<span class="string">"foo"</span>);     <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">Predicate&lt;Boolean&gt; nonNull = Objects::nonNull;</span><br><span class="line">Predicate&lt;Boolean&gt; isNull = Objects::isNull;</span><br><span class="line"></span><br><span class="line">Predicate&lt;String&gt; isEmpty = String::isEmpty;</span><br><span class="line">Predicate&lt;String&gt; isNotEmpty = isEmpty.negate();</span><br></pre></td></tr></table></figure>
+
+<h4 id="Functions-函数"><a href="#Functions-函数" class="headerlink" title="Functions(函数)"></a>Functions(函数)</h4><p>函数接收一个参数返回一个结果. 默认方法能够链式调用 (compose, andThen).</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Function&lt;String, Integer&gt; toInteger = Integer::valueOf;</span><br><span class="line">Function&lt;String, String&gt; backToString = toInteger.andThen(String::valueOf);</span><br><span class="line"></span><br><span class="line">backToString.apply(<span class="string">"123"</span>);     <span class="comment">// "123"</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Suppliers-生产者"><a href="#Suppliers-生产者" class="headerlink" title="Suppliers(生产者)"></a>Suppliers(生产者)</h4><p>Suppliers返回一个给定的泛型类型的结果. 不像函数, Suppliers不需要传递参数.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Supplier&lt;Person&gt; personSupplier = Person::<span class="keyword">new</span>;</span><br><span class="line">personSupplier.get();   <span class="comment">// new Person</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Consumers-消费者"><a href="#Consumers-消费者" class="headerlink" title="Consumers(消费者)"></a>Consumers(消费者)</h4><p>Consumers代表在一个输入参数上执行一项操作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Consumer&lt;Person&gt; greeter = (p) -&gt; System.out.println(<span class="string">"Hello, "</span> + p.firstName);</span><br><span class="line">greeter.accept(<span class="keyword">new</span> Person(<span class="string">"Luke"</span>, <span class="string">"Skywalker"</span>));</span><br></pre></td></tr></table></figure>
+
+<h4 id="Comparators-比较"><a href="#Comparators-比较" class="headerlink" title="Comparators(比较)"></a>Comparators(比较)</h4><p>Comparators在老版本中大家都比较熟悉. Java 8 为这个接口增加了几种默认的方法.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Comparator&lt;Person&gt; comparator = (p1, p2) -&gt; p1.firstName.compareTo(p2.firstName);</span><br><span class="line"></span><br><span class="line">Person p1 = <span class="keyword">new</span> Person(<span class="string">"John"</span>, <span class="string">"Doe"</span>);</span><br><span class="line">Person p2 = <span class="keyword">new</span> Person(<span class="string">"Alice"</span>, <span class="string">"Wonderland"</span>);</span><br><span class="line"></span><br><span class="line">comparator.compare(p1, p2);             <span class="comment">// &gt; 0</span></span><br><span class="line">comparator.reversed().compare(p1, p2);  <span class="comment">// &lt; 0</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Optionals-选项"><a href="#Optionals-选项" class="headerlink" title="Optionals(选项)"></a>Optionals(选项)</h4><p>Optionals 并不是一个函数接口, 相反的它的作用就是避免出现空指针异常.它是一个很重要的概念对以一部分,然我们来快速了解它.</p>
+<p>Optional是一个简单的容器里面包含有空或者非空的值.想象一下如果有一个方法能够返回一个空或者一个非空的值 . 在Java8中你可以通过返回一个<code>Optional来替代空</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; optional = Optional.of(<span class="string">"bam"</span>);</span><br><span class="line"></span><br><span class="line">optional.isPresent();           <span class="comment">// true</span></span><br><span class="line">optional.get();                 <span class="comment">// "bam"</span></span><br><span class="line">optional.orElse(<span class="string">"fallback"</span>);    <span class="comment">// "bam"</span></span><br><span class="line"></span><br><span class="line">optional.ifPresent((s) -&gt; System.out.println(s.charAt(<span class="number">0</span>)));     <span class="comment">// "b"</span></span><br></pre></td></tr></table></figure>
+
 <h2 id="Lambda-表达式举例"><a href="#Lambda-表达式举例" class="headerlink" title="Lambda 表达式举例"></a>Lambda 表达式举例</h2><h3 id="线程初始化"><a href="#线程初始化" class="headerlink" title="线程初始化"></a>线程初始化</h3><p>线程可以通过以下方法初始化：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Old way</span></span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello world"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line"><span class="comment">// New way</span></span><br><span class="line"><span class="keyword">new</span> Thread(</span><br><span class="line">    () -&gt; System.out.println(<span class="string">"Hello world"</span>)</span><br><span class="line">).start();</span><br></pre></td></tr></table></figure>
 
@@ -3087,12 +3048,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">212k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:12</span>
+    <span title="站点阅读时长">3:13</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>

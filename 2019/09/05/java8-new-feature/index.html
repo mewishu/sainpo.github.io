@@ -66,7 +66,7 @@
 <meta property="og:site_name" content="窦小固的小木屋">
 <meta property="og:description" content="接口的默认方法和静态方法在Java8之前，接口中只能包含抽象方法。那么这有什么样弊端呢？比如，想再Collection接口中添加一个spliterator抽象方法，那么也就意味着之前所有实现Collection接口的实现类，都要重新实现spliterator这个方法才行。而接口的默认方法就是为了解决接口的修改与接口实现类不兼容的问题，作为代码向前兼容的一个方法。 那么如何在接口中定义一个默认方法呢">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-05T03:16:15.417Z">
+<meta property="og:updated_time" content="2019-09-05T07:40:10.561Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java8新特性">
 <meta name="twitter:description" content="接口的默认方法和静态方法在Java8之前，接口中只能包含抽象方法。那么这有什么样弊端呢？比如，想再Collection接口中添加一个spliterator抽象方法，那么也就意味着之前所有实现Collection接口的实现类，都要重新实现spliterator这个方法才行。而接口的默认方法就是为了解决接口的修改与接口实现类不兼容的问题，作为代码向前兼容的一个方法。 那么如何在接口中定义一个默认方法呢">
@@ -302,7 +302,7 @@
                 
               
 
-              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：11:16:15" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
+              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：15:40:10" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
             </span>
           
             
@@ -349,7 +349,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">12k</span>
+              <span title="本文字数">13k</span>
             </span>
           
             <span class="post-meta-item">
@@ -359,7 +359,7 @@
               
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               
-              <span title="阅读时长">11 分钟</span>
+              <span title="阅读时长">12 分钟</span>
             </span>
           
 
@@ -451,59 +451,32 @@
 <li>Intermediate（中间操作）:中间操作是指对流中数据元素做出相应转换或操作后依然返回为一个流Stream，仍然可以供下一次流操作使用。常用的有：map (mapToInt, flatMap 等)、 filter、 distinct、 sorted、 peek、 limit、 skip。</li>
 <li>Termial（结束操作）：是指最终对Stream做出聚合操作，输出结果。</li>
 </ol>
-<p><strong>中间操作</strong></p>
-<blockquote>
-<p>filter：对Stream中元素进行过滤</p>
-</blockquote>
-<p>过滤元素为空的字符串：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
+<h3 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a><strong>中间操作</strong></h3><h4 id="Filter-过滤"><a href="#Filter-过滤" class="headerlink" title="Filter(过滤)"></a>Filter(过滤)</h4><p>Filter接收一个判断用来过滤流中的所有元素. 这个操作是中间操作，它能够使我们对结果进行另一个流操作(<code>forEach</code>) . ForEach接受一个consumer操作对每一个过滤的流元素中. ForEach是一个终端操作. 它返回值void,所以我们不能调用另一个函数操作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stringCollection</span><br><span class="line">    .stream()</span><br><span class="line">    .filter((s) -&gt; s.startsWith(<span class="string">"a"</span>))</span><br><span class="line">    .forEach(System.out::println);</span><br><span class="line"></span><br><span class="line"><span class="comment">// "aaa2", "aaa1"</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>map：对Stream中元素按照指定规则映射成另一个元素</p>
-</blockquote>
-<p>将每一个元素都添加字符串“_map”</p>
+<h4 id="Map-映射"><a href="#Map-映射" class="headerlink" title="Map(映射)"></a>Map(映射)</h4><p>对Stream中元素按照指定规则映射成另一个元素，将每一个元素都添加字符串“_map”</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stream.map(str -&gt; str + <span class="string">"_map"</span>).forEach(System.out::println);</span><br></pre></td></tr></table></figure>
 
 <p>map方法是一对一的关系，将stream中的每一个元素按照映射规则成另外一个元素，而如果是一对多的关系的话就需要使用flatmap方法。</p>
-<blockquote>
-<p>concat：对流进行合并操作</p>
-</blockquote>
-<p>concat方法将两个Stream连接在一起，合成一个Stream。若两个输入的Stream都时排序的，则新Stream也是排序的；若输入的Stream中任何一个是并行的，则新的Stream也是并行的；若关闭新的Stream时，原两个输入的Stream都将执行关闭处理。</p>
+<h4 id="concat-对流进行合并操作"><a href="#concat-对流进行合并操作" class="headerlink" title="concat(对流进行合并操作)"></a>concat(对流进行合并操作)</h4><p>concat方法将两个Stream连接在一起，合成一个Stream。若两个输入的Stream都时排序的，则新Stream也是排序的；若输入的Stream中任何一个是并行的，则新的Stream也是并行的；若关闭新的Stream时，原两个输入的Stream都将执行关闭处理。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Stream.concat(Stream.of(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>), Stream.of(<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>)).</span><br><span class="line">	forEach(System.out::println);</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>distinct：对流进行去重操作</p>
-</blockquote>
-<p>去除流中重复的元素</p>
+<h4 id="distinct-对流进行去重操作"><a href="#distinct-对流进行去重操作" class="headerlink" title="distinct(对流进行去重操作)"></a>distinct(对流进行去重操作)</h4><p>去除流中重复的元素</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.distinct().forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>limit：限制流中元素的个数</p>
-</blockquote>
-<p>截取流中前两个元素：</p>
+<h4 id="limit：限制流中元素的个数"><a href="#limit：限制流中元素的个数" class="headerlink" title="limit：限制流中元素的个数"></a>limit：限制流中元素的个数</h4><p>截取流中前两个元素：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.limit(<span class="number">2</span>).forEach(System.out::println);</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line">a</span><br><span class="line">a</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>skip：跳过流中前几个元素</p>
-</blockquote>
-<p>丢掉流中前两个元素：</p>
+<h4 id="skip：跳过流中前几个元素"><a href="#skip：跳过流中前几个元素" class="headerlink" title="skip：跳过流中前几个元素"></a>skip：跳过流中前几个元素</h4><p>丢掉流中前两个元素：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;String&gt; stream = Stream.of(<span class="string">"a"</span>, <span class="string">"a"</span>, <span class="string">"b"</span>, <span class="string">"c"</span>);</span><br><span class="line">        stream.skip(<span class="number">2</span>).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line">b</span><br><span class="line">c</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>peek：对流中每一个元素依次进行操作，类似于forEach操作</p>
-</blockquote>
-<p>JDK中给出的例子：</p>
+<h4 id="peek：对流中每一个元素依次进行操作，类似于forEach操作"><a href="#peek：对流中每一个元素依次进行操作，类似于forEach操作" class="headerlink" title="peek：对流中每一个元素依次进行操作，类似于forEach操作"></a>peek：对流中每一个元素依次进行操作，类似于forEach操作</h4><p>JDK中给出的例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Stream.of(<span class="string">"one"</span>, <span class="string">"two"</span>, <span class="string">"three"</span>, <span class="string">"four"</span>)</span><br><span class="line">            .filter(e -&gt; e.length() &gt; <span class="number">3</span>)</span><br><span class="line">            .peek(e -&gt; System.out.println(<span class="string">"Filtered value: "</span> + e))</span><br><span class="line">            .map(String::toUpperCase)</span><br><span class="line">            .peek(e -&gt; System.out.println(<span class="string">"Mapped value: "</span> + e))</span><br><span class="line">            .collect(Collectors.toList());</span><br><span class="line">输出结果：</span><br><span class="line">Filtered value: three</span><br><span class="line">Mapped value: THREE</span><br><span class="line">Filtered value: four</span><br><span class="line">Mapped value: FOUR</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>sorted：对流中元素进行排序，可以通过sorted(Comparator&lt;? super T&gt; comparator)自定义比较规则</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">        stream.sorted(Integer::compareTo).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="Sorted-排序"><a href="#Sorted-排序" class="headerlink" title="Sorted(排序)"></a>Sorted(排序)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">        stream.sorted(Integer::compareTo).forEach(System.out::println);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>match：检查流中元素是否匹配指定的匹配规则</p>
-</blockquote>
-<p>Stream 有三个 match 方法，从语义上说：</p>
+<p>注意 <code>sorted</code> 仅仅是创建一个排序后的视图操作，并没有操作排序返回的集合. 排序的 <code>stringCollection</code>并没有受到影响。</p>
+<h4 id="Match-匹配"><a href="#Match-匹配" class="headerlink" title="Match(匹配)"></a>Match(匹配)</h4><p>Stream 有三个 match 方法，从语义上说：</p>
 <ul>
 <li>allMatch：Stream 中全部元素符合传入的 predicate，返回 true；</li>
 <li>anyMatch：Stream 中只要有一个元素符合传入的 predicate，返回 true；</li>
@@ -512,30 +485,18 @@
 <p>如检查Stream中每个元素是否都大于5：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line"><span class="keyword">boolean</span> match = stream.allMatch(integer -&gt; integer &gt; <span class="number">5</span>);</span><br><span class="line">System.out.println(match);</span><br><span class="line">输出结果：</span><br><span class="line"><span class="keyword">false</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>结束操作</strong></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu013291394%2Farticle%2Fdetails%2F52662761" target="_blank" rel="noopener">Collectors中常见归约方法总结</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fio_field%2Farticle%2Fdetails%2F54971555" target="_blank" rel="noopener">重构和定制收集器Collectors</a></p>
-<blockquote>
-<p>count：统计Stream中元素的个数</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
+<h3 id="结束操作"><a href="#结束操作" class="headerlink" title="结束操作"></a><strong>结束操作</strong></h3><h4 id="collector"><a href="#collector" class="headerlink" title="collector"></a>collector</h4><p>参见: <a href="https://www.jianshu.com/p/c0d5c3094324" target="_blank" rel="noopener">【译】java8之collector</a></p>
+<h4 id="Count-统计"><a href="#Count-统计" class="headerlink" title="Count(统计)"></a>Count(统计)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> count = stream.filter(str -&gt; str.isEmpty()).count();</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>max/min：找出流中最大或者最小的元素</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">    System.out.println(stream.max(Integer::compareTo).get());</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="max-min-找出流中最大或者最小的元素"><a href="#max-min-找出流中最大或者最小的元素" class="headerlink" title="max/min(找出流中最大或者最小的元素)"></a>max/min(找出流中最大或者最小的元素)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream&lt;Integer&gt; stream = Stream.of(<span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">    System.out.println(stream.max(Integer::compareTo).get());</span><br><span class="line"></span><br><span class="line">输出结果：</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>forEach</p>
-</blockquote>
-<p>forEach方法前面已经用了好多次，其用于遍历Stream中的所元素，避免了使用for循环，让代码更简洁，逻辑更清晰。</p>
+<h4 id="forEach-遍历"><a href="#forEach-遍历" class="headerlink" title="forEach(遍历)"></a>forEach(遍历)</h4><p>forEach方法前面已经用了好多次，其用于遍历Stream中的所元素，避免了使用for循环，让代码更简洁，逻辑更清晰。</p>
 <p>示例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Stream.of(<span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>)</span><br><span class="line">    .sorted()</span><br><span class="line">    .forEach(System.out::println);</span><br><span class="line">    <span class="comment">// 打印结果</span></span><br><span class="line">    <span class="comment">// 1，2，3,4,5</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>reduce</p>
-</blockquote>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2FIO_Field%2Farticle%2Fdetails%2F54971679" target="_blank" rel="noopener">Stream中的Reduce讲解</a></p>
+<h4 id="Reduce-合并"><a href="#Reduce-合并" class="headerlink" title="Reduce(合并)"></a>Reduce(合并)</h4><p>这个终端操作完成一个流中元素合并操作通过给定的函数.返回的结果通过 <code>Optional来保存值</code>.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; reduced =</span><br><span class="line">    stringCollection</span><br><span class="line">        .stream()</span><br><span class="line">        .sorted()</span><br><span class="line">        .reduce((s1, s2) -&gt; s1 + <span class="string">"#"</span> + s2);</span><br><span class="line"></span><br><span class="line">reduced.ifPresent(System.out::println);</span><br><span class="line"><span class="comment">// "aaa1#aaa2#bbb1#bbb2#bbb3#ccc#ddd1#ddd2"</span></span><br></pre></td></tr></table></figure>
+
 <h1 id="Optional"><a href="#Optional" class="headerlink" title="Optional"></a>Optional</h1><p>为了解决空指针异常，在Java8之前需要使用if-else这样的语句去防止空指针异常，而在Java8就可以使用Optional来解决。Optional可以理解成一个数据容器，甚至可以封装null，并且如果值存在调用isPresent()方法会返回true。为了能够理解Optional。先来看一个例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OptionalTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getUserName</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> user.getUserName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String userName;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String userName)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.userName = userName;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getUserName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> userName;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -592,17 +553,9 @@
 <li>编译器新增一些特性以及提供一些新的Java工具</li>
 </ol>
 <h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>Stream的参考资料：</p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu010425776%2Farticle%2Fdetails%2F52344425" target="_blank" rel="noopener">Stream API讲解</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fio_field%2Farticle%2Fdetails%2F54971761" target="_blank" rel="noopener">Stream讲解系列文章</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-java8streamapi%2F" target="_blank" rel="noopener">对Stream的讲解很细致</a></p>
-<p><a href="https://link.juejin.im?target=https%3A%2F%2Fblog.csdn.net%2Fu013291394%2Farticle%2Fdetails%2F52624966" target="_blank" rel="noopener">Java8新特性之Stream API</a></p>
+<p><a href="https://www.jianshu.com/p/c0d5c3094324" target="_blank" rel="noopener">【译】java8之collector</a></p>
 <p>Optional的参考资料：</p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F6675.html" target="_blank" rel="noopener">Optional的API讲解很详细</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F26144.html" target="_blank" rel="noopener">对Optional部分的讲解还不错，值得参考</a></p>
-<p>Java8新特性的介绍：</p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F11908.html" target="_blank" rel="noopener">Java8新特性指南，很好的资料</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.importnew.com%2F26144.html" target="_blank" rel="noopener">跟上 Java 8 – 你忽略了的新特性</a></p>
-<p><a href="https://link.juejin.im?target=http%3A%2F%2Fwww.runoob.com%2Fjava%2Fjava8-new-features.html" target="_blank" rel="noopener">Java8新特性学习系列教程</a></p>
+<p><a href="https://blog.csdn.net/aitangyong/article/details/54564100" target="_blank" rel="noopener">JDK8新特性：使用Optional避免null导致的NullPointerException</a></p>
 
     </div>
 
@@ -839,7 +792,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#接口的默认方法和静态方法"><span class="nav-text">接口的默认方法和静态方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数式接口FunctionInterface与lambda表达式"><span class="nav-text">函数式接口FunctionInterface与lambda表达式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法引用"><span class="nav-text">方法引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stream"><span class="nav-text">Stream</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是流Stream"><span class="nav-text">什么是流Stream</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Stream的方式"><span class="nav-text">生成Stream的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stream的操作"><span class="nav-text">Stream的操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optional"><span class="nav-text">Optional</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Date-time-API的改进"><span class="nav-text">Date/time API的改进</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他改进"><span class="nav-text">其他改进</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#接口的默认方法和静态方法"><span class="nav-text">接口的默认方法和静态方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数式接口FunctionInterface与lambda表达式"><span class="nav-text">函数式接口FunctionInterface与lambda表达式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#方法引用"><span class="nav-text">方法引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stream"><span class="nav-text">Stream</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是流Stream"><span class="nav-text">什么是流Stream</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成Stream的方式"><span class="nav-text">生成Stream的方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stream的操作"><span class="nav-text">Stream的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#中间操作"><span class="nav-text">中间操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Filter-过滤"><span class="nav-text">Filter(过滤)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Map-映射"><span class="nav-text">Map(映射)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#concat-对流进行合并操作"><span class="nav-text">concat(对流进行合并操作)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#distinct-对流进行去重操作"><span class="nav-text">distinct(对流进行去重操作)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#limit：限制流中元素的个数"><span class="nav-text">limit：限制流中元素的个数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#skip：跳过流中前几个元素"><span class="nav-text">skip：跳过流中前几个元素</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#peek：对流中每一个元素依次进行操作，类似于forEach操作"><span class="nav-text">peek：对流中每一个元素依次进行操作，类似于forEach操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sorted-排序"><span class="nav-text">Sorted(排序)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Match-匹配"><span class="nav-text">Match(匹配)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结束操作"><span class="nav-text">结束操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#collector"><span class="nav-text">collector</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Count-统计"><span class="nav-text">Count(统计)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-min-找出流中最大或者最小的元素"><span class="nav-text">max/min(找出流中最大或者最小的元素)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#forEach-遍历"><span class="nav-text">forEach(遍历)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reduce-合并"><span class="nav-text">Reduce(合并)</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optional"><span class="nav-text">Optional</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Date-time-API的改进"><span class="nav-text">Date/time API的改进</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他改进"><span class="nav-text">其他改进</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
             
 
           </div>
@@ -873,12 +826,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">211k</span>
+    <span title="站点总字数">212k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:12</span>
+    <span title="站点阅读时长">3:13</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
