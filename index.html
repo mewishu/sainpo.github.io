@@ -300,7 +300,7 @@
                 
               
 
-              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：15:56:10" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
+              <time title="创建时间：2019-09-05 10:55:01 / 修改时间：15:56:27" itemprop="dateCreated datePublished" datetime="2019-09-05T10:55:01+08:00">2019-09-05</time>
             </span>
           
             
@@ -1287,11 +1287,21 @@
                 
               
 
-              <time title="创建时间：2019-08-28 17:05:17 / 修改时间：18:48:12" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
+              <time title="创建时间：2019-08-28 17:05:17" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-08 10:28:37" itemprop="dateModified" datetime="2019-09-08T10:28:37+08:00">2019-09-08</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -1515,7 +1525,7 @@
 <p>现在完了，库存出现了负数!泪奔啊，没有 20 台 iPhone 发给两个用户啊!这可如何是好。</p>
 <h2 id="8-2-用分布式锁如何解决库存超卖问题"><a href="#8-2-用分布式锁如何解决库存超卖问题" class="headerlink" title="8.2 用分布式锁如何解决库存超卖问题?"></a>8.2 用分布式锁如何解决库存超卖问题?</h2><p>我们用分布式锁如何解决库存超卖问题呢?其实很简单，回忆一下上次我们说的那个分布式锁的实现原理：</p>
 <p>同一个锁 Key，同一时间只能有一个客户端拿到锁，其他客户端会陷入无限的等待来尝试获取那个锁，只有获取到锁的客户端才能执行下面的业务逻辑。</p>
-<p><img src="https://img1.tuicool.com/e26Jvuv.jpg!web" alt="img"></p>
+<p><img src="/2019/08/28/distributed-lock/6B265385-4A47-47A5-844F-AE2E2170EB8A.png" alt="img"></p>
 <p>代码大概就是上面那个样子，现在我们来分析一下，为啥这样做可以避免库存超卖?</p>
 <p><img src="/2019/08/28/distributed-lock/jIzuMz2.png" alt="img"></p>
 <p>大家可以顺着上面的那个步骤序号看一遍，马上就明白了。</p>

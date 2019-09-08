@@ -8,8 +8,16 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/28/distributed-lock/</loc>
+        <lastmod>2019-09-08T02:28:37.181Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/09/05/java8-new-feature/</loc>
-        <lastmod>2019-09-05T07:56:10.552Z</lastmod>
+        <lastmod>2019-09-05T07:56:27.846Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -34,14 +42,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/</loc>
         <lastmod>2019-08-29T02:55:58.581Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/28/distributed-lock/</loc>
-        <lastmod>2019-08-28T10:48:12.596Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

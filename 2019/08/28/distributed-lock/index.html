@@ -80,11 +80,11 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353262643935653131613862333f773d3130363926683d33383026663d706e6726733d3732323731.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31302f382f313636353334353064343561326139363f773d3131333526683d34323926663d706e6726733d3439303436.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/MRRJ7vq.png">
-<meta property="og:image" content="https://img1.tuicool.com/e26Jvuv.jpg!web">
+<meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/6B265385-4A47-47A5-844F-AE2E2170EB8A.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/jIzuMz2.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/BRjM3aV.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/niAVJvm.png">
-<meta property="og:updated_time" content="2019-08-28T10:48:12.596Z">
+<meta property="og:updated_time" content="2019-09-08T02:28:37.181Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式锁">
 <meta name="twitter:description" content="1.背景对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。">
@@ -321,11 +321,21 @@
                 
               
 
-              <time title="创建时间：2019-08-28 17:05:17 / 修改时间：18:48:12" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
+              <time title="创建时间：2019-08-28 17:05:17" itemprop="dateCreated datePublished" datetime="2019-08-28T17:05:17+08:00">2019-08-28</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-08 10:28:37" itemprop="dateModified" datetime="2019-09-08T10:28:37+08:00">2019-09-08</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -557,7 +567,7 @@
 <p>现在完了，库存出现了负数!泪奔啊，没有 20 台 iPhone 发给两个用户啊!这可如何是好。</p>
 <h2 id="8-2-用分布式锁如何解决库存超卖问题"><a href="#8-2-用分布式锁如何解决库存超卖问题" class="headerlink" title="8.2 用分布式锁如何解决库存超卖问题?"></a>8.2 用分布式锁如何解决库存超卖问题?</h2><p>我们用分布式锁如何解决库存超卖问题呢?其实很简单，回忆一下上次我们说的那个分布式锁的实现原理：</p>
 <p>同一个锁 Key，同一时间只能有一个客户端拿到锁，其他客户端会陷入无限的等待来尝试获取那个锁，只有获取到锁的客户端才能执行下面的业务逻辑。</p>
-<p><img src="https://img1.tuicool.com/e26Jvuv.jpg!web" alt="img"></p>
+<p><img src="/2019/08/28/distributed-lock/6B265385-4A47-47A5-844F-AE2E2170EB8A.png" alt="img"></p>
 <p>代码大概就是上面那个样子，现在我们来分析一下，为啥这样做可以避免库存超卖?</p>
 <p><img src="/2019/08/28/distributed-lock/jIzuMz2.png" alt="img"></p>
 <p>大家可以顺着上面的那个步骤序号看一遍，马上就明白了。</p>
