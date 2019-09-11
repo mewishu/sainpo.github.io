@@ -264,6 +264,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/19/zookeeper-request-processor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/19/zookeeper-request-processor/" class="post-title-link" itemprop="url">zookeeper请求处理</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-19 21:46:50" itemprop="dateCreated datePublished" datetime="2019-08-19T21:46:50+08:00">2019-08-19</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-23 11:10:28" itemprop="dateModified" datetime="2019-08-23T11:10:28+08:00">2019-08-23</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">5.3k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">5 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+            <h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>对于请求处理链而言，所有请求处理器的父接口为RequestProcessor: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RequestProcessor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestProcessorException</span> <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">RequestProcessorException</span><span class="params">(String msg, Throwable t)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(msg, t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">processRequest</span><span class="params">(Request request)</span> <span class="keyword">throws</span> RequestProcessorException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理的主要逻辑在processRequest中，通过processRequest方法可以将请求传递到下个处理器，通常是单线程的。而shutdown表示关闭处理器，其意味着该处理器要关闭和其他处理器的连接。</p>
+<ol>
+<li>PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创建节点、更新数据、删除节点、创建会话等），PrepRequestProcessor能够识别出当前客户端请求是否是事务请求。对于事务请求，PrepRequestProcessor处理器会对其进行一系列预处理，如创建请求事务头、事务体、会话检查、ACL检查和版本检查等。</li>
+<li>SyncRequestProcessor。事务日志记录处理器。用来将事务请求记录到事务日志文件中，同时会触发Zookeeper进行数据快照。</li>
+<li>FinalRequestProcessor。用来进行客户端请求返回之前的操作，包括创建客户端请求的响应，针对事务请求，该处理还会负责将事务应用到内存数据库中去。</li>
+</ol>
+<h2 id="会话创建请求"><a href="#会话创建请求" class="headerlink" title="会话创建请求"></a>会话创建请求</h2><p>Zookeeper服务端对于会话创建的处理，大体可以分为请求接收、会话创建、预处理、事务处理、事务应用和会话响应六大环节，其大体流程如下: </p>
+<p><img src="/2019/08/19/zookeeper-request-processor/616953-20161207095042507-929689583.png" alt="会话创建处理-服务器流程示意图"></p>
+<h3 id="请求接收"><a href="#请求接收" class="headerlink" title="请求接收"></a>请求接收</h3><ol>
+<li>I/O层接收来自客户端的请求。NIOServerCnxn维护每一个客户端连接，客户端与服务器端的所有通信都是由NIOServerCnxn负责，其负责统一接收来自客户端的所有请求，并将请求内容从底层网络I/O中完整地读取出来。</li>
+<li>判断是否是客户端会话创建请求。每个会话对应一个NIOServerCnxn实体，对于每个请求，Zookeeper都会检查当前NIOServerCnxn实体是否已经被初始化，如果尚未被初始化，那么就可以确定该客户端一定是会话创建请求。</li>
+<li>反序列化ConnectRequest请求。一旦确定客户端请求是否是会话创建请求，那么服务端就可以对其进行反序列化，并生成一个ConnectRequest载体。</li>
+<li>判断是否是ReadOnly客户端。如果当前Zookeeper服务器是以ReadOnly模式启动，那么所有来自非ReadOnly型客户端的请求将无法被处理。因此，服务端需要先检查是否是ReadOnly客户端，并以此来决定是否接受该会话创建请求。</li>
+<li>检查客户端ZXID。正常情况下，在一个Zookeeper集群中，服务端的ZXID必定大于客户端的ZXID，因此若发现客户端的ZXID大于服务端ZXID，那么服务端不接受该客户端的会话创建请求。</li>
+<li>协商sessionTimeout。在客户端向服务器发送超时时间后，服务器会根据自己的超时时间限制最终确定该会话超时时间，这个过程就是sessionTimeout协商过程。</li>
+<li>判断是否需要重新激活创建会话。服务端根据客户端请求中是否包含sessionID来判断该客户端是否需要重新创建会话，若客户单请求中包含sessionID，那么就认为该客户端正在进行会话重连，这种情况下，服务端只需要重新打开这个会话，否则需要重新创建。</li>
+</ol>
+<h3 id="会话创建"><a href="#会话创建" class="headerlink" title="会话创建"></a>会话创建</h3><ol>
+<li>为客户端生成sessionID。在为客户端创建会话之前，服务端首先会为每个客户端分配一个sessionID，服务端为客户端分配的sessionID是全局唯一的。</li>
+<li>注册会话。向SessionTracker中注册会话，SessionTracker中维护了sessionsWithTimeout和sessionsById，在会话创建初期，会将客户端会话的相关信息保存到这两个数据结构中。</li>
+<li>激活会话。激活会话涉及Zookeeper会话管理的分桶策略，其核心是为会话安排一个区块，以便会话清理程序能够快速高效地进行会话清理。</li>
+<li>生成会话密码。服务端在创建一个客户端会话时，会同时为客户端生成一个会话密码，连同sessionID一同发给客户端，作为会话在集群中不同机器间转移的凭证。</li>
+</ol>
+<h3 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h3><ol>
+<li>将请求交给PrepRequestProcessor处理器处理。在提交给第一个请求处理器之前，Zookeeper会根据该请求所属的会话，进行一次激活会话操作，以确保当前会话处于激活状态，完成会话激活后，则提交请求至处理器。</li>
+<li>创建请求事务头。对于事务请求，Zookeeper会为其创建请求事务头，服务端后续的请求处理器都是基于该请求头来识别当前请求是否是事务请求，请求事务头包含了一个事务请求最基本的一些信息，包括sessionID、ZXID（事务请求对应的事务ZXID）、CXID（客户端的操作序列）和请求类型（如create、delete、setData、createSession等）等。</li>
+<li>创建请求事务体。由于此时是会话创建请求，其事务体是CreateSessionTxn。</li>
+<li>注册于激活会话。处理由非Leader服务器转发过来的会话创建请求。</li>
+</ol>
+<h3 id="事务处理"><a href="#事务处理" class="headerlink" title="事务处理"></a>事务处理</h3><ol>
+<li>将请求交给ProposalRequestProcessor处理器。与提议相关的处理器，从ProposalRequestProcessor开始，请求的处理将会进入三个子处理流程，分别是Sync流程、Proposal流程、Commit流程。</li>
+</ol>
+<p><img src="/2019/08/19/zookeeper-request-processor/616953-20161207103040257-77514359.png" alt="事务处理流程"></p>
+<p><strong>Sync流程</strong></p>
+<p>使用SyncRequestProcessor处理器记录事务日志，针对每个事务请求，都会通过事务日志的形式将其记录，完成日志记录后，每个Follower都会向Leader发送ACK消息，表明自身完成了事务日志的记录，以便Leader统计每个事务请求的投票情况。</p>
+<p><strong>Proposal流程</strong></p>
+<p>每个事务请求都需要集群中过半机器投票认可才能被真正应用到内存数据库中，这个投票与统计过程就是Proposal流程。</p>
+<ol>
+<li>发起投票。若当前请求是事务请求，Leader会发起一轮事务投票，在发起事务投票之前，会检查当前服务端的ZXID是否可用。</li>
+<li>生成提议Proposal。若ZXID可用，Zookeeper会将已创建的请求头和事务体以及ZXID和请求本身序列化到Proposal对象中，此Proposal对象就是一个提议。</li>
+<li>广播提议。Leader以ZXID作为标识，将该提议放入投票箱outstandingProposals中，同时将该提议广播给所有Follower。</li>
+<li>收集投票。Follower接收到Leader提议后，进入Sync流程进行日志记录，记录完成后，发送ACK消息至Leader服务器，Leader根据这些ACK消息来统计每个提议的投票情况，当一个提议获得半数以上投票时，就认为该提议通过，进入Commit阶段。</li>
+<li>将请求放入toBeApplied队列中。</li>
+<li>广播Commit消息。Leader向Follower和Observer发送COMMIT消息。向Observer发送INFORM消息，向Leader发送ZXID。</li>
+</ol>
+<p><strong>Commit流程</strong></p>
+<ol>
+<li>将请求交付CommitProcessor。CommitProcessor收到请求后，将其放入queuedRequests队列中。</li>
+<li>处理queuedRequest队列请求。CommitProcessor中单独的线程处理queuedRequests队列中的请求。</li>
+<li>标记nextPending。若从queuedRequests中取出的是事务请求，则需要在集群中进行投票处理，同时将nextPending标记位当前请求。</li>
+<li>等待Proposal投票。在进行Commit流程的同时，Leader会生成Proposal并广播给所有Follower服务器，此时，Commit流程等待，直到投票结束。</li>
+<li>投票通过。若提议获得过半机器认可，则进入请求提交阶段，该请求会被放入commitedRequests队列中，同时唤醒Commit流程。</li>
+<li>提交请求。若commitedRequests队列中存在可以提交的请求，那么Commit流程则开始提交请求，将请求放入toProcess队列中，然后交付下一个请求处理器: FinalRequestProcessor。</li>
+</ol>
+<h3 id="事务应用"><a href="#事务应用" class="headerlink" title="事务应用"></a>事务应用</h3><ol>
+<li>交付给FinalRequestProcessor处理器。FinalRequestProcessor处理器检查outstandingChanges队列中请求的有效性，若发现这些请求已经落后于当前正在处理的请求，那么直接从outstandingChanges队列中移除。</li>
+<li>事务应用。之前的请求处理仅仅将事务请求记录到了事务日志中，而内存数据库中的状态尚未改变，因此，需要将事务变更应用到内存数据库。</li>
+<li>将事务请求放入队列commitProposal。完成事务应用后，则将该请求放入commitProposal队列中，commitProposal用来保存最近被提交的事务请求，以便集群间机器进行数据的快速同步。</li>
+</ol>
+<h3 id="会话响应"><a href="#会话响应" class="headerlink" title="会话响应"></a>会话响应</h3><ol>
+<li>统计处理。Zookeeper计算请求在服务端处理所花费的时间，统计客户端连接的基本信息，如lastZxid(最新的ZXID)、lastOp(最后一次和服务端的操作)、lastLatency(最后一次请求处理所花费的时间)等。</li>
+<li>创建响应ConnectResponse。会话创建成功后的响应，包含了当前客户端和服务端之间的通信协议版本号、会话超时时间、sessionID和会话密码。</li>
+<li>序列化ConnectResponse。</li>
+<li>I/O层发送响应给客户端。</li>
+</ol>
+<h2 id="SetData请求"><a href="#SetData请求" class="headerlink" title="SetData请求"></a>SetData请求</h2><p>服务端对于SetData请求大致可以分为四步，预处理、事务处理、事务应用、请求响应。</p>
+<h3 id="预处理-1"><a href="#预处理-1" class="headerlink" title="预处理"></a>预处理</h3><ol>
+<li>I/O层接收来自客户端的请求。</li>
+<li>判断是否是客户端”会话创建”请求。对于SetData请求，按照正常事务请求进行处理。</li>
+<li>将请求交给PrepRequestProcessor处理器进行处理。</li>
+<li>创建请求事务头。</li>
+<li>会话检查。检查该会话是否有效。</li>
+<li>反序列化请求，并创建ChangeRecord记录。反序列化并生成特定的SetDataRequest请求，请求中包含了数据节点路径path、更新的内容data和期望的数据节点版本version。同时根据请求对应的path，Zookeeper生成一个ChangeRecord记录，并放入outstandingChanges队列中。</li>
+<li>ACL检查。检查客户端是否具有数据更新的权限。</li>
+<li>数据版本检查。通过version属性来实现乐观锁机制的写入校验。</li>
+<li>创建请求事务体SetDataTxn。</li>
+<li>保存事务操作到outstandingChanges队列中。</li>
+</ol>
+<h3 id="事务处理-1"><a href="#事务处理-1" class="headerlink" title="事务处理"></a>事务处理</h3><p>对于事务请求，服务端都会发起事务处理流程。所有事务请求都是由ProposalRequestProcessor处理器处理，通过Sync、Proposal、Commit三个子流程相互协作完成。</p>
+<h3 id="事务应用-1"><a href="#事务应用-1" class="headerlink" title="事务应用"></a>事务应用</h3><ol>
+<li>交付给FinalRequestProcessor处理器。</li>
+<li>事务应用。将请求事务头和事务体直接交给内存数据库ZKDatabase进行事务应用，同时返回ProcessTxnResult对象，包含了数据节点内容更新后的stat。</li>
+<li>将事务请求放入commitProposal队列。</li>
+</ol>
+<h3 id="请求响应"><a href="#请求响应" class="headerlink" title="请求响应"></a>请求响应</h3><ol>
+<li>创建响应体SetDataResponse。其包含了当前数据节点的最新状态stat。</li>
+<li>创建响应头。包含当前响应对应的事务ZXID和请求处理是否成功的标识。</li>
+<li>序列化响应。</li>
+<li>I/O层发送响应给客户端。</li>
+</ol>
+<h2 id="GetData请求"><a href="#GetData请求" class="headerlink" title="GetData请求"></a>GetData请求</h2><p>服务端对于GetData请求的处理，大致分为三步，预处理、非事务处理、请求响应。</p>
+<h3 id="预处理-2"><a href="#预处理-2" class="headerlink" title="预处理"></a>预处理</h3><ol>
+<li>I/O层接收来自客户端的请求。</li>
+<li>判断是否是客户端”会话创建”请求。</li>
+<li>将请求交给PrepRequestProcessor处理器进行处理。</li>
+<li>会话检查。</li>
+</ol>
+<h3 id="非事务处理"><a href="#非事务处理" class="headerlink" title="非事务处理"></a>非事务处理</h3><ol>
+<li>反序列化GetDataRequest请求。</li>
+<li>获取数据节点。</li>
+<li>ACL检查。</li>
+<li>获取数据内容和stat，注册Watcher。</li>
+</ol>
+<h3 id="请求响应-1"><a href="#请求响应-1" class="headerlink" title="请求响应"></a>请求响应</h3><ol>
+<li>创建响应体GetDataResponse。响应体包含当前数据节点的内容和状态stat。</li>
+<li>创建响应头。</li>
+<li>统计处理。</li>
+<li>序列化响应。</li>
+<li>I/O层发送响应给客户端。</li>
+</ol>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a href="https://www.cnblogs.com/leesf456/p/6140503.html" target="_blank" rel="noopener">【分布式】Zookeeper请求处理</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/19/zookeeper-session/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2545,248 +2796,6 @@
   </article>
 
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/05/awk-syntax/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sainpo.yxb">
-      <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="窦小固的小木屋">
-    </span>
-      <header class="post-header">
-
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/05/awk-syntax/" class="post-title-link" itemprop="url">awk用法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-05 17:28:29" itemprop="dateCreated datePublished" datetime="2019-08-05T17:28:29+08:00">2019-08-05</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-06 10:23:55" itemprop="dateModified" datetime="2019-08-06T10:23:55+08:00">2019-08-06</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/" itemprop="url" rel="index"><span itemprop="name">linux命令</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/awk命令/" itemprop="url" rel="index"><span itemprop="name">awk命令</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          <br>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">7.7k</span>
-            </span>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">7 分钟</span>
-            </span>
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-            <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk [options] <span class="string">'pattern &#123;action&#125;'</span> file...</span><br></pre></td></tr></table></figure>
-
-<p><code>awk</code>的工作过程是这样的：按行读取输入(标准输入或文件)，对于符合模式<code>pattern</code>的行，执行<code>action</code>。当<code>pattern</code>省略时表示匹配任何字符串；当<code>action</code>省略时表示执行<code>&#39;{print}&#39;</code>；它们不可以同时省略。</p>
-<p>模式可以是以下任意一个：</p>
-<ul>
-<li>/正则表达式/：使用通配符的扩展集。</li>
-<li>关系表达式：使用运算符进行操作，可以是字符串或数字的比较测试。</li>
-<li>模式匹配表达式：用运算符<code>~</code>(匹配) 和 <code>~!</code>(不匹配)。</li>
-<li>BEGIN语句块、pattern语句块、END语句块</li>
-</ul>
-<p>每一行输入，对<code>awk</code>来说都是一条记录(<code>record</code>)，<code>awk</code>使用<code>$0</code>来引用当前记录：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 ~]<span class="comment"># head -1 /etc/passwd | awk '&#123;print $0&#125;'</span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br></pre></td></tr></table></figure>
-
-<p>例子中将命令<code>head -1 /etc/passwd</code>作为<code>awk</code>的输入，<code>awk</code>省略了<code>pattern</code>，<code>action</code>为<code>print $0</code>，意为打印当前记录。<br>对于每条记录，<code>awk</code>使用分隔符将其分割成列，第一列用<code>$1</code>表示，第二列用<code>$2</code>表示…最后一列用<code>$NF</code>表示</p>
-<p>选项<code>-F</code>表示指定分隔符<br>如输出文件<code>/etc/passwd</code>第一行第一列(用户名)和最后一列(登录shell)：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 ~]<span class="comment"># head -1 /etc/passwd | awk -F: '&#123;print $1,$NF&#125;'</span></span><br><span class="line">root /bin/bash</span><br></pre></td></tr></table></figure>
-
-<p>当没有指定分隔符时，使用一到多个<code>blank</code>(空白字符，由空格键或TAB键产生)作为分隔符。输出的分隔符默认为空格。<br>如输出命令<code>ls -l *</code>的结果中，文件大小和文件名：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># ls -l * | awk '&#123;print $5,$NF&#125;'</span></span><br><span class="line">13 b.txt</span><br><span class="line">58 c.txt</span><br><span class="line">12 d.txt</span><br><span class="line">0 e.txt</span><br><span class="line">0 f.txt</span><br><span class="line">24 test.sh</span><br></pre></td></tr></table></figure>
-
-<p>还可以对任意列进行过滤：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># ls -l *|awk '$5&gt;20 &amp;&amp; $NF ~ /txt$/'</span></span><br><span class="line">-rw-r--r-- 1 nobody nobody 58 11月 16 16:34 c.txt</span><br></pre></td></tr></table></figure>
-
-<p>其中<code>$5&gt;20</code>表示第五列的值大于20；<code>&amp;&amp;</code>表示逻辑与；<code>$NF ~ /txt$/</code>中，<code>~</code>表示匹配，符号<code>//</code>内部是正则表达式。这里省略了<code>action</code>，整条awk语句表示打印文件大小大于20字节并且文件名以txt结尾的行。</p>
-<p><code>awk</code>用<code>NR</code>表示行号</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># awk '/^root/ || NR==2' /etc/passwd</span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br></pre></td></tr></table></figure>
-
-<p>例子中<code>||</code>表示逻辑或，语句表示：输出文件<code>/etc/passwd</code>中以root开头的行或者第二行。</p>
-<p>在一些情况下，使用<code>awk</code>过滤甚至比使用<code>grep</code>更灵活<br>如获得<code>ifconfig</code>的输出中网卡名及其对应的mtu值</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71253 ~]<span class="comment"># ifconfig|awk '/^\S/&#123;print $1"\t"$NF&#125;'</span></span><br><span class="line">ens32:  1500</span><br><span class="line">ens33:  1500</span><br><span class="line">lo:     65536</span><br><span class="line"><span class="comment">#这里的正则表示不以空白字符开头的行，输出内容中使用\t进行了格式化。</span></span><br></pre></td></tr></table></figure>
-
-<p>以上所说的<code>NR</code>、<code>NF</code>等都是awk的内建变量，下面列出部分常用内置变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$0</span>          当前记录（这个变量中存放着整个行的内容）</span><br><span class="line"><span class="variable">$1</span>~<span class="variable">$n</span>       当前记录的第n个字段，字段间由FS分隔</span><br><span class="line">FS          输入字段分隔符 默认是空格或Tab</span><br><span class="line">NF          当前记录中的字段个数，就是有多少列</span><br><span class="line">NR          行号，从1开始，如果有多个文件话，这个值也不断累加。</span><br><span class="line">FNR         输入文件行号</span><br><span class="line">RS          输入的记录分隔符， 默认为换行符</span><br><span class="line">OFS         输出字段分隔符， 默认也是空格</span><br><span class="line">ORS         输出的记录分隔符，默认为换行符</span><br><span class="line">FILENAME    当前输入文件的名字</span><br></pre></td></tr></table></figure>
-
-<p><code>awk</code>中还可以使用自定义变量，如将网卡名赋值给变量a，然后输出网卡名及其对应的<code>RX bytes</code>的值(注意不同模式匹配及其action的写法)：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71253 ~]<span class="comment"># ifconfig|awk '/^\S/&#123;a=$1&#125;/RX p/&#123;print a,$5&#125;'</span></span><br><span class="line">ens32: 999477100</span><br><span class="line">ens33: 1663197120</span><br><span class="line">lo: 0</span><br></pre></td></tr></table></figure>
-
-<p><code>awk</code>中有两个特殊的pattern：<code>BEGIN</code>和<code>END</code>；它们不会对输入文本进行匹配，<code>BEGIN</code>对应的<code>action</code>部分组合成一个代码块，在任何输入开始之前执行；<code>END</code>对应的<code>action</code>部分组合成一个代码块，在所有输入处理完成之后执行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注意类似于C语言的赋值及print函数用法</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># ls -l *|awk 'BEGIN&#123;print "size name\n---------"&#125;$5&gt;20&#123;x+=$5;print $5,$NF&#125;END&#123;print "---------\ntotal",x&#125;'</span></span><br><span class="line">size name</span><br><span class="line">---------</span><br><span class="line">58 c.txt</span><br><span class="line">24 test.sh</span><br><span class="line">---------</span><br><span class="line">total 82</span><br></pre></td></tr></table></figure>
-
-<p>再来看看统计每个用户的进程的占了多少内存（注：sum的RSS那一列）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ps aux | awk &apos;NR!=1&#123;a[$1]+=$6;&#125; END &#123; for(i in a) print i &quot;, &quot; a[i]&quot;KB&quot;;&#125;&apos;</span><br><span class="line">dbus, 540KB</span><br><span class="line">mysql, 99928KB</span><br><span class="line">www, 3264924KB</span><br><span class="line">root, 63644KB</span><br><span class="line">hchen, 6020KB</span><br></pre></td></tr></table></figure>
-
-<p><code>awk</code>还支持数组，数组的索引都被视为字符串(即关联数组)，可以使用<code>for</code>循环遍历数组元素<br>如输出文件<code>/etc/passwd</code>中各种登录shell及其总数量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注意数组赋值及for循环遍历数组的写法</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk -F ':' '&#123;a[$NF]++&#125;END&#123;for(i in a) print i,a[i]&#125;' /etc/passwd</span></span><br><span class="line">/bin/sync 1</span><br><span class="line">/bin/bash 2</span><br><span class="line">/sbin/nologin 19</span><br><span class="line">/sbin/halt 1</span><br><span class="line">/sbin/shutdown 1</span><br></pre></td></tr></table></figure>
-
-<p>当然也有<code>if</code>分支语句</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注意大括号是如何界定action块的</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># netstat -antp|awk '&#123;if($6=="LISTEN")&#123;x++&#125;else&#123;y++&#125;&#125;END&#123;print x,y&#125;'</span></span><br><span class="line">6 3</span><br></pre></td></tr></table></figure>
-
-<p><code>pattern</code>之间可以用逗号分隔，表示从匹配第一个模式开始直到匹配第二个模式</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 ~]<span class="comment"># awk '/^root/,/^adm/' /etc/passwd       </span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br></pre></td></tr></table></figure>
-
-<p>还支持三目操作符<code>pattern1 ? pattern2 : pattern3</code>，表示判断pattern1是否匹配，true则匹配pattern2，false则匹配pattern3，pattern也可以是类似C语言的表达式。<br>如判断文件<code>/etc/passwd</code>中UID大于500的登录shell是否为/bin/bash，是则输出整行，否则输出UID为0的行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#注意为避免混淆对目录分隔符进行了转义</span></span><br><span class="line">[root@centos7 ~]<span class="comment"># awk -F: '$3&gt;500?/\/bin\/bash$/:$3==0 &#123;print $0&#125;' /etc/passwd         </span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">learner:x:1000:1000::/home/learner:/bin/bash</span><br><span class="line"><span class="comment">#三目运算符也可以嵌套，例子略</span></span><br></pre></td></tr></table></figure>
-
-<p>选项<code>-f file</code>表示从file中读取awk指令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#打印斐波那契数列前十项</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># cat test.awk </span></span><br><span class="line">BEGIN&#123;</span><br><span class="line">    <span class="variable">$1</span>=1</span><br><span class="line">    <span class="variable">$2</span>=1</span><br><span class="line">    OFS=<span class="string">","</span></span><br><span class="line">    <span class="keyword">for</span>(i=3;i&lt;=10;i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="variable">$i</span>=$(i-2)+$(i-1)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">print</span></span><br><span class="line">&#125;</span><br><span class="line">[root@centos7 temp]<span class="comment"># awk -f test.awk </span></span><br><span class="line">1,1,2,3,5,8,13,21,34,55</span><br></pre></td></tr></table></figure>
-
-<p>选项<code>-F</code>指定列分隔符</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#多个字符作为分隔符时</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># echo 1.2,3:4 5|awk -F '[., :]' '&#123;print $2,$NF&#125;'</span></span><br><span class="line">2 5</span><br><span class="line"><span class="comment">#这里-F后单引号中的内容也是正则表达式</span></span><br></pre></td></tr></table></figure>
-
-<p>选项<code>-v var=val</code>设定变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#这里printf函数用法类似C语言同名函数</span></span><br><span class="line">[root@centos7 ~]<span class="comment"># awk -v n=5 'BEGIN&#123;for(i=0;i&lt;n;i++) printf "%02d\n",i&#125;'  </span></span><br><span class="line">00</span><br><span class="line">01</span><br><span class="line">02</span><br><span class="line">03</span><br><span class="line">04</span><br></pre></td></tr></table></figure>
-
-<p><code>print</code>等函数还支持使用重定向符<code>&gt;</code>和<code>&gt;&gt;</code>将输出保存至文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#如按第一列(IP)分类拆分文件access.log，并保存至ip.txt文件中</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk '&#123;print &gt; $1".txt"&#125;' access.log </span></span><br><span class="line">[root@centos7 temp]<span class="comment"># ls -l 172.20.71.*</span></span><br><span class="line">-rw-r--r-- 1 root root 5297 11月 22 21:33 172.20.71.38.txt</span><br><span class="line">-rw-r--r-- 1 root root 1236 11月 22 21:33 172.20.71.39.txt</span><br><span class="line">-rw-r--r-- 1 root root 4533 11月 22 21:33 172.20.71.84.txt</span><br><span class="line">-rw-r--r-- 1 root root 2328 11月 22 21:33 172.20.71.85.txt</span><br></pre></td></tr></table></figure>
-
-<h2 id="内建函数"><a href="#内建函数" class="headerlink" title="内建函数"></a>内建函数</h2><p>length()获得字符串长度</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># awk -F: '&#123;if(length($1)&gt;=16)print&#125;' /etc/passwd </span></span><br><span class="line">systemd-bus-proxy:x:999:997:systemd Bus Proxy:/:/sbin/nologin</span><br></pre></td></tr></table></figure>
-
-<p><code>split()</code>将字符串按分隔符分隔，并保存至数组</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># head -1 /etc/passwd|awk '&#123;split($0,arr,/:/);for(i=1;i&lt;=length(arr);i++) print arr[i]&#125;'</span></span><br><span class="line">root</span><br><span class="line">x</span><br><span class="line">0</span><br><span class="line">0</span><br><span class="line">root</span><br><span class="line">/root</span><br><span class="line">/bin/bash</span><br></pre></td></tr></table></figure>
-
-<p><code>getline</code>从输入(可以是管道、另一个文件或当前文件的下一行)中获得记录，赋值给变量或重置某些环境变量</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#从shell命令date中通过管道获得当前的小时数</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk 'BEGIN&#123;"date"|getline;split($5,arr,/:/);print arr[1]&#125;'</span></span><br><span class="line">09</span><br><span class="line"><span class="comment">#从文件中获取，此时会覆盖当前的$0。(注意逐行处理b.txt的同时也在逐行从c.txt中获得记录并覆盖$0，当getline先遇到eof时&lt;即c.txt文件行数较少&gt;将输出空行)</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk '&#123;getline &lt;"c.txt";print $4&#125;' b.txt </span></span><br><span class="line"><span class="string">"https://segmentfault.com/blog/learnning"</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># </span></span><br><span class="line"><span class="comment">#赋值给变量</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk '&#123;getline blog &lt;"c.txt";print $0"\n"blog&#125;' b.txt </span></span><br><span class="line">aasdasdadsad</span><br><span class="line">BLOG ADDRESS IS <span class="string">"https://segmentfault.com/blog/learnning"</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># </span></span><br><span class="line"><span class="comment">#读取下一行(也会覆盖当前$0)</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># cat file</span></span><br><span class="line">anny</span><br><span class="line">100</span><br><span class="line">bob</span><br><span class="line">150</span><br><span class="line">cindy</span><br><span class="line">120</span><br><span class="line">[root@centos7 temp]<span class="comment"># awk '&#123;getline;total+=$0&#125;END&#123;print total&#125;' file</span></span><br><span class="line">370</span><br><span class="line"><span class="comment">#此时表示只对偶数行进行处理</span></span><br></pre></td></tr></table></figure>
-
-<p><code>next</code>作用和getline类似，也是读取下一行并覆盖$0，区别是next执行后，其后的命令不再执行，而是读取下一行从头再执行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#跳过以a-s开头的行，统计行数，打印最终结果</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk '/^[a-s]/&#123;next&#125;&#123;count++&#125;END&#123;print count&#125;' /etc/passwd</span></span><br><span class="line">2</span><br><span class="line">[root@centos7 temp]<span class="comment"># </span></span><br><span class="line"><span class="comment">#又如合并相同列的两个文件</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># cat f.txt </span></span><br><span class="line">学号 分值</span><br><span class="line">00001 80</span><br><span class="line">00002 75</span><br><span class="line">00003 90</span><br><span class="line">[root@centos7 temp]<span class="comment"># cat e.txt </span></span><br><span class="line">姓名 学号</span><br><span class="line">张三 00001</span><br><span class="line">李四 00002</span><br><span class="line">王五 00003</span><br><span class="line">[root@centos7 temp]<span class="comment"># awk 'NR==FNR&#123;a[$1]=$2;next&#125;&#123;print $0,a[$2]&#125;' f.txt e.txt   </span></span><br><span class="line">姓名 学号 分值</span><br><span class="line">张三 00001 80</span><br><span class="line">李四 00002 75</span><br><span class="line">王五 00003 90</span><br><span class="line"><span class="comment">#这里当读第一个文件时NR==FNR成立，执行a[$1]=$2，然后next忽略后面的。读取第二个文件时，NR==FNR不成立，执行后面的打印命令</span></span><br></pre></td></tr></table></figure>
-
-<p><code>sub(regex,substr,string)</code>替换字符串string(省略时为$0)中首个出现匹配正则regex的子串substr</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># echo 178278 world|awk 'sub(/[0-9]+/,"hello")'</span></span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
-
-<p><code>gsub(regex,substr,string)</code>与sub()类似，但不止替换第一个，而是全局替换</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># head -n5 /etc/passwd|awk '&#123;gsub(/[0-9]+/,"----");print $0&#125;'     </span></span><br><span class="line">root:x:----:----:root:/root:/bin/bash</span><br><span class="line">bin:x:----:----:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:----:----:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:----:----:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:----:----:lp:/var/spool/lpd:/sbin/nologin</span><br></pre></td></tr></table></figure>
-
-<p><code>substr(str,n,m)</code>切割字符串str，从第n个字符开始，切割m个。如果m省略，则到结尾</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># echo "hello,世界！"|awk '&#123;print substr($0,8,1)&#125;'</span></span><br><span class="line">界</span><br></pre></td></tr></table></figure>
-
-<p><code>tolower(str)</code>和<code>toupper(str)</code>表示大小写转换</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># echo "hello,世界！"|awk '&#123;A=toupper($0);print A&#125;'</span></span><br><span class="line">HELLO,世界！</span><br></pre></td></tr></table></figure>
-
-<p><code>system(cmd)</code>执行shell命令cmd，返回执行结果，执行成功为0，失败为非0</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#此处if语句判断和C语言一致，0为false，非0为true</span></span><br><span class="line">[root@centos7 temp]<span class="comment"># awk 'BEGIN&#123;if(!system("date&gt;/dev/null"))print "success"&#125;'</span></span><br><span class="line">success</span><br></pre></td></tr></table></figure>
-
-<p><code>match(str,regex)</code>返回字符串str中匹配正则regex的位置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]<span class="comment"># awk 'BEGIN&#123;A=match("abc.f.11.12.1.98",/[0-9]&#123;1,3&#125;\./);print A&#125;'</span></span><br><span class="line">7</span><br></pre></td></tr></table></figure>
-
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><ul>
-<li>条件统计</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">'$2&gt;=6 &amp;&amp; $2&lt;20 &#123; tot++ &#125; END &#123; print +tot&#125;'</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>花式用法</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#按连接数查看客户端IP</span></span><br><span class="line">netstat -ntu | awk <span class="string">'&#123;print $5&#125;'</span> | cut -d: -f1 | sort | uniq -c | sort -nr</span><br><span class="line"> </span><br><span class="line"><span class="comment">#打印99乘法表</span></span><br><span class="line">seq 9 | sed <span class="string">'H;g'</span> | awk -v RS=<span class="string">''</span> <span class="string">'&#123;for(i=1;i&lt;=NF;i++)printf("%dx%d=%d%s", i, NR, i*NR, i==NR?"\n":"\t")&#125;'</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </section>
 
   
@@ -2824,7 +2833,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2883,7 +2892,9 @@
         
           
         
-        <span class="site-state-item-count">22</span>
+          
+        
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -2936,7 +2947,11 @@
         
           
         
-        <span class="site-state-item-count">19</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -2998,12 +3013,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">215k</span>
+    <span title="站点总字数">233k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:16</span>
+    <span title="站点阅读时长">3:32</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
