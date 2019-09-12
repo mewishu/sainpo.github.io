@@ -84,7 +84,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/jIzuMz2.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/BRjM3aV.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/28/distributed-lock/niAVJvm.png">
-<meta property="og:updated_time" content="2019-09-10T03:35:41.134Z">
+<meta property="og:updated_time" content="2019-09-12T04:23:47.218Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式锁">
 <meta name="twitter:description" content="1.背景对于锁大家肯定不会陌生，在Java中synchronized关键字和ReentrantLock可重入锁在我们的代码中是经常见的，一般我们用其在多线程环境中控制对资源的并发访问，但是随着分布式的快速发展，本地的加锁往往不能满足我们的需要，在我们的分布式环境中上面加锁的方法就会失去作用。于是人们为了在分布式环境中也能实现本地锁的效果，也是纷纷各出其招，今天让我们来聊一聊一般分布式锁实现的套路。">
@@ -334,7 +334,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-10 11:35:41" itemprop="dateModified" datetime="2019-09-10T11:35:41+08:00">2019-09-10</time>
+                <time title="修改时间：2019-09-12 12:23:47" itemprop="dateModified" datetime="2019-09-12T12:23:47+08:00">2019-09-12</time>
               </span>
             
           
@@ -378,7 +378,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">12k</span>
+              <span title="本文字数">13k</span>
             </span>
           
             <span class="post-meta-item">
@@ -492,17 +492,28 @@
 <ol>
 <li><p>尝试加锁:首先会尝试进行加锁，由于保证操作是原子性，那么就只能使用lua脚本，相关的lua脚本如下： </p>
 <p><img src="/2019/08/28/distributed-lock/20190828172849.jpg" alt="img"></p>
-<p> 可以看见他并没有使用我们的sexNx来进行操作，而是使用的hash结构，我们的每一个需要锁定的资源都可以看做是一个HashMap，锁定资源的节点信息是Key,锁定次数是value。通过这种方式可以很好的实现可重入的效果，只需要对value进行加1操作，就能进行可重入锁。当然这里也可以用之前我们说的本地计数进行优化。</p>
+<p> 可以看见他并没有使用我们的sexNx来进行操作，而是使用的hash结构，我们的每一个需要锁定的资源都可以看做是一个HashMap，锁定资源的节点信息是Key,锁定次数是value。通过这种方式可以很好的实现可重入的效果，只需要对value进行加1操作，就能进行可重入锁。当然这里也可以用之前我们说的本地计数进行优化: </p>
+<ol>
+<li>如果通过 <code>exists</code> 命令发现当前 key 不存在，即锁没被占用，则执行 <code>hset</code> 写入 Hash 类型数据 <strong>key:全局锁名称</strong>（例如共享资源ID）, <strong>field:锁实例名称</strong>（Redisson客户端ID:线程ID）, <strong>value:1</strong>，并执行 <code>pexpire</code> 对该 key 设置失效时间，返回空值 <code>nil</code>，至此获取锁成功。</li>
+<li>如果通过 <code>hexists</code> 命令发现 Redis 中已经存在当前 key 和 field 的 Hash 数据，说明当前线程之前已经获取到锁，因为这里的锁是<strong>可重入</strong>的，则执行 <code>hincrby</code> 对当前 key field 的值<strong>加一</strong>，并重新设置失效时间，返回空值，至此重入获取锁成功。</li>
+<li>最后是锁已被占用的情况，即当前 key 已经存在，但是 Hash 中的 Field 与当前值不同，则执行 <code>pttl</code> 获取锁的剩余存活时间并返回，至此获取锁失败。</li>
+</ol>
 </li>
 <li><p>如果尝试加锁失败，判断是否超时，如果超时则返回false。</p>
 </li>
-<li><p>如果加锁失败之后，没有超时，那么需要在名字为redisson_lock__channel+lockName的channel上进行订阅，用于订阅解锁消息，然后一直阻塞直到超时，或者有解锁消息。</p>
+<li><p>如果加锁失败之后，没有超时，那么需要在名字为redisson_lock__channel+lockName的channel上进行订阅，用于订阅解锁消息，然后一直阻塞直到超时，或者有解锁消息。这里的具体实现本文也不深入，只是简单提一下 Redisson 在执行 Redis 命令时提供了<strong>同步</strong>和<strong>异步</strong>的两种实现，但实际上<strong>同步的实现都是基于异步的</strong>，具体做法是使用 Netty 中的异步工具 <em>Future*和 *FutureListener</em> 结合 JDK 中的 <em>CountDownLatch</em> 一起实现。</p>
 </li>
 <li><p>重试步骤1，2，3，直到最后获取到锁，或者某一步获取锁超时。</p>
 </li>
 </ol>
-<p>对于我们的unlock方法比较简单也是通过lua脚本进行解锁，如果是可重入锁，只是减1。如果是非加锁线程解锁，那么解锁失败。 </p>
+<p>对于我们的unlock方法比较简单也是通过lua脚本进行解锁，如果是可重入锁，只是减1。如果是非加锁线程解锁，那么解锁失败: </p>
 <p><img src="/2019/08/28/distributed-lock/20190828173014.jpg" alt="img"></p>
+<ol>
+<li>key 不存在，说明锁已释放，直接执行 <code>publish</code> 命令发布释放锁消息并返回 <code>1</code>。</li>
+<li>key 存在，但是 field 在 Hash 中不存在，说明自己不是锁持有者，无权释放锁，返回 <code>nil</code>。</li>
+<li>因为锁可重入，所以释放锁时不能把所有已获取的锁全都释放掉，一次只能释放一把锁，因此执行 <code>hincrby</code> 对锁的值<strong>减一</strong>。</li>
+<li>释放一把锁后，如果还有剩余的锁，则刷新锁的失效时间并返回 <code>0</code>；如果刚才释放的已经是最后一把锁，则执行 <code>del</code> 命令删除锁的 key，并发布锁释放消息，返回 <code>1</code>。</li>
+</ol>
 <p>Redisson还有公平锁的实现，对于公平锁其利用了list结构和hashset结构分别用来保存我们排队的节点，和我们节点的过期时间，用这两个数据结构帮助我们实现公平锁，这里就不展开介绍了，有兴趣可以参考源码。</p>
 <h3 id="上述-Redis-分布式锁的缺点"><a href="#上述-Redis-分布式锁的缺点" class="headerlink" title="上述 Redis 分布式锁的缺点"></a>上述 Redis 分布式锁的缺点</h3><p>上面那种方案最大的问题，就是如果你对某个 Redis Master 实例，写入了 myLock 这种锁 Key 的 Value，此时会异步复制给对应的 Master Slave 实例。</p>
 <p>但是这个过程中一旦发生 Redis Master 宕机，主备切换，Redis Slave 变为了 Redis Master。</p>
@@ -904,7 +915,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:31</span>
+    <span title="站点阅读时长">3:32</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
