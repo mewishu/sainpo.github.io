@@ -264,6 +264,190 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/05/linux-command/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/05/linux-command/" class="post-title-link" itemprop="url">linux基本命令</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-05 18:23:29" itemprop="dateCreated datePublished" datetime="2019-08-05T18:23:29+08:00">2019-08-05</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-09 11:02:15" itemprop="dateModified" datetime="2019-08-09T11:02:15+08:00">2019-08-09</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/" itemprop="url" rel="index"><span itemprop="name">linux命令</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/linux基本命令/" itemprop="url" rel="index"><span itemprop="name">linux基本命令</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">1.7k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+            <h2 id="sort-排序"><a href="#sort-排序" class="headerlink" title="sort: 排序"></a>sort: 排序</h2><p><code>sort</code> 命令的用法很简单。最基本的用法有两种：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat data.txt | sort</span><br><span class="line">sort data.txt</span><br></pre></td></tr></table></figure>
+
+<p>选项：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-r  倒序</span><br><span class="line">-f	忽略字母大小写</span><br></pre></td></tr></table></figure>
+
+<p><code>-k</code> 指定用于排序的栏目范围，<code>-t</code> 指定栏目的分隔符。</p>
+<p>以下实例，用<code>:</code>分割行，排序值从第3栏开始：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ sort -k 3 -t : sort.txt</span><br><span class="line">aaa:30:1.6</span><br><span class="line">bbb:10:2.5</span><br><span class="line">ccc:50:3.3</span><br><span class="line">ddd:20:4.2</span><br><span class="line">eee:60:5.1</span><br><span class="line">eee:40:5.4</span><br></pre></td></tr></table></figure>
+
+<h2 id="uniq-重复"><a href="#uniq-重复" class="headerlink" title="uniq: 重复"></a>uniq: 重复</h2><p><code>uniq</code> 的作用可以描述为：针对相邻的重复行，进行相应的动作。</p>
+<p>这句话中，有两个地方需要注意。首先，针对的是<strong>相邻的重复行</strong>。因此，<code>uniq</code> 对于不相邻的重复行是不起作用的。其次，进行<strong>相应的</strong>动作。这意味着，<code>uniq</code> 可以做的事情很多，不止一样。</p>
+<p>不带任何参数的时候 <code>uniq</code> 的动作是：对相邻的重复行进行去除。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;filename&gt; | sort | uniq</span><br></pre></td></tr></table></figure>
+
+<p>我们已经见过了 <code>sort</code> 的作用，那么上面命令的作用就很显然了：将 <code>&lt;filename&gt;</code> 按照 ASCII 升序排序；然后去除重复出现的行；最后将这个没有重复行的内容输出到标准输出。</p>
+<p>给 <code>uniq</code> 加上参数，就能解锁更多姿势。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;filename&gt; | sort | uniq -d     <span class="comment"># 只显示重复的行，每行只显示一次</span></span><br><span class="line">cat &lt;filename&gt; | sort | uniq -D     <span class="comment"># 只显示重复的行</span></span><br><span class="line">cat &lt;filename&gt; | sort | uniq -i     <span class="comment"># 忽略大小写</span></span><br><span class="line">cat &lt;filename&gt; | sort | uniq -u     <span class="comment"># 只显示只出现一次的行</span></span><br><span class="line">cat &lt;filename&gt; | sort | uniq -c     <span class="comment"># 统计每行重复的次数</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="xargs-将标准输入转为命令行参数"><a href="#xargs-将标准输入转为命令行参数" class="headerlink" title="xargs: 将标准输入转为命令行参数"></a>xargs: 将标准输入转为命令行参数</h2><p>Unix有些命令可以接受”标准输入”（stdin）作为参数。</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; $ cat /etc/passwd | grep root</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面的代码使用了管道命令（<code>|</code>）。管道命令的作用，是将左侧命令（<code>cat /etc/passwd</code>）的标准输出转换为标准输入，提供给右侧命令（<code>grep root</code>）作为参数。</p>
+<p>但是，大多数命令都不接受标准输入作为参数，只能直接在命令行输入参数，这导致无法用管道命令传递参数。举例来说，<code>echo</code>命令就不接受管道传参。</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; $ <span class="built_in">echo</span> <span class="string">"hello world"</span> | <span class="built_in">echo</span></span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面的代码不会有输出。因为管道右侧的<code>echo</code>不接受管道传来的标准输入作为参数。</p>
+<p><code>xargs</code>命令的作用，是将标准输入转为命令行参数。</p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; $ <span class="built_in">echo</span> <span class="string">"hello world"</span> | xargs <span class="built_in">echo</span></span><br><span class="line">&gt; hello world</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>上面的代码将管道左侧的标准输入，转为命令行参数<code>hello world</code>，传给第二个<code>echo</code>命令。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><ol>
+<li>查找所有后辍为txt的文件列表，然后进行grep: </li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ find . -name <span class="string">"*.txt"</span> | xargs grep <span class="string">"abc"</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>由于<code>xargs</code>默认将空格作为分隔符，所以不太适合处理文件名，因为文件名可能包含空格。</li>
+</ol>
+<p><code>find</code>命令有一个特别的参数<code>-print0</code>，指定输出的文件列表以<code>null</code>分隔。然后，<code>xargs</code>命令的<code>-0</code>参数表示用<code>null</code>当作分隔符。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> f -name <span class="string">"*.log"</span> -print0 | xargs -0 rm -f</span><br></pre></td></tr></table></figure>
+
+<p>统计一个源代码目录中所有 php 文件的行数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> f -name <span class="string">"*.php"</span> -print0 | xargs -0 wc -l</span><br></pre></td></tr></table></figure>
+
+<p>查找所有的 jpg 文件，并且压缩它们：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -<span class="built_in">type</span> f -name <span class="string">"*.jpg"</span> -<span class="built_in">print</span> | xargs tar -czvf images.tar.gz</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/05/awk-syntax/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1274,7 +1458,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1335,7 +1519,9 @@
         
           
         
-        <span class="site-state-item-count">23</span>
+          
+        
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -1392,7 +1578,11 @@
         
           
         
-        <span class="site-state-item-count">21</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -1454,12 +1644,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">233k</span>
+    <span title="站点总字数">236k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:32</span>
+    <span title="站点阅读时长">3:35</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
