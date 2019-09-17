@@ -82,7 +82,7 @@
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/031301251394117.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/v2-46c2fe525acc000c829573b7a88e2418_hd.png">
 <meta property="og:image" content="http://www.sainpo.top/2019/08/23/zookeeper-consistency/4702716-203ed2c502783d76.png">
-<meta property="og:updated_time" content="2019-08-27T13:18:36.799Z">
+<meta property="og:updated_time" content="2019-09-17T02:03:47.726Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="zookeeper一致性保证">
 <meta name="twitter:description" content="zookeeper（简称zk），顾名思义，为动物园管理员的意思，动物对应服务节点，zk是这些节点的管理者。在分布式场景中，zk的应用非常广泛，如：数据发布/订阅、命名服务、配置中心、分布式锁、集群管理、选主与服务发现等等。这不仅得益于zk类文件系统的数据模型和基于Watcher机制的分布式事件通知，也得益于zk特殊的高容错数据一致性协议。  这里的一致性，是指数据在多个副本之间保持一致的特性。分布">
@@ -332,7 +332,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-27 21:18:36" itemprop="dateModified" datetime="2019-08-27T21:18:36+08:00">2019-08-27</time>
+                <time title="修改时间：2019-09-17 10:03:47" itemprop="dateModified" datetime="2019-09-17T10:03:47+08:00">2019-09-17</time>
               </span>
             
           
@@ -524,7 +524,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logRequest</span><span class="params">(TxnHeader hdr, Record txn)</span> </span>&#123;</span><br><span class="line">    Request request = <span class="keyword">new</span> Request(hdr.getClientId(), hdr.getCxid(), hdr.getType(), hdr, txn, hdr.getZxid());</span><br><span class="line">    <span class="keyword">if</span> ((request.zxid &amp; <span class="number">0xffffffffL</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        pendingTxns.add(request);</span><br><span class="line">    &#125;</span><br><span class="line">    syncProcessor.processRequest(request);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>proposal这步是会发给所有的follower的（放到LearnerHandler的请求处理队列中，一个Follower一个LearnerHandler），之后Follower的ack就不一定全返回了</p>
+<p>proposal这步是会发给所有的follower的（放到LearnerHandler的请求处理队列中，一个Follower一个LearnerHandler），之后Follower的ack就不一定全返回了。</p>
 </blockquote>
 <ul>
 <li>ack过半，Leader发送commit请求给所有Follower，Follower对比commit request的zxid和前面提到的pendingTxns的zxid，不一致的话Follower退出，重新跟Leader同步</li>

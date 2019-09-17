@@ -3,6 +3,20 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/zookeeper/</loc>
+        <lastmod>2019-09-17T02:03:47.726Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/Java8%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
+        <lastmod>2019-09-17T02:02:43.014Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/%E6%B2%B3%E5%8D%97/</loc>
         <lastmod>2019-09-12T13:25:19.033Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -38,13 +52,6 @@
     </url>
 
     <url>
-        <loc>http://www.sainpo.top/tags/Java8%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
-        <lastmod>2019-09-10T03:19:01.811Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://www.sainpo.top/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/</loc>
         <lastmod>2019-09-09T07:10:26.738Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -68,13 +75,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/mysql/</loc>
         <lastmod>2019-08-29T02:55:58.581Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/zookeeper/</loc>
-        <lastmod>2019-08-27T13:18:36.799Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

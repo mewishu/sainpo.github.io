@@ -8,6 +8,22 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/23/zookeeper-consistency/</loc>
+        <lastmod>2019-09-17T02:03:47.726Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/2019/09/05/java8-new-feature/</loc>
+        <lastmod>2019-09-17T02:02:43.014Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/09/12/henan-jun-fa/</loc>
         <lastmod>2019-09-12T13:25:19.033Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -26,14 +42,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/09/11/qi-lian-shan/</loc>
         <lastmod>2019-09-12T03:58:10.437Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/09/05/java8-new-feature/</loc>
-        <lastmod>2019-09-10T03:19:01.811Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -66,14 +74,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/27/innodb-consistent-nonlocking-read/</loc>
         <lastmod>2019-08-29T02:55:58.581Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/23/zookeeper-consistency/</loc>
-        <lastmod>2019-08-27T13:18:36.799Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
