@@ -8,6 +8,14 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
+        <lastmod>2019-10-23T06:54:52.652Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/08/23/zookeeper-consistency/</loc>
         <lastmod>2019-09-17T02:03:47.726Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -138,14 +146,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/10/gejianxiong-xingwanlilu/</loc>
         <lastmod>2019-08-11T04:32:23.096Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
-        <lastmod>2019-08-09T03:02:15.528Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

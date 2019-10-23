@@ -3,6 +3,13 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
+        <lastmod>2019-10-23T06:54:52.652Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/zookeeper/</loc>
         <lastmod>2019-09-17T02:03:47.726Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -103,13 +110,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/%E5%8E%86%E5%8F%B2%E5%9C%B0%E7%90%86/</loc>
         <lastmod>2019-08-11T04:32:23.096Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-08-09T03:02:15.528Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
