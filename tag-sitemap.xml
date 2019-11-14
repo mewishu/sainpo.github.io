@@ -3,8 +3,36 @@
 
 
     <url>
+        <loc>http://www.sainpo.top/tags/git%E5%91%BD%E4%BB%A4/</loc>
+        <lastmod>2019-11-14T14:15:06.406Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/CAP%E7%90%86%E8%AE%BA/</loc>
+        <lastmod>2019-11-14T13:21:24.958Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-11-14T07:01:35.375Z</lastmod>
+        <lastmod>2019-11-14T13:21:12.084Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/%E6%B2%B3%E5%8D%97/</loc>
+        <lastmod>2019-11-14T09:26:57.526Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/%E4%B8%AD%E5%9B%BD%E5%8E%86%E5%8F%B2/</loc>
+        <lastmod>2019-11-14T09:26:57.526Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -19,20 +47,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/Java8%E6%96%B0%E7%89%B9%E6%80%A7/</loc>
         <lastmod>2019-09-17T02:02:43.014Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/%E6%B2%B3%E5%8D%97/</loc>
-        <lastmod>2019-09-12T13:25:19.033Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/%E4%B8%AD%E5%9B%BD%E5%8E%86%E5%8F%B2/</loc>
-        <lastmod>2019-09-12T13:25:19.033Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -82,13 +96,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/mysql/</loc>
         <lastmod>2019-08-29T02:55:58.581Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/CAP%E7%90%86%E8%AE%BA/</loc>
-        <lastmod>2019-08-23T09:49:36.771Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

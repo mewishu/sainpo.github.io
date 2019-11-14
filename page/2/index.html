@@ -264,6 +264,184 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/25/zookeeper-server-role/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sainpo.yxb">
+      <meta itemprop="description" content="码农|理工男|文青">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="窦小固的小木屋">
+    </span>
+      <header class="post-header">
+
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/08/25/zookeeper-server-role/" class="post-title-link" itemprop="url">Zookeeper的服务器角色</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-25 21:05:51" itemprop="dateCreated datePublished" datetime="2019-08-25T21:05:51+08:00">2019-08-25</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-26 20:59:32" itemprop="dateModified" datetime="2019-08-26T20:59:32+08:00">2019-08-26</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/" itemprop="url" rel="index"><span itemprop="name">分布式一致性</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/分布式一致性/zookeeper/" itemprop="url" rel="index"><span itemprop="name">zookeeper</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          <br>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">本文字数：</span>
+              
+              <span title="本文字数">2.5k</span>
+            </span>
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              
+              <span title="阅读时长">2 分钟</span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+            <h1 id="Leader"><a href="#Leader" class="headerlink" title="Leader"></a>Leader</h1><p>Leader服务器是Zookeeper集群工作的核心，其主要工作如下</p>
+<ul>
+<li>事务请求的唯一调度和处理者，保证集群事务处理的顺序性。</li>
+<li>集群内部各服务器的调度者。</li>
+</ul>
+<h2 id="请求处理链"><a href="#请求处理链" class="headerlink" title="请求处理链"></a>请求处理链</h2><p>使用责任链来处理每个客户端的请求时Zookeeper的特色，Leader服务器的请求处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206203032319-1806823400.png" alt="Leader服务器请求处理链"></p>
+<ol>
+<li>PrepRequestProcessor。请求预处理器。在Zookeeper中，那些会改变服务器状态的请求称为事务请求（创建节点、更新数据、删除节点、创建会话等），PrepRequestProcessor能够识别出当前客户端请求是否是事务请求。对于事务请求，PrepRequestProcessor处理器会对其进行一系列预处理，如创建请求事务头、事务体、会话检查、ACL检查和版本检查等。</li>
+<li>ProposalRequestProcessor。事务投票处理器。Leader服务器事务处理流程的发起者，对于非事务性请求，ProposalRequestProcessor会直接将请求转发到CommitProcessor处理器，不再做任何处理，而对于事务性请求，处理将请求转发到CommitProcessor外，还会根据请求类型创建对应的Proposal提议，并发送给所有的Follower服务器来发起一次集群内的事务投票。同时，ProposalRequestProcessor还会将事务请求交付给SyncRequestProcessor进行事务日志的记录。</li>
+<li>SyncRequestProcessor。事务日志记录处理器。用来将事务请求记录到事务日志文件中，同时会触发Zookeeper进行数据快照。</li>
+<li>AckRequestProcessor。负责在SyncRequestProcessor完成事务日志记录后，向Proposal的投票收集器发送ACK反馈，以通知投票收集器当前服务器已经完成了对该Proposal的事务日志记录。</li>
+<li>CommitProcessor。事务提交处理器。对于非事务请求，该处理器会直接将其交付给下一级处理器处理；对于事务请求，其会等待集群内针对Proposal的投票直到该Proposal可被提交，利用CommitProcessor，每个服务器都可以很好地控制对事务请求的顺序处理。</li>
+<li>ToBeCommitProcessor。该处理器有一个toBeApplied队列，用来存储那些已经被CommitProcessor处理过的可被提交的Proposal。其会将这些请求交付给FinalRequestProcessor处理器处理，待其处理完后，再将其从toBeApplied队列中移除。</li>
+<li>FinalRequestProcessor。用来进行客户端请求返回之前的操作，包括创建客户端请求的响应，针对事务请求，该处理还会负责将事务应用到内存数据库中去。</li>
+</ol>
+<h2 id="LearnerHandler"><a href="#LearnerHandler" class="headerlink" title="LearnerHandler"></a>LearnerHandler</h2><p>为了保证整个集群内部的实时通信，同时为了确保可以控制所有的Follower/Observer服务器，Leader服务器会与每个Follower/Observer服务器建立一个TCP长连接。同时也会为每个Follower/Observer服务器创建一个名为LearnerHandler的实体。LearnerHandler是Learner服务器的管理者，主要负责Follower/Observer服务器和Leader服务器之间的一系列网络通信，包括数据同步、请求转发和Proposal提议的投票等。Leader服务器中保存了所有Follower/Observer对应的LearnerHandler。</p>
+<h1 id="Follower"><a href="#Follower" class="headerlink" title="Follower"></a>Follower</h1><p>Follower是Zookeeper集群的跟随者，其主要工作如下</p>
+<ul>
+<li>处理客户端非事务性请求（读取数据），转发事务请求给Leader服务器。</li>
+<li>参与事务请求Proposal的投票。</li>
+<li>参与Leader选举投票。</li>
+</ul>
+<p>Follower也采用了责任链模式组装的请求处理链来处理每一个客户端请求，由于不需要对事务请求的投票处理，因此Follower的请求处理链会相对简单，其处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206205916319-94850171.png" alt="Follower服务器请求处理链"></p>
+<ol>
+<li>FollowerRequestProcessor。其用作识别当前请求是否是事务请求，若是，那么Follower就会将该请求转发给Leader服务器，Leader服务器是在接收到这个事务请求后，就会将其提交到请求处理链，按照正常事务请求进行处理。</li>
+<li>SendAckRequestProcessor。其承担了事务日志记录反馈的角色，在完成事务日志记录后，会向Leader服务器发送ACK消息以表明自身完成了事务日志的记录工作。</li>
+</ol>
+<h1 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h1><p>Observer充当观察者角色，观察Zookeeper集群的最新状态变化并将这些状态同步过来，其对于非事务请求可以进行独立处理，对于事务请求，则会转发给Leader服务器进行处理。Observer不会参与任何形式的投票，包括事务请求Proposal的投票和Leader选举投票。其处理链如下</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206210521179-2100336705.png" alt="Observer服务器请求处理链"></p>
+<h1 id="集群间消息通信"><a href="#集群间消息通信" class="headerlink" title="集群间消息通信"></a>集群间消息通信</h1><p>Zookeeper的消息类型大体分为数据同步型、服务器初始化型、请求处理型和会话管理型。</p>
+<h2 id="数据同步型"><a href="#数据同步型" class="headerlink" title="数据同步型"></a>数据同步型</h2><p>指在Learner和Leader服务器进行数据同步时，网络通信所用到的消息，通常有DIFF、TRUNC、SNAP、UPTODATE。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206211659288-380771789.png" alt="Zookeeper集群间数据同步过程中的消息类型"></p>
+<h2 id="服务器初始化型"><a href="#服务器初始化型" class="headerlink" title="服务器初始化型"></a>服务器初始化型</h2><p>指在整个集群或是某些新机器初始化时，Leader和Learner之间相互通信所使用的消息类型，常见的有OBSERVERINFO、FOLLOWERINFO、LEADERINFO、ACKEPOCH和NEWLEADER五种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206213138194-152453727.png" alt="Zookeeper集群服务器初始化过程中的消息类型"></p>
+<h2 id="请求处理型"><a href="#请求处理型" class="headerlink" title="请求处理型"></a>请求处理型</h2><p>指在进行清理时，Leader和Learner服务器之间互相通信所使用的消息，常见的有REQUEST、PROPOSAL、ACK、COMMIT、INFORM和SYNC六种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206214318897-1132940651.png" alt="Zookeeper集群请求处理过程中的消息类型"></p>
+<h2 id="会话管理型"><a href="#会话管理型" class="headerlink" title="会话管理型"></a>会话管理型</h2><p>指Zookeeper在进行会话管理时和Learner服务器之间互相通信所使用的消息，常见的有PING和REVALIDATE两种。</p>
+<p><img src="/2019/08/25/zookeeper-server-role/616953-20161206215016601-1432875769.png" alt="Zookeeper集群会话管理过程中的消息类型"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li>【分布式】Zookeeper的服务器角色: <a href="https://www.cnblogs.com/leesf456/p/6139266.html" target="_blank" rel="noopener">https://www.cnblogs.com/leesf456/p/6139266.html</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+      
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/23/distributed-systems-cap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -300,11 +478,21 @@
                 
               
 
-              <time title="创建时间：2019-08-23 11:45:08 / 修改时间：17:49:36" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
+              <time title="创建时间：2019-08-23 11:45:08" itemprop="dateCreated datePublished" datetime="2019-08-23T11:45:08+08:00">2019-08-23</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-14 21:21:24" itemprop="dateModified" datetime="2019-11-14T21:21:24+08:00">2019-11-14</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -2391,541 +2579,6 @@
   </article>
 
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.sainpo.top/2019/08/05/linux-vim/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="sainpo.yxb">
-      <meta itemprop="description" content="码农|理工男|文青">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="窦小固的小木屋">
-    </span>
-      <header class="post-header">
-
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/08/05/linux-vim/" class="post-title-link" itemprop="url">vim命令</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-05 20:42:17" itemprop="dateCreated datePublished" datetime="2019-08-05T20:42:17+08:00">2019-08-05</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-07 10:02:21" itemprop="dateModified" datetime="2019-08-07T10:02:21+08:00">2019-08-07</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/" itemprop="url" rel="index"><span itemprop="name">linux命令</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux命令/vim命令/" itemprop="url" rel="index"><span itemprop="name">vim命令</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          <br>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">本文字数：</span>
-              
-              <span title="本文字数">4.8k</span>
-            </span>
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              
-              <span title="阅读时长">4 分钟</span>
-            </span>
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-            <h2 id="一般模式"><a href="#一般模式" class="headerlink" title="一般模式"></a>一般模式</h2><h3 id="光标移动"><a href="#光标移动" class="headerlink" title="光标移动"></a>光标移动</h3><table>
-<thead>
-<tr>
-<th>h 或 向左箭头键(←)</th>
-<th>光标向左移动一个字符</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>j 或 向下箭头键(↓)</td>
-<td>光标向下移动一个字符</td>
-</tr>
-<tr>
-<td>k 或 向上箭头键(↑)</td>
-<td>光标向上移动一个字符</td>
-</tr>
-<tr>
-<td>l 或 向右箭头键(→)</td>
-<td>光标向右移动一个字符</td>
-</tr>
-<tr>
-<td>20j</td>
-<td>向下移动20行(以上四个命令可以配合数字使用)，在Vim中，很多命令都可以配合数字使用，比如删除10个字符<code>10x</code></td>
-</tr>
-<tr>
-<td>w</td>
-<td>前移一个单词，光标停在下一个单词开头</td>
-</tr>
-<tr>
-<td>2w</td>
-<td>重复执行w操作2次</td>
-</tr>
-<tr>
-<td>W</td>
-<td>移动下一个单词开头，但忽略一些标点</td>
-</tr>
-<tr>
-<td>e</td>
-<td>前移一个单词，光标停在下一个单词末尾</td>
-</tr>
-<tr>
-<td>E</td>
-<td>移动到下一个单词末尾，如果词尾有标点，则移动到标点</td>
-</tr>
-<tr>
-<td>b</td>
-<td>后移一个单词，光标停在上一个单词开头</td>
-</tr>
-<tr>
-<td>B</td>
-<td>移动到上一个单词开头，忽略一些标点</td>
-</tr>
-<tr>
-<td>(</td>
-<td>前移1句</td>
-</tr>
-<tr>
-<td>)</td>
-<td>后移1句</td>
-</tr>
-<tr>
-<td>3)</td>
-<td>光标移动到向下3句</td>
-</tr>
-<tr>
-<td>{</td>
-<td>前移1段</td>
-</tr>
-<tr>
-<td>}</td>
-<td>后移1段</td>
-</tr>
-<tr>
-<td>f</td>
-<td>(find）命令也可以用于移动，<code>fx</code>将找到光标后第一个为x的字符，<code>3fd</code>将找到第三个为d的字符</td>
-</tr>
-<tr>
-<td>F</td>
-<td>同f，反向查找</td>
-</tr>
-<tr>
-<td>[Ctrl] + [f]</td>
-<td>屏幕『向下』移动一页，相当于 [Page Down]按键 (常用)</td>
-</tr>
-<tr>
-<td>[Ctrl] + [b]</td>
-<td>屏幕『向上』移动一页，相当于 [Page Up] 按键 (常用)</td>
-</tr>
-<tr>
-<td>[Ctrl] + [d]</td>
-<td>屏幕『向下』移动半页</td>
-</tr>
-<tr>
-<td>[Ctrl] + [u]</td>
-<td>屏幕『向上』移动半页</td>
-</tr>
-<tr>
-<td>+</td>
-<td>光标移动到非空格符的下一行</td>
-</tr>
-<tr>
-<td>-</td>
-<td>光标移动到非空格符的上一行</td>
-</tr>
-<tr>
-<td>n&lt;space&gt;</td>
-<td>那个 n 表示『数字』，例如 20 。按下数字后再按空格键，光标会向右移动这一行的 n 个字符。例如 20&lt;space&gt; 则光标会向后面移动 20 个字符距离。</td>
-</tr>
-<tr>
-<td>0 或功能键[Home]</td>
-<td>这是数字『 0 』：移动到这一行的最前面字符处 (常用)</td>
-</tr>
-<tr>
-<td>$ 或功能键[End]</td>
-<td>移动到这一行的最后面字符处(常用)</td>
-</tr>
-<tr>
-<td>H</td>
-<td>光标移动到这个屏幕的最上方那一行的第一个字符</td>
-</tr>
-<tr>
-<td>M</td>
-<td>光标移动到这个屏幕的中央那一行的第一个字符</td>
-</tr>
-<tr>
-<td>L</td>
-<td>光标移动到这个屏幕的最下方那一行的第一个字符</td>
-</tr>
-<tr>
-<td>G</td>
-<td>移动到这个档案的最后一行(常用)</td>
-</tr>
-<tr>
-<td>nG</td>
-<td>n 为数字。移动到这个档案的第 n 行。例如 20G 则会移动到这个档案的第 20 行(可配合 :set nu)</td>
-</tr>
-<tr>
-<td>gg</td>
-<td>移动到这个档案的第一行，相当于 1G 啊！ (常用)</td>
-</tr>
-<tr>
-<td>n&lt;Enter&gt;</td>
-<td>n 为数字。光标向下移动 n 行(常用)</td>
-</tr>
-</tbody></table>
-<h3 id="复制粘贴"><a href="#复制粘贴" class="headerlink" title="复制粘贴"></a>复制粘贴</h3><table>
-<thead>
-<tr>
-<th>x, X</th>
-<th>在一行字当中，x 为向后删除一个字符 (相当于 [del] 按键)， X 为向前删除一个字符(相当于 [backspace] 亦即是退格键) (常用)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>nx</td>
-<td>n 为数字，连续向后删除 n 个字符。举例来说，我要连续删除 10 个字符， 『10x』。</td>
-</tr>
-<tr>
-<td>dd</td>
-<td>删除游标所在的那一整行(常用)</td>
-</tr>
-<tr>
-<td>ndd</td>
-<td>n 为数字。删除光标所在的向下 n 行，例如 20dd 则是删除 20 行 (常用)</td>
-</tr>
-<tr>
-<td>d1G</td>
-<td>删除光标所在到第一行的所有数据</td>
-</tr>
-<tr>
-<td>dG</td>
-<td>删除光标所在到最后一行的所有数据</td>
-</tr>
-<tr>
-<td>d$</td>
-<td>删除游标所在处，到该行的最后一个字符</td>
-</tr>
-<tr>
-<td>d0</td>
-<td>那个是数字的 0 ，删除游标所在处，到该行的最前面一个字符</td>
-</tr>
-<tr>
-<td>yy</td>
-<td>复制游标所在的那一行(常用)</td>
-</tr>
-<tr>
-<td>nyy</td>
-<td>n 为数字。复制光标所在的向下 n 行，例如 20yy 则是复制 20 行(常用)</td>
-</tr>
-<tr>
-<td>y1G</td>
-<td>复制游标所在行到第一行的所有数据</td>
-</tr>
-<tr>
-<td>yG</td>
-<td>复制游标所在行到最后一行的所有数据</td>
-</tr>
-<tr>
-<td>y0</td>
-<td>复制光标所在的那个字符到该行行首的所有数据</td>
-</tr>
-<tr>
-<td>y$</td>
-<td>复制光标所在的那个字符到该行行尾的所有数据</td>
-</tr>
-<tr>
-<td>p, P</td>
-<td>p 为将已复制的数据在光标下一行贴上，P 则为贴在游标上一行！ 举例来说，我目前光标在第 20 行，且已经复制了 10 行数据。则按下 p 后， 那 10 行数据会贴在原本的 20 行之后，亦即由 21 行开始贴。但如果是按下 P 呢？ 那么原本的第 20 行会被推到变成 30 行。 (常用)</td>
-</tr>
-<tr>
-<td>J</td>
-<td>将光标所在行与下一行的数据结合成同一行</td>
-</tr>
-<tr>
-<td>c</td>
-<td>重复删除多个数据，例如向下删除 10 行，[ 10cj ]</td>
-</tr>
-<tr>
-<td>u</td>
-<td>复原前一个动作。(常用)</td>
-</tr>
-<tr>
-<td>[Ctrl]+r</td>
-<td>重做上一个动作。(常用)</td>
-</tr>
-<tr>
-<td>这个 u 与 [Ctrl]+r 是很常用的指令！一个是复原，另一个则是重做一次～</td>
-<td></td>
-</tr>
-<tr>
-<td>.</td>
-<td>不要怀疑！这就是小数点！意思是重复前一个动作的意思。 如果你想要重复删除、重复贴上等等动作，按下小数点『.』就好了！ (常用)</td>
-</tr>
-</tbody></table>
-<h3 id="搜索替换"><a href="#搜索替换" class="headerlink" title="搜索替换"></a>搜索替换</h3><table>
-<thead>
-<tr>
-<th>/word</th>
-<th>向光标之下寻找一个名称为 word 的字符串。例如要在档案内搜寻 vbird 这个字符串，就输入 /vbird 即可！ (常用)</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>?word</td>
-<td>向光标之上寻找一个字符串名称为 word 的字符串。</td>
-</tr>
-<tr>
-<td>n</td>
-<td>这个 n 是英文按键。代表重复前一个搜寻的动作。举例来说， 如果刚刚我们执行 /vbird 去向下搜寻 vbird 这个字符串，则按下 n 后，会向下继续搜寻下一个名称为 vbird 的字符串。如果是执行 ?vbird 的话，那么按下 n 则会向上继续搜寻名称为 vbird 的字符串！</td>
-</tr>
-<tr>
-<td>N</td>
-<td>这个 N 是英文按键。与 n 刚好相反，为『反向』进行前一个搜寻动作。 例如 /vbird 后，按下 N 则表示『向上』搜寻 vbird 。</td>
-</tr>
-<tr>
-<td>使用 /word 配合 n 及 N 是非常有帮助的！可以让你重复的找到一些你搜寻的关键词！</td>
-<td></td>
-</tr>
-<tr>
-<td>:n1,n2s/word1/word2/g</td>
-<td>n1 与 n2 为数字。在第 n1 与 n2 行之间寻找 word1 这个字符串，并将该字符串取代为 word2 ！举例来说，在 100 到 200 行之间搜寻 vbird 并取代为 VBIRD 则： 『:100,200s/vbird/VBIRD/g』。(常用)</td>
-</tr>
-<tr>
-<td><strong>:1,$s/word1/word2/g</strong> 或 <strong>:%s/word1/word2/g</strong></td>
-<td>从第一行到最后一行寻找 word1 字符串，并将该字符串取代为 word2 ！(常用)</td>
-</tr>
-<tr>
-<td><strong>:1,$s/word1/word2/gc</strong> 或 <strong>:%s/word1/word2/gc</strong></td>
-<td>从第一行到最后一行寻找 word1 字符串，并将该字符串取代为 word2 ！且在取代前显示提示字符给用户确认 (confirm) 是否需要取代！(常用)</td>
-</tr>
-</tbody></table>
-<h2 id="一般模式切换到编辑模式"><a href="#一般模式切换到编辑模式" class="headerlink" title="一般模式切换到编辑模式"></a>一般模式切换到编辑模式</h2><table>
-<thead>
-<tr>
-<th align="left">进入输入或取代的编辑模式</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">i, I</td>
-<td>进入输入模式(Insert mode)： i 为『从目前光标所在处输入』， I 为『在目前所在行的第一个非空格符处开始输入』。 (常用)</td>
-</tr>
-<tr>
-<td align="left">a, A</td>
-<td>进入输入模式(Insert mode)： a 为『从目前光标所在的下一个字符处开始输入』， A 为『从光标所在行的最后一个字符处开始输入』。(常用)</td>
-</tr>
-<tr>
-<td align="left">o, O</td>
-<td>进入输入模式(Insert mode)： 这是英文字母 o 的大小写。o 为『在目前光标所在的下一行处输入新的一行』； O 为在目前光标所在处的上一行输入新的一行！(常用)</td>
-</tr>
-<tr>
-<td align="left">r, R</td>
-<td>进入取代模式(Replace mode)： r 只会取代光标所在的那一个字符一次；R会一直取代光标所在的文字，直到按下 ESC 为止；(常用)</td>
-</tr>
-<tr>
-<td align="left">上面这些按键中，在 vi 画面的左下角处会出现『–INSERT–』或『–REPLACE–』的字样。 由名称就知道该动作了吧！！特别注意的是，我们上面也提过了，你想要在档案里面输入字符时， 一定要在左下角处看到 INSERT 或 REPLACE 才能输入喔！</td>
-<td></td>
-</tr>
-<tr>
-<td align="left">[Esc]</td>
-<td>退出编辑模式，回到一般模式中(常用)</td>
-</tr>
-</tbody></table>
-<h2 id="一般模式切换到指令行模式"><a href="#一般模式切换到指令行模式" class="headerlink" title="一般模式切换到指令行模式"></a>一般模式切换到指令行模式</h2><table>
-<thead>
-<tr>
-<th align="left">指令行的储存、离开等指令</th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">:w</td>
-<td>将编辑的数据写入硬盘档案中(常用)</td>
-</tr>
-<tr>
-<td align="left">:w!</td>
-<td>若文件属性为『只读』时，强制写入该档案。不过，到底能不能写入， 还是跟你对该档案的档案权限有关啊！</td>
-</tr>
-<tr>
-<td align="left">:q</td>
-<td>离开 vi (常用)</td>
-</tr>
-<tr>
-<td align="left">:q!</td>
-<td>若曾修改过档案，又不想储存，使用 ! 为强制离开不储存档案。</td>
-</tr>
-<tr>
-<td align="left">注意一下啊，那个惊叹号 (!) 在 vi 当中，常常具有『强制』的意思～</td>
-<td></td>
-</tr>
-<tr>
-<td align="left">:wq</td>
-<td>储存后离开，若为 :wq! 则为强制储存后离开 (常用)</td>
-</tr>
-<tr>
-<td align="left">ZZ</td>
-<td>这是大写的 Z 喔！若档案没有更动，则不储存离开，若档案已经被更动过，则储存后离开！</td>
-</tr>
-<tr>
-<td align="left">:w [filename]</td>
-<td>将编辑的数据储存成另一个档案（类似另存新档）</td>
-</tr>
-<tr>
-<td align="left">:r [filename]</td>
-<td>在编辑的数据中，读入另一个档案的数据。亦即将 『filename』 这个档案内容加到游标所在行后面</td>
-</tr>
-<tr>
-<td align="left">:n1,n2 w [filename]</td>
-<td>将 n1 到 n2 的内容储存成 filename 这个档案。</td>
-</tr>
-<tr>
-<td align="left">:! command</td>
-<td>暂时离开 vi 到指令行模式下执行 command 的显示结果！例如 『:! ls /home』即可在 vi 当中察看 /home 底下以 ls 输出的档案信息！</td>
-</tr>
-<tr>
-<td align="left">vim 环境的变更</td>
-<td></td>
-</tr>
-<tr>
-<td align="left">:set nu</td>
-<td>显示行号，设定之后，会在每一行的前缀显示该行的行号</td>
-</tr>
-<tr>
-<td align="left">:set nonu</td>
-<td>与 set nu 相反，为取消行号！</td>
-</tr>
-</tbody></table>
-<h2 id="区域选择-lt-action-gt-a-lt-object-gt-或-lt-action-gt-i-lt-object-gt"><a href="#区域选择-lt-action-gt-a-lt-object-gt-或-lt-action-gt-i-lt-object-gt" class="headerlink" title="区域选择 &lt;action&gt;a&lt;object&gt; 或 &lt;action&gt;i&lt;object&gt;"></a>区域选择 <code>&lt;action&gt;a&lt;object&gt;</code> 或 <code>&lt;action&gt;i&lt;object&gt;</code></h2><p>在visual 模式下，这些命令很强大，其命令格式为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;action&gt;a&lt;object&gt;` 和 `&lt;action&gt;i&lt;object&gt;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>action可以是任何的命令，如 <code>d</code> (删除), <code>y</code> (拷贝), <code>v</code> (可以视模式选择)。</li>
-<li>object 可能是： <code>w</code> 一个单词， <code>W</code> 一个以空格为分隔的单词， <code>s</code> 一个句字， <code>p</code> 一个段落。也可以是一个特别的字符：<code>&quot;、</code> <code>&#39;、</code> <code>)、</code> <code>}、</code> <code>]。</code></li>
-</ul>
-<p>假设你有一个字符串 <code>(map (+) (&quot;foo&quot;))</code>.而光标键在第一个 <code>o</code>的位置。</p>
-<blockquote>
-<ul>
-<li><code>vi&quot;</code> → 会选择 <code>foo</code>.</li>
-<li><code>va&quot;</code> → 会选择 <code>&quot;foo&quot;</code>.</li>
-<li><code>vi)</code> → 会选择 <code>&quot;foo&quot;</code>.</li>
-<li><code>va)</code> → 会选择<code>(&quot;foo&quot;)</code>.</li>
-<li><code>v2i)</code> → 会选择 <code>map (+) (&quot;foo&quot;)</code></li>
-<li><code>v2a)</code> → 会选择 <code>(map (+) (&quot;foo&quot;))</code></li>
-</ul>
-</blockquote>
-<h2 id="块操作-lt-C-v-gt"><a href="#块操作-lt-C-v-gt" class="headerlink" title="块操作: &lt;C-v&gt;"></a>块操作: <code>&lt;C-v&gt;</code></h2><p>块操作，典型的操作： <code>0 &lt;C-v&gt; &lt;C-d&gt; I-- [ESC]</code></p>
-<ul>
-<li><p><code>^</code> → 到行头</p>
-</li>
-<li><p><code>&lt;C-v&gt;</code> → 开始块操作</p>
-</li>
-<li><p><code>&lt;C-d&gt;</code> → 向下移动 (你也可以使用hjkl来移动光标，或是使用%，或是别的)</p>
-</li>
-<li><p><code>I-- [ESC]</code> → I是插入，插入“<code>--</code>”，按ESC键来为每一行生效。</p>
-</li>
-</ul>
-<h2 id="自动提示：-lt-C-n-gt-和-lt-C-p-gt"><a href="#自动提示：-lt-C-n-gt-和-lt-C-p-gt" class="headerlink" title="自动提示： &lt;C-n&gt; 和 &lt;C-p&gt;"></a>自动提示： <code>&lt;C-n&gt;</code> 和 <code>&lt;C-p&gt;</code></h2><p>在 Insert 模式下，你可以输入一个词的开头，然后按 <code>&lt;C-p&gt;或是&lt;C-n&gt;，自动补齐功能就出现了……</code></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
-<li>简明 VIM 练级攻略: <a href="https://coolshell.cn/articles/5426.html" target="_blank" rel="noopener">https://coolshell.cn/articles/5426.html</a></li>
-<li>Vim使用笔记: <a href="https://www.cnblogs.com/jiqingwu/archive/2012/06/14/vim_notes.html" target="_blank" rel="noopener">https://www.cnblogs.com/jiqingwu/archive/2012/06/14/vim_notes.html</a></li>
-<li>Vim命令合集: <a href="https://www.jianshu.com/p/117253829581" target="_blank" rel="noopener">https://www.jianshu.com/p/117253829581</a></li>
-</ol>
-<p>### </p>
-
-          
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </section>
 
   
@@ -2963,7 +2616,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3028,7 +2681,11 @@
         
           
         
-        <span class="site-state-item-count">25</span>
+          
+        
+          
+        
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">分类</span>
         </a>
       </div>
@@ -3089,7 +2746,9 @@
         
           
         
-        <span class="site-state-item-count">23</span>
+          
+        
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">标签</span>
         </a>
       </div>
@@ -3151,12 +2810,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">242k</span>
+    <span title="站点总字数">247k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:40</span>
+    <span title="站点阅读时长">3:45</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
   <span class="post-meta-divider">|</span>
