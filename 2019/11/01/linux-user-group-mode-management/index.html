@@ -67,7 +67,7 @@
 <meta property="og:description" content="用户管理用户及用户组用户账户 管理员：UID：0，GID：0 系统用户：UID：1-499  GID：1-499 作用：对守护进程获取资源进行权限分配 普通用户: UID:500-60000  GID:500-6000  组账户(组是用户的集合) 管理员组：root, 0 系统组：1-499, 1-999(centos7) 普通组：500-6000  Linux组的分类当一个用户同属于多个组时，将">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.sainpo.top/2019/11/01/linux-user-group-mode-management/20191101163954.jpg">
-<meta property="og:updated_time" content="2019-11-14T06:53:57.063Z">
+<meta property="og:updated_time" content="2019-11-14T06:56:34.193Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux之用户、权限管理">
 <meta name="twitter:description" content="用户管理用户及用户组用户账户 管理员：UID：0，GID：0 系统用户：UID：1-499  GID：1-499 作用：对守护进程获取资源进行权限分配 普通用户: UID:500-60000  GID:500-6000  组账户(组是用户的集合) 管理员组：root, 0 系统组：1-499, 1-999(centos7) 普通组：500-6000  Linux组的分类当一个用户同属于多个组时，将">
@@ -317,7 +317,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-14 14:53:57" itemprop="dateModified" datetime="2019-11-14T14:53:57+08:00">2019-11-14</time>
+                <time title="修改时间：2019-11-14 14:56:34" itemprop="dateModified" datetime="2019-11-14T14:56:34+08:00">2019-11-14</time>
               </span>
             
           
@@ -547,19 +547,12 @@
 <li>-M, –maxdays MAX_DAYS</li>
 <li>-W, –warndays WARN_DAYS</li>
 </ul>
-<h3 id="用户切换命令-su-sudo"><a href="#用户切换命令-su-sudo" class="headerlink" title="用户切换命令: su/sudo"></a>用户切换命令: su/sudo</h3><ul>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su</span><br></pre></td></tr></table></figure>
+<h3 id="用户切换命令-su-sudo"><a href="#用户切换命令-su-sudo" class="headerlink" title="用户切换命令: su/sudo"></a>用户切换命令: su/sudo</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su</span><br></pre></td></tr></table></figure>
 
 <p>直接切换为超级用户，但是需要<strong>root账号的密码</strong>，但是我们的目的只是让普通用户来借用root的权限，而不是把普通账号变为root，因为一旦root密码被别人知道这可是很危险的行为。</p>
-</li>
-</ul>
-<ul>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo</span><br><span class="line">sudo su &lt;user&gt;      &lt;--与su &lt;user&gt;用法类似，都是用来切换用户的，不过只要输入自己的账号</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo</span><br><span class="line">sudo su &lt;user&gt;      &lt;--与su &lt;user&gt;用法类似，都是用来切换用户的，不过只要输入自己的账号</span><br></pre></td></tr></table></figure>
 
-
-</li>
-</ul>
-<p>  而sudo 只要输入自己的账号就可以拥有root权限来执行系统管理命令，而无需知道超级用户的口令。当用户执行sudo时，会自动查找<strong>/etc/sudoers</strong>文件判断用户是否有执行sudo命令的权限。</p>
+<p>而sudo 只要输入自己的账号就可以拥有root权限来执行系统管理命令，而无需知道超级用户的口令。当用户执行sudo时，会自动查找<strong>/etc/sudoers</strong>文件判断用户是否有执行sudo命令的权限。</p>
 <h3 id="用户相关的命令-id、groups、whoami、w-who"><a href="#用户相关的命令-id、groups、whoami、w-who" class="headerlink" title="用户相关的命令: id、groups、whoami、w/who"></a>用户相关的命令: id、groups、whoami、w/who</h3><ul>
 <li><code>id</code>：显示用户当前的uid、gid和用户所属的组列表</li>
 <li><code>groups</code>：显示指定用户所属的组列表</li>
