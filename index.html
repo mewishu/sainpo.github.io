@@ -300,11 +300,21 @@
                 
               
 
-              <time title="创建时间：2019-11-14 21:32:54 / 修改时间：22:15:06" itemprop="dateCreated datePublished" datetime="2019-11-14T21:32:54+08:00">2019-11-14</time>
+              <time title="创建时间：2019-11-14 21:32:54" itemprop="dateCreated datePublished" datetime="2019-11-14T21:32:54+08:00">2019-11-14</time>
             </span>
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 13:27:04" itemprop="dateModified" datetime="2019-11-15T13:27:04+08:00">2019-11-15</time>
+              </span>
             
           
             <span class="post-meta-item">
@@ -338,7 +348,7 @@
               
                 <span class="post-meta-item-text">本文字数：</span>
               
-              <span title="本文字数">5.1k</span>
+              <span title="本文字数">5.6k</span>
             </span>
           
             <span class="post-meta-item">
@@ -392,12 +402,26 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git diff    // 查看版本库中所有的改动</span><br><span class="line">git diff Readme.md      // 查看具体文件的改动</span><br></pre></td></tr></table></figure>
 
 <h2 id="查看提交历史记录"><a href="#查看提交历史记录" class="headerlink" title="查看提交历史记录"></a>查看提交历史记录</h2><p>有的时候，你会需要查看自己做过哪些提交，来回顾自己完成的部分。或者需要寻找某个具体的提交来查看当时的代码。这里需要用到：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span>     // 显示所有提交的历史记录</span><br><span class="line">git <span class="built_in">log</span> --pretty=oneline    // 单行显示提交历史记录的内容</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span>     // 显示所有提交的历史记录</span><br><span class="line">git <span class="built_in">log</span> --graph --abbrev-commit --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --all  // 图形化显示更清晰的提交历史(提交时间、作者)。--all代表显示所有的分支的提交记录</span><br></pre></td></tr></table></figure>
 
 <p>在 <code>git log</code> 的输出内容中，可以看到每次提交的 ID，是一个 40 位的字符串。</p>
-<h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><p>有了 git log 来查看提交的历史记录，我们就可以通过 git reset –hard 来回退到我们需要的特定版本，然后使用当时的代码进行各种操作。</p>
+<p><code>git log --graph</code>显示说明:<br><img src="/2019/11/14/git-usage/20180907155220880.png" alt="图1 Zookeeper集群架构"></p>
+<ul>
+<li>每个<code>*</code> 代表一次提交</li>
+<li>|表示分支前进。两条平行竖线代表两个不同的分支在并行开发。</li>
+<li>/表示分叉   \表示合入</li>
+</ul>
+<h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><h3 id="使用reset"><a href="#使用reset" class="headerlink" title="使用reset"></a>使用reset</h3><p>有了 git log 来查看提交的历史记录，我们就可以通过 git reset –hard 来回退到我们需要的特定版本，然后使用当时的代码进行各种操作。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD^      // 回退到上一个提交版本</span><br><span class="line">git reset --hard HEAD^^     // 回退到上上一个提交版本</span><br><span class="line">git reset --hard <span class="string">'commit_id'</span>    // 会退到 commit_id 指定的提交版本</span><br></pre></td></tr></table></figure>
 
+<p>接下来要把本地的修改强制推送到远程分支上:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin master -f // 将本地 master 分支强制推送到 origin 远程分支</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用revert"><a href="#使用revert" class="headerlink" title="使用revert"></a>使用revert</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git revert HEAD         // 回退到上一个提交版本</span><br><span class="line">git push origin master  // 将本地 master 分支推送到 origin 远程分支</span><br></pre></td></tr></table></figure>
+
+<p><strong>区别:</strong></p>
+<p>reset是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录；</p>
+<p>revert是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在。</p>
 <h2 id="回到未来的某个提交"><a href="#回到未来的某个提交" class="headerlink" title="回到未来的某个提交"></a>回到未来的某个提交</h2><p>当退回到某个提交的版本以后，再通过 git log 是无法显示在这之后的提交信息的。但是，通过 git reflog 可以获取到操作命令的历史。</p>
 <p>因此，想要回到未来的某个提交，先通过 git reflog 从历史命令中找到想要回到的提交版本的 ID，然后通过 git reset –hard 来切换。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git reflog</span><br><span class="line">git reset --hard <span class="string">'commit_id'</span></span><br></pre></td></tr></table></figure>
