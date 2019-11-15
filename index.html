@@ -313,7 +313,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-15 13:27:04" itemprop="dateModified" datetime="2019-11-15T13:27:04+08:00">2019-11-15</time>
+                <time title="修改时间：2019-11-15 16:06:51" itemprop="dateModified" datetime="2019-11-15T16:06:51+08:00">2019-11-15</time>
               </span>
             
           
@@ -402,7 +402,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git diff    // 查看版本库中所有的改动</span><br><span class="line">git diff Readme.md      // 查看具体文件的改动</span><br></pre></td></tr></table></figure>
 
 <h2 id="查看提交历史记录"><a href="#查看提交历史记录" class="headerlink" title="查看提交历史记录"></a>查看提交历史记录</h2><p>有的时候，你会需要查看自己做过哪些提交，来回顾自己完成的部分。或者需要寻找某个具体的提交来查看当时的代码。这里需要用到：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span>     // 显示所有提交的历史记录</span><br><span class="line">git <span class="built_in">log</span> --graph --abbrev-commit --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --all  // 图形化显示更清晰的提交历史(提交时间、作者)。--all代表显示所有的分支的提交记录</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span>     // 显示所有提交的历史记录</span><br><span class="line">git <span class="built_in">log</span> --graph --abbrev-commit --pretty=format:<span class="string">'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset'</span> --all  // 图形化显示更清晰的提交历史(提交时间、作者)。--all代表显示所有的分支的提交记录</span><br><span class="line">git show <span class="string">'commit_id'</span>   // 显示某次提交的元数据和内容变化</span><br></pre></td></tr></table></figure>
 
 <p>在 <code>git log</code> 的输出内容中，可以看到每次提交的 ID，是一个 40 位的字符串。</p>
 <p><code>git log --graph</code>显示说明:<br><img src="/2019/11/14/git-usage/20180907155220880.png" alt="图1 Zookeeper集群架构"></p>
@@ -3339,7 +3339,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">247k</span>
+    <span title="站点总字数">248k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
