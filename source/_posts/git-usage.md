@@ -371,14 +371,31 @@ git push origin --tags
 
 ## 临时保存修改
 
-在执行很多的 Git 操作的时候，是需要保持当前操作的仓库/分支处于 clean 状态，及没有未提交的修改。如 `git pull`， `git merge` 等等，如果有未提交的修改，这些将无法操作。
+在执行很多的 Git 操作的时候，是需要保持当前操作的仓库/分支处于 clean 状态，及没有未提交的修改。如 `git pull`， `git merge` 等等，如果有未提交的修改，这些将无法操作，报错如下:
+> error: Your local changes to the following files would be overwritten by merge:
+	pom.xml
+Please commit your changes or stash them before you merge.
+Aborting
 
-但是做这些事情的时候，你可能修改了比较多的代码，却又不想丢弃它。那么，你需要把这些修改临时保存起来，这就需要用到 `git stash`。
+但是做这些事情的时候，你可能修改了比较多的代码，却又不想丢弃它。那么，你需要把这些修改临时保存起来，这就需要用到 `git stash`。处理方法如下:
+```bash
+git stash
+git pull
+git stash pop
+```
+
+反过来，如果希望用代码库中的文件完全覆盖本地工作版本。方法如下:
+```bash
+git reset --hard
+git pull
+```
+
+### git stash命令
 
 1. **临时保存修改**，这样仓库就可以回到 clean 状态。
 
 ```bash
-git  stash      // 保存本地仓库中的临时修改。
+git  stash      // 保存本地仓库中的临时修改
 ```
 
 >
