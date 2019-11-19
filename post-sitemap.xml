@@ -9,7 +9,15 @@
 
     <url>
         <loc>http://www.sainpo.top/2019/11/14/git-usage/</loc>
-        <lastmod>2019-11-15T08:06:51.150Z</lastmod>
+        <lastmod>2019-11-19T13:35:29.529Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/2019/09/12/henan-jun-fa/</loc>
+        <lastmod>2019-11-19T11:38:02.382Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -26,14 +34,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
         <lastmod>2019-11-14T13:21:12.084Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/09/12/henan-jun-fa/</loc>
-        <lastmod>2019-11-14T09:26:57.526Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

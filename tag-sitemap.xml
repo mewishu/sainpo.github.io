@@ -4,7 +4,21 @@
 
     <url>
         <loc>http://www.sainpo.top/tags/git%E5%91%BD%E4%BB%A4/</loc>
-        <lastmod>2019-11-15T08:06:51.150Z</lastmod>
+        <lastmod>2019-11-19T13:35:29.529Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/%E6%B2%B3%E5%8D%97/</loc>
+        <lastmod>2019-11-19T11:38:02.382Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/tags/%E4%B8%AD%E5%9B%BD%E5%8E%86%E5%8F%B2/</loc>
+        <lastmod>2019-11-19T11:38:02.382Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -19,20 +33,6 @@
     <url>
         <loc>http://www.sainpo.top/tags/linux%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/</loc>
         <lastmod>2019-11-14T13:21:12.084Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/%E6%B2%B3%E5%8D%97/</loc>
-        <lastmod>2019-11-14T09:26:57.526Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/tags/%E4%B8%AD%E5%9B%BD%E5%8E%86%E5%8F%B2/</loc>
-        <lastmod>2019-11-14T09:26:57.526Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
