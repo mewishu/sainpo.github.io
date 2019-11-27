@@ -168,3 +168,26 @@ tar -zxvf 压缩包名.tar.gz
 [vagrant/tmp/tmp] ]$tar -zxvf /tmp/etc.tar.gz  <==将/tmp/etc.tar.gz 档案解压缩在vagrant/tmp/tmp下
 ```
 
+
+
+## stat: 读取文件(夹)状态
+
+stat命令可以显示文件的修改时间，大小，权限模式，磁盘占用等情况，相比ls命令，能显示更多的文件状态信息，也有更高的自由度: 
+
+```bash
+stat install.log
+```
+
+实例如下: 
+
+```bash
+[root@localhost ~]# stat install.log
+  File: "install.log"
+  Size: 7730            Blocks: 16         IO Block: 4096   普通文件
+Device: fd00h/64768d    Inode: 1048578     Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2015-10-20 10:21:05.473712000 +0800
+Modify: 2015-10-20 10:23:50.061712001 +0800
+Change: 2015-10-20 10:23:56.028712002 +0800
+```
+
