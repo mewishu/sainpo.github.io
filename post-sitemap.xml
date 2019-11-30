@@ -8,6 +8,22 @@
     </url>
 
     <url>
+        <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
+        <lastmod>2019-11-30T05:23:15.342Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
+        <lastmod>2019-11-27T03:00:30.801Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.sainpo.top/2019/11/14/git-usage/</loc>
         <lastmod>2019-11-19T13:41:59.828Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -26,14 +42,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/23/distributed-systems-cap/</loc>
         <lastmod>2019-11-14T13:21:24.958Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/05/linux-command/</loc>
-        <lastmod>2019-11-14T13:21:12.084Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -194,14 +202,6 @@
     <url>
         <loc>http://www.sainpo.top/2019/08/05/grep-command/</loc>
         <lastmod>2019-08-06T02:24:38.719Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://www.sainpo.top/2019/08/05/awk-syntax/</loc>
-        <lastmod>2019-08-06T02:23:55.525Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
