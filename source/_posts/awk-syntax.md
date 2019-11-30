@@ -356,7 +356,13 @@ success
 - 条件统计
 
 ```bash
-awk '$2>=6 && $2<20 { tot++ } END { print +tot}'
+awk '$2>=6 && $2<20 { ++count } END { print count}'
+
+ppp -b -p 20 aaaserver 'grep  "ZHUANZHANG" logs/aaa/aaa.15dt.log -c' | awk '{s+=$1} END {print s}'   <-- 统计多个文件中出现特定字符串的次数的总和
+
+grep aaa rpc-server-digest.log | grep '2016-07-16 09:4' | awk -F ',' 'substr($13,1,length($13)-2)+0 >500 { num=num+1}END {print num};’
+
+
 ```
 
 
